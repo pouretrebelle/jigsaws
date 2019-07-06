@@ -1,0 +1,53 @@
+{
+  "name": "generative-jigsaws",
+  "version": "1.0.0",
+  "description": "Generative jigsaws",
+  "scripts": {
+    "start": "webpack-dev-server --config=config/webpack.config.js --mode=development"
+  },
+  "repository": {
+    "url": "https://github.com/pouretrebelle/generative-jigsaws"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-proposal-export-default-from": "^7.2.0",
+    "@babel/preset-env": "^7.5.0",
+    "@babel/preset-react": "^7.0.0",
+    "autoprefixer": "^9.6.0",
+    "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
+    "canvas2svg": "^1.0.16",
+    "chroma-js": "^2.0.4",
+    "css-loader": "^3.0.0",
+    "delaunator": "^4.0.0",
+    "dotenv": "^8.0.0",
+    "eslint": "^6.0.1",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-react": "^7.14.2",
+    "file-loader": "^4.0.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "mobx": "^5.11.0",
+    "mobx-react": "^6.1.1",
+    "postcss-loader": "^3.0.0",
+    "prettier": "^1.18.2",
+    "prop-types": "^15.7.2",
+    "pug": "^2.0.4",
+    "pug-html-loader": "^1.1.5",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-helmet": "^5.2.1",
+    "simplex-noise": "^2.4.0",
+    "style-loader": "^0.23.1",
+    "styled-components": "^4.3.2",
+    "webpack": "^4.35.2",
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2"
+  }
+}

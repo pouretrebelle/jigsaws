@@ -5,7 +5,7 @@ import styled from 'styled-components'
 const StyledExportButton = styled.button`
   width: 100%;
   padding: 0.25rem 0.5rem;
-  margin: 0.5rem 0;
+  margin: 0.5rem 0 0;
   background: #eee;
   border: 1px solid #ccc;
   border-radius: 3px;

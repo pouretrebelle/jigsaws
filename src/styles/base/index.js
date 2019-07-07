@@ -73,10 +73,6 @@ const GlobalStyle = createGlobalStyle`
   a {
     color: inherit;
   }
-
-  h2 {
-    margin-top: 1rem;
-  }
 `
 
 export default GlobalStyle

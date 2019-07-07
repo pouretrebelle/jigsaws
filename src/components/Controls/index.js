@@ -21,6 +21,10 @@ const Meta = styled.p`
   font-size: 0.625rem;
 `
 
+const H2 = styled.h2`
+  margin: 1.5rem 0 0;
+`
+
 const H3 = styled.h3`
   font-size: 0.875rem;
   margin: 0.25rem 0;
@@ -36,6 +40,8 @@ const Wrapper = styled.aside`
   @media (min-width: 700px) {
     width: 150px;
     max-height: 100%;
+    padding-right: 1.5rem;
+    box-shadow: inset -30px 0 30px -30px rgba(0, 0, 0, 0.1);
   }
 `
 
@@ -63,13 +69,13 @@ class Controls extends Component {
   }
 
   exportCut = () => {
-    const { cut, width, store } = this.props
+    const { store } = this.props
 
     let svgC = new C2S(width, width)
 
-    cut({
+    store.cut({
       c: svgC,
-      width,
+      width: store.width,
       seed: store.cutNoiseSeeds,
     })
 
@@ -89,6 +95,7 @@ class Controls extends Component {
       cutVersion,
       cutNoiseSeeds,
     } = this.props.store
+
     return (
       <Wrapper>
         <H1>Sketch {settings.sketch}</H1>
@@ -98,7 +105,7 @@ class Controls extends Component {
         {settings.rows && <Meta>pieces: {Math.pow(settings.rows, 2)}</Meta>}
 
         <div>
-          <h2>Design</h2>
+          <H2>Design</H2>
           {settings.designNoiseSeeds && (
             <>
               <H3>
@@ -123,7 +130,7 @@ class Controls extends Component {
         </div>
 
         <div>
-          <h2>Cut</h2>
+          <H2>Cut</H2>
           {settings.cutNoiseSeeds && (
             <>
               <H3>
@@ -153,8 +160,6 @@ class Controls extends Component {
 
 Controls.propTypes = {
   store: PropTypes.object,
-  cut: PropTypes.func,
-  width: PropTypes.number,
 }
 
 export default Controls

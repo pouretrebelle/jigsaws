@@ -9,9 +9,6 @@ import Demo from 'components/Demo'
 @inject('store')
 @observer
 class App extends Component {
-  @observable design = undefined
-  @observable cut = undefined
-
   constructor(props) {
     super(props)
 
@@ -19,22 +16,24 @@ class App extends Component {
 
     import(/* webpackChunkName: "[request]" */ `../sketches/${sketch}`).then(
       ({ design, cut, settings }) => {
-        store.loadSettings(Object.assign({ sketch }, settings))
-        this.cut = cut
-        this.design = design
+        store.load({
+          settings: Object.assign({ sketch }, settings),
+          cut,
+          design,
+        })
       }
     )
   }
 
   render() {
-    const { sketch } = this.props
+    const { sketch, store } = this.props
     return (
       <>
         <Helmet>
           <title>{sketch} (Generative Jigsaws)</title>
         </Helmet>
         <GlobalStyle />
-        {this.design && <Demo design={this.design} cut={this.cut} />}
+        {store.design && <Demo />}
       </>
     )
   }

@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { reaction, observable } from 'mobx'
+import { observable } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import styled from 'styled-components'
 import Controls from './Controls'
-
-const MM_TO_INCH = 0.0393701
+import Canvas from './Canvas'
 
 const Wrapper = styled.div`
   display: flex;
@@ -16,143 +15,86 @@ const Wrapper = styled.div`
     flex-direction: row;
   }
 `
+
 const CanvasWrapper = styled.div`
-  flex: 1 0 0;
-  display: flex;
+  flex: 1 1 0;
   height: 100%;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
+  cursor: zoom-in;
+
+  ${({ hovering }) =>
+    !hovering &&
+    `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  `}
 `
 
-const Canvas = styled.canvas`
-  width: 90vw;
-  height: 90vw;
-
-  @media (min-width: 700px) {
-    width: calc(90vmin - 150px);
-    height: calc(90vmin - 150px);
-  }
+const StyledCanvas = styled(Canvas)`
+  box-shadow: 0px 0px 100px -50px rgba(0, 0, 0, 0.5);
 `
 
 @inject('store')
 @observer
 class Demo extends Component {
-  designReaction = undefined
-  cutReaction = undefined
+  canvasWrapper = undefined
+  @observable mouseX = 0
+  @observable mouseY = 0
 
-  canvas = undefined
-  designCanvas = undefined
-  bleed = undefined
-  @observable width = undefined
-  bleedWidth = undefined
-
-  constructor(props) {
-    super(props)
-    const { store } = this.props
-
-    // reach to design seeds
-    this.designReaction = reaction(
-      () => [...store.designNoiseSeeds],
-      () => this.drawDesign()
-    )
-
-    // react to cut noise seeds and resizing
-    this.cutReaction = reaction(
-      () => [...store.cutNoiseSeeds, store.windowWidth, store.windowHeight],
-      () => this.drawCanvas(),
-      {
-        delay: 100,
-      }
-    )
+  onCanvasWrapperRef = (element) => {
+    this.props.store.onCanvasMount(element)
   }
 
-  componentWillUnmount() {
-    this.designReaction()
-    this.cutReaction()
+  onMouseMoved = ({ pageX, pageY }) => {
+    this.mouseX = pageX
+    this.mouseY = pageY
   }
 
-  componentDidMount() {
-    const { settings, setDesignCanvas } = this.props.store
-    const canvas = this.canvas
-
-    const designCanvas = document.createElement('canvas')
-    setDesignCanvas(designCanvas)
-
-    this.bleed = Math.round(settings.bleed * MM_TO_INCH * settings.dpi)
-    this.width = Math.round(settings.width * MM_TO_INCH * settings.dpi)
-    this.bleedWidth = this.width + this.bleed * 2
-
-    canvas.width = this.bleedWidth
-    canvas.height = this.bleedWidth
-
-    designCanvas.width = this.bleedWidth
-    designCanvas.height = this.bleedWidth
-
-    this.drawDesign()
-  }
-
-  drawDesign = () => {
-    const { bleed, bleedWidth } = this
-    const { design, store } = this.props
-    const c = store.designCanvas.getContext('2d')
-
-    design({
-      c,
-      width: bleedWidth,
-      bleed,
-      seed: store.designNoiseSeeds,
-    })
-
-    // then draw canvas with new design
-    this.drawCanvas()
-  }
-
-  drawCanvas = () => {
-    const { canvas, width, bleed, bleedWidth } = this
-    const { cut, store } = this.props
-
-    const c = this.canvas.getContext('2d')
-    const pixel = this.bleedWidth / canvas.clientWidth
-
-    c.drawImage(store.designCanvas, 0, 0)
-
-    c.strokeStyle = store.settings.lineColor
-    c.lineWidth = pixel
-
-    c.save()
-    c.translate(bleed, bleed)
-    cut({
-      c,
-      width,
-      seed: store.cutNoiseSeeds,
-    })
-    c.restore()
-
-    // guides
-    c.beginPath()
-
-    c.moveTo(bleed, 0)
-    c.lineTo(bleed, bleedWidth)
-
-    c.moveTo(bleedWidth - bleed, 0)
-    c.lineTo(bleedWidth - bleed, bleedWidth)
-
-    c.moveTo(0, bleed)
-    c.lineTo(bleedWidth, bleed)
-
-    c.moveTo(0, bleedWidth - bleed)
-    c.lineTo(bleedWidth, bleedWidth - bleed)
-
-    c.stroke()
+  onMouseHover = (bool) => {
+    this.props.store.setHovering(bool)
   }
 
   render() {
-    const { cut } = this.props
+    const { canvasWrapperBoundingBox, bleedWidth, hovering } = this.props.store
+    const wrapperBox = canvasWrapperBoundingBox
+
+    const width = !wrapperBox
+      ? 500
+      : hovering
+      ? bleedWidth / (window.devicePixelRatio || 1)
+      : Math.min(wrapperBox.width, wrapperBox.height) - 100
+
+    let x = 0
+    let y = 0
+    if (hovering) {
+      const throughX = (this.mouseX - wrapperBox.x) / wrapperBox.width
+      const throughY = (this.mouseY - wrapperBox.y) / wrapperBox.height
+
+      x = (width - wrapperBox.width) * throughX
+      y = (width - wrapperBox.height) * throughY
+    }
+
     return (
       <Wrapper>
-        <Controls cut={cut} width={this.width} />
-        <CanvasWrapper>
-          <Canvas ref={(element) => (this.canvas = element)} />
+        <Controls />
+        <CanvasWrapper
+          ref={this.onCanvasWrapperRef}
+          hovering={hovering}
+          onMouseEnter={(e) => {
+            this.onMouseMoved(e)
+            this.onMouseHover(true)
+          }}
+          onMouseLeave={() => this.onMouseHover(false)}
+          onMouseMove={this.onMouseMoved}
+        >
+          <StyledCanvas
+            style={{
+              width: width,
+              height: width,
+              transform: hovering && `translate(-${x}px, -${y}px)`,
+            }}
+          />
         </CanvasWrapper>
       </Wrapper>
     )
@@ -160,8 +102,6 @@ class Demo extends Component {
 }
 
 Demo.propTypes = {
-  design: PropTypes.func,
-  cut: PropTypes.func,
   store: PropTypes.object,
 }
 

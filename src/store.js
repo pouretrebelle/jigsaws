@@ -12,25 +12,32 @@ const defaultSettings = {
   dpi: 300,
   lineColor: 'red',
   designNoiseSeeds: 0,
+  cutNoiseSeeds: 0,
 }
 
 class store {
-  @observable windowWidth = 0
-  @observable windowHeight = 0
   @observable settings = defaultSettings
 
+  @observable canvasWrapper = undefined
+  @observable canvasWrapperBoundingBox = undefined
+  @observable hovering = false
+
+  @observable design = undefined
   @observable designVersion = 1
   @observable designNoiseSeeds = []
 
+  @observable designCanvas = undefined
+  @observable width = undefined
+  @observable bleed = undefined
+  @observable bleedWidth = undefined
+
+  @observable cut = undefined
   @observable cutVersion = 1
   @observable cutNoiseSeeds = []
-
-  @observable designCanvas = undefined
 
   constructor() {
     if (typeof window !== 'undefined') {
       this.createListeners()
-      this.updateDimensions()
     }
   }
 
@@ -38,16 +45,21 @@ class store {
     window.addEventListener('resize', this.onWindowResized)
   }
 
-  @action
-  updateDimensions = () => {
-    this.windowWidth = window.innerWidth
-    this.windowHeight = window.innerHeight
-  }
-
   onWindowResized = () => this.updateDimensions()
 
   @action
-  loadSettings = (settings) => {
+  updateDimensions = () => {
+    if (!this.canvasWrapper) return
+    this.canvasWrapperBoundingBox = this.canvasWrapper.getBoundingClientRect()
+  }
+
+  onCanvasMount = (element) => {
+    this.canvasWrapper = element
+    this.updateDimensions()
+  }
+
+  @action
+  load = ({ settings, cut, design }) => {
     this.settings = Object.assign(this.settings, settings)
 
     this.designVersion = localStorage.getItem(`design-${settings.sketch}`) || 1
@@ -56,7 +68,8 @@ class store {
     this.reseed('design')
     this.reseed('cut')
 
-    // console.log(toJS(this.settings))
+    this.design = design
+    this.cut = cut
   }
 
   @action
@@ -89,6 +102,18 @@ class store {
   @action
   setDesignCanvas = (canvas) => {
     this.designCanvas = canvas
+  }
+
+  @action
+  setWidths = ({ width, bleedWidth, bleed }) => {
+    this.width = width
+    this.bleed = bleed
+    this.bleedWidth = bleedWidth
+  }
+
+  @action
+  setHovering = (bool) => {
+    this.hovering = bool
   }
 }
 

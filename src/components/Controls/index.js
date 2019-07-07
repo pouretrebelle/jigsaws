@@ -2,9 +2,16 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import styled from 'styled-components'
+import saveAs from 'file-saver'
+import C2S from 'canvas2svg'
 import Input from './Input'
 import ExportButton from './ExportButton'
 import RefreshButton from './RefreshButton'
+import {
+  formatVersion,
+  getCutExportFilename,
+  getDesignExportFilename,
+} from 'utils/exportUtils'
 
 const H1 = styled.h1`
   margin: 0 0 0.5rem;
@@ -48,15 +55,40 @@ class Controls extends Component {
   }
 
   exportDesign = () => {
-    console.log('design')
+    const { store } = this.props
+    store.designCanvas.toBlob((blob) => {
+      saveAs(blob, getDesignExportFilename(store))
+    })
+    store.incrementVersion('design')
   }
 
   exportCut = () => {
-    console.log('cut')
+    const { cut, width, store } = this.props
+
+    let svgC = new C2S(width, width)
+
+    cut({
+      c: svgC,
+      width,
+      seed: store.cutNoiseSeeds,
+    })
+
+    // create blob of svg content
+    const blob = new Blob([svgC.getSerializedSvg()], {
+      type: 'text/plain',
+    })
+    saveAs(blob, getCutExportFilename(store))
+    store.incrementVersion('cut')
   }
 
   render() {
-    const { settings, designNoiseSeeds, cutNoiseSeeds } = this.props.store
+    const {
+      settings,
+      designVersion,
+      designNoiseSeeds,
+      cutVersion,
+      cutNoiseSeeds,
+    } = this.props.store
     return (
       <Wrapper>
         <H1>Sketch {settings.sketch}</H1>
@@ -67,7 +99,6 @@ class Controls extends Component {
 
         <div>
           <h2>Design</h2>
-          <i>iteration ---</i>
           {settings.designNoiseSeeds && (
             <>
               <H3>
@@ -87,13 +118,12 @@ class Controls extends Component {
             </>
           )}
           <ExportButton onClick={() => this.exportDesign()}>
-            Export
+            Export ({formatVersion(designVersion)})
           </ExportButton>
         </div>
 
         <div>
           <h2>Cut</h2>
-          <i>iteration ---</i>
           {settings.cutNoiseSeeds && (
             <>
               <H3>
@@ -112,7 +142,9 @@ class Controls extends Component {
               ))}
             </>
           )}
-          <ExportButton onClick={() => this.exportCut()}>Export</ExportButton>
+          <ExportButton onClick={() => this.exportCut()}>
+            Export ({formatVersion(cutVersion)})
+          </ExportButton>
         </div>
       </Wrapper>
     )
@@ -121,6 +153,8 @@ class Controls extends Component {
 
 Controls.propTypes = {
   store: PropTypes.object,
+  cut: PropTypes.func,
+  width: PropTypes.number,
 }
 
 export default Controls

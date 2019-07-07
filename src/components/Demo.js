@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { reaction } from 'mobx'
+import { reaction, observable } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import styled from 'styled-components'
 import Controls from './Controls'
@@ -43,7 +43,7 @@ class Demo extends Component {
   canvas = undefined
   designCanvas = undefined
   bleed = undefined
-  width = undefined
+  @observable width = undefined
   bleedWidth = undefined
 
   constructor(props) {
@@ -72,11 +72,11 @@ class Demo extends Component {
   }
 
   componentDidMount() {
-    const { settings } = this.props.store
+    const { settings, setDesignCanvas } = this.props.store
     const canvas = this.canvas
 
     const designCanvas = document.createElement('canvas')
-    this.designCanvas = designCanvas
+    setDesignCanvas(designCanvas)
 
     this.bleed = Math.round(settings.bleed * MM_TO_INCH * settings.dpi)
     this.width = Math.round(settings.width * MM_TO_INCH * settings.dpi)
@@ -92,9 +92,9 @@ class Demo extends Component {
   }
 
   drawDesign = () => {
-    const { designCanvas, bleed, bleedWidth } = this
+    const { bleed, bleedWidth } = this
     const { design, store } = this.props
-    const c = designCanvas.getContext('2d')
+    const c = store.designCanvas.getContext('2d')
 
     design({
       c,
@@ -108,13 +108,13 @@ class Demo extends Component {
   }
 
   drawCanvas = () => {
-    const { canvas, designCanvas, width, bleed, bleedWidth } = this
+    const { canvas, width, bleed, bleedWidth } = this
     const { cut, store } = this.props
 
     const c = this.canvas.getContext('2d')
     const pixel = this.bleedWidth / canvas.clientWidth
 
-    c.drawImage(designCanvas, 0, 0)
+    c.drawImage(store.designCanvas, 0, 0)
 
     c.strokeStyle = store.settings.lineColor
     c.lineWidth = pixel
@@ -124,7 +124,6 @@ class Demo extends Component {
     cut({
       c,
       width,
-      bleed,
       seed: store.cutNoiseSeeds,
     })
     c.restore()
@@ -148,9 +147,10 @@ class Demo extends Component {
   }
 
   render() {
+    const { cut } = this.props
     return (
       <Wrapper>
-        <Controls />
+        <Controls cut={cut} width={this.width} />
         <CanvasWrapper>
           <Canvas ref={(element) => (this.canvas = element)} />
         </CanvasWrapper>

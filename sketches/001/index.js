@@ -4,7 +4,8 @@ export cut from './cut'
 export const settings = {
   width: 300, // mm
   bleed: 10, // mm
-  rows: 10,
-  cutNoiseSeeds: 1,
+  rows: 15,
+  cutNoiseSeeds: 2,
   designNoiseSeeds: 1,
+  lineColor: 'white',
 }

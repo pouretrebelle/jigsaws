@@ -8,9 +8,9 @@ const MM_TO_INCH = 0.0393701
 @inject('store')
 @observer
 class Canvas extends Component {
+  canvas = undefined
   designReaction = undefined
   cutReaction = undefined
-  canvas = undefined
 
   constructor(props) {
     super(props)
@@ -42,11 +42,11 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    const { settings, setDesignCanvas, setWidths } = this.props.store
+    const { settings, setCanvases, setWidths } = this.props.store
     const canvas = this.canvas
 
     const designCanvas = document.createElement('canvas')
-    setDesignCanvas(designCanvas)
+    setCanvases(canvas, designCanvas)
 
     const bleed = Math.round(settings.bleed * MM_TO_INCH * settings.dpi)
     const width = Math.round(settings.width * MM_TO_INCH * settings.dpi)
@@ -70,27 +70,30 @@ class Canvas extends Component {
       bleedWidth,
       designCanvas,
       designNoiseSeeds,
+      settings,
     } = this.props.store
     const c = designCanvas.getContext('2d')
 
-    design({
-      c,
-      width: bleedWidth,
-      bleed,
-      seed: designNoiseSeeds,
-    })
+    design(
+      Object.assign({}, settings, {
+        c,
+        width: bleedWidth,
+        bleed,
+        seed: designNoiseSeeds,
+      })
+    )
 
     // then draw canvas with new design
     this.drawCanvas()
   }
 
   drawCanvas = () => {
-    const { canvas } = this
     const {
       cut,
       width,
       bleed,
       bleedWidth,
+      canvas,
       designCanvas,
       settings,
       cutNoiseSeeds,
@@ -102,15 +105,18 @@ class Canvas extends Component {
     c.drawImage(designCanvas, 0, 0)
 
     c.strokeStyle = settings.lineColor
-    c.lineWidth = pixel
+    c.fillStyle = settings.lineColor
+    c.lineWidth = pixel * 2
 
     c.save()
     c.translate(bleed, bleed)
-    cut({
-      c,
-      width,
-      seed: cutNoiseSeeds,
-    })
+    cut(
+      Object.assign({}, settings, {
+        c,
+        width,
+        seed: cutNoiseSeeds,
+      })
+    )
     c.restore()
 
     // guides
@@ -132,8 +138,7 @@ class Canvas extends Component {
   }
 
   render() {
-    const { store, ...props } = this.props
-    return <canvas ref={(element) => (this.canvas = element)} {...props} />
+    return <canvas ref={(element) => (this.canvas = element)} {...this.props} />
   }
 }
 

@@ -11,6 +11,7 @@ import {
   formatVersion,
   getCutExportFilename,
   getDesignExportFilename,
+  getCanvasExportFilename,
 } from 'utils/exportUtils'
 
 const H1 = styled.h1`
@@ -21,7 +22,7 @@ const Meta = styled.p`
   font-size: 0.625rem;
 `
 
-const H2 = styled.h2`
+const Section = styled.section`
   margin: 1.5rem 0 0;
 `
 
@@ -71,7 +72,7 @@ class Controls extends Component {
   exportCut = () => {
     const { store } = this.props
 
-    let svgC = new C2S(width, width)
+    let svgC = new C2S(store.width, store.width)
 
     store.cut({
       c: svgC,
@@ -85,6 +86,13 @@ class Controls extends Component {
     })
     saveAs(blob, getCutExportFilename(store))
     store.incrementVersion('cut')
+  }
+
+  exportCanvas = () => {
+    const { store } = this.props
+    store.canvas.toBlob((blob) => {
+      saveAs(blob, getCanvasExportFilename(store))
+    })
   }
 
   render() {
@@ -104,8 +112,8 @@ class Controls extends Component {
         <Meta>bleed: {settings.bleed}mm</Meta>
         {settings.rows && <Meta>pieces: {Math.pow(settings.rows, 2)}</Meta>}
 
-        <div>
-          <H2>Design</H2>
+        <Section>
+          <h2>Design</h2>
           {settings.designNoiseSeeds && (
             <>
               <H3>
@@ -127,10 +135,10 @@ class Controls extends Component {
           <ExportButton onClick={() => this.exportDesign()}>
             Export ({formatVersion(designVersion)})
           </ExportButton>
-        </div>
+        </Section>
 
-        <div>
-          <H2>Cut</H2>
+        <Section>
+          <h2>Cut</h2>
           {settings.cutNoiseSeeds && (
             <>
               <H3>
@@ -152,7 +160,13 @@ class Controls extends Component {
           <ExportButton onClick={() => this.exportCut()}>
             Export ({formatVersion(cutVersion)})
           </ExportButton>
-        </div>
+        </Section>
+
+        <Section>
+          <ExportButton onClick={() => this.exportCanvas()}>
+            Export canvas
+          </ExportButton>
+        </Section>
       </Wrapper>
     )
   }

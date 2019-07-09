@@ -26,6 +26,7 @@ class store {
   @observable designVersion = 1
   @observable designNoiseSeeds = []
 
+  @observable canvas = undefined
   @observable designCanvas = undefined
   @observable width = undefined
   @observable bleed = undefined
@@ -100,8 +101,9 @@ class store {
   }
 
   @action
-  setDesignCanvas = (canvas) => {
-    this.designCanvas = canvas
+  setCanvases = (canvas, designCanvas) => {
+    this.canvas = canvas
+    this.designCanvas = designCanvas
   }
 
   @action

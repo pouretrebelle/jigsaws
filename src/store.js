@@ -70,8 +70,8 @@ class store {
     this.designVersion = localStorage.getItem(`design-${settings.sketch}`) || 1
     this.cutVersion = localStorage.getItem(`cut-${settings.sketch}`) || 1
 
-    this.reseed('design')
-    this.reseed('cut')
+    this.reseed('design', undefined, true)
+    this.reseed('cut', undefined, true)
 
     this.design = design
     this.cut = cut
@@ -89,19 +89,29 @@ class store {
   @action
   updateSeed = (type, index, value) => {
     this[`${type}NoiseSeeds`][index] = value
+    this.saveSeed(type, index, value)
   }
 
   @action
-  reseed = (type, index) => {
+  reseed = (type, index, getFromStorage) => {
     const key = `${type}NoiseSeeds`
 
-    if (index !== undefined) return (this[key][index] = randomSeed())
+    if (index !== undefined) return this.updateSeed(type, index, randomSeed())
 
     let arr = []
     for (let i = 0; i < this.settings[key]; i++) {
-      arr.push(randomSeed())
+      const value =
+        (getFromStorage && localStorage.getItem(`${type}-seed-${i}`)) ||
+        randomSeed()
+      arr.push(value)
+      this.saveSeed(type, i, value)
     }
     this[key] = arr
+  }
+
+  @action
+  saveSeed = (type, index, value) => {
+    localStorage.setItem(`${type}-seed-${index}`, value)
   }
 
   @action

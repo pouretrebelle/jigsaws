@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { reaction, observable } from 'mobx'
+import { reaction } from 'mobx'
 import { inject, observer } from 'mobx-react'
 
 const MM_TO_INCH = 0.0393701
@@ -11,6 +11,7 @@ class Canvas extends Component {
   canvas = undefined
   designReaction = undefined
   cutReaction = undefined
+  resizeReaction = undefined
 
   constructor(props) {
     super(props)
@@ -22,16 +23,18 @@ class Canvas extends Component {
       () => this.drawDesign()
     )
 
-    // react to cut noise seeds and resizing
+    // react to cut noise seeds and hovering
     this.cutReaction = reaction(
-      () => [
-        ...store.cutNoiseSeeds,
-        store.canvasWrapperBoundingBox,
-        store.hovering,
-      ],
+      () => [...store.cutNoiseSeeds, store.hovering],
+      () => this.drawCanvas()
+    )
+
+    // react to resizing
+    this.resizeReaction = reaction(
+      () => [store.canvasWrapperBoundingBox],
       () => this.drawCanvas(),
       {
-        delay: 1,
+        delay: 100,
       }
     )
   }
@@ -39,6 +42,7 @@ class Canvas extends Component {
   componentWillUnmount() {
     this.designReaction()
     this.cutReaction()
+    this.resizeReaction()
   }
 
   componentDidMount() {
@@ -93,20 +97,23 @@ class Canvas extends Component {
       width,
       bleed,
       bleedWidth,
-      canvas,
+      canvasWrapperWidth,
       designCanvas,
       settings,
       cutNoiseSeeds,
+      hovering,
     } = this.props.store
 
     const c = this.canvas.getContext('2d')
-    const pixel = bleedWidth / canvas.clientWidth
+    const pixel = hovering
+      ? window.devicePixelRatio
+      : bleedWidth / canvasWrapperWidth
 
     c.drawImage(designCanvas, 0, 0)
 
     c.strokeStyle = settings.lineColor
     c.fillStyle = settings.lineColor
-    c.lineWidth = pixel * 2
+    c.lineWidth = pixel
 
     c.save()
     c.translate(bleed, bleed)

@@ -56,18 +56,21 @@ class Demo extends Component {
   }
 
   render() {
-    const { canvasWrapperBoundingBox, bleedWidth, hovering } = this.props.store
+    const {
+      canvasWrapperBoundingBox,
+      canvasWrapperWidth,
+      bleedWidth,
+      hovering,
+    } = this.props.store
     const wrapperBox = canvasWrapperBoundingBox
 
-    const width = !wrapperBox
-      ? 500
-      : hovering
-      ? bleedWidth / (window.devicePixelRatio || 1)
-      : Math.min(wrapperBox.width, wrapperBox.height) - 100
+    let width = canvasWrapperWidth
 
     let x = 0
     let y = 0
     if (hovering) {
+      width = bleedWidth / (window.devicePixelRatio || 1)
+
       const throughX = (this.mouseX - wrapperBox.x) / wrapperBox.width
       const throughY = (this.mouseY - wrapperBox.y) / wrapperBox.height
 

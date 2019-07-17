@@ -20,6 +20,7 @@ class store {
 
   @observable canvasWrapper = undefined
   @observable canvasWrapperBoundingBox = undefined
+  @observable canvasWrapperWidth = 500
   @observable hovering = false
 
   @observable design = undefined
@@ -51,7 +52,10 @@ class store {
   @action
   updateDimensions = () => {
     if (!this.canvasWrapper) return
-    this.canvasWrapperBoundingBox = this.canvasWrapper.getBoundingClientRect()
+    const wrapperBox = this.canvasWrapper.getBoundingClientRect()
+    this.canvasWrapperWidth =
+      Math.min(wrapperBox.width, wrapperBox.height) - 100
+    this.canvasWrapperBoundingBox = wrapperBox
   }
 
   onCanvasMount = (element) => {

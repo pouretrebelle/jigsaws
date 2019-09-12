@@ -11,6 +11,7 @@ const defaultSettings = {
   bleed: 20, // mm
   dpi: 300,
   lineColor: 'red',
+  backgroundColor: 'black',
   designNoiseSeeds: 0,
   cutNoiseSeeds: 0,
 }
@@ -24,6 +25,7 @@ class store {
   @observable hovering = false
 
   @observable design = undefined
+  @observable designVisible = undefined
   @observable designVersion = 1
   @observable designNoiseSeeds = []
 
@@ -34,6 +36,7 @@ class store {
   @observable bleedWidth = undefined
 
   @observable cut = undefined
+  @observable cutVisible = undefined
   @observable cutVersion = 1
   @observable cutNoiseSeeds = []
 
@@ -68,7 +71,9 @@ class store {
     this.settings = Object.assign(this.settings, settings)
 
     this.designVersion = localStorage.getItem(`design-${settings.sketch}`) || 1
+    this.designVisible = !!parseInt(localStorage.getItem(`design-visible`))
     this.cutVersion = localStorage.getItem(`cut-${settings.sketch}`) || 1
+    this.cutVisible = !!parseInt(localStorage.getItem(`cut-visible`))
 
     this.reseed('design', undefined, true)
     this.reseed('cut', undefined, true)
@@ -130,6 +135,13 @@ class store {
   @action
   setHovering = (bool) => {
     this.hovering = bool
+  }
+
+  @action
+  toggleVisibility = (type) => {
+    const bool = !this[`${type}Visible`]
+    this[`${type}Visible`] = bool
+    localStorage.setItem(`${type}-visible`, bool ? 1 : 0)
   }
 }
 

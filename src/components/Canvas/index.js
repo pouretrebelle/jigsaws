@@ -23,9 +23,14 @@ class Canvas extends Component {
       () => this.drawDesign()
     )
 
-    // react to cut noise seeds and hovering
+    // react to cut noise seeds, hovering, and visibility
     this.cutReaction = reaction(
-      () => [...store.cutNoiseSeeds, store.hovering],
+      () => [
+        ...store.cutNoiseSeeds,
+        store.hovering,
+        store.designVisible,
+        store.cutVisible,
+      ],
       () => this.drawCanvas()
     )
 
@@ -94,10 +99,12 @@ class Canvas extends Component {
   drawCanvas = () => {
     const {
       cut,
+      cutVisible,
       width,
       bleed,
       bleedWidth,
       canvasWrapperWidth,
+      designVisible,
       designCanvas,
       settings,
       cutNoiseSeeds,
@@ -109,22 +116,27 @@ class Canvas extends Component {
       ? window.devicePixelRatio
       : bleedWidth / canvasWrapperWidth / window.devicePixelRatio
 
-    c.drawImage(designCanvas, 0, 0)
+    c.fillStyle = settings.backgroundColor
+    c.fillRect(0, 0, width + bleed * 2, width + bleed * 2)
+
+    if (designVisible) c.drawImage(designCanvas, 0, 0)
 
     c.strokeStyle = settings.lineColor
     c.fillStyle = settings.lineColor
     c.lineWidth = pixel * 2
 
-    c.save()
-    c.translate(bleed, bleed)
-    cut(
-      Object.assign({}, settings, {
-        c,
-        width,
-        seed: cutNoiseSeeds,
-      })
-    )
-    c.restore()
+    if (cutVisible) {
+      c.save()
+      c.translate(bleed, bleed)
+      cut(
+        Object.assign({}, settings, {
+          c,
+          width,
+          seed: cutNoiseSeeds,
+        })
+      )
+      c.restore()
+    }
 
     // guides
     c.beginPath()

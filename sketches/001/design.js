@@ -1,37 +1,34 @@
 import SimplexNoise from 'simplex-noise'
 
-const design = ({ c, seed, width, height, bleed }) => {
-  const simplex = new SimplexNoise(seed[0])
+const design = ({ c, seed, width, height, bleed, rows, columns }) => {
+  const simplex1 = new SimplexNoise(seed[0])
 
-  c.fillStyle = 'hsl(0, 0%, 96%)'
+  c.fillStyle = '#000'
   c.fillRect(0, 0, width, height)
 
-  // Gradient foreground
+  // background
   const fill = c.createLinearGradient(0, 0, width, height)
-  fill.addColorStop(0, `hsl(${180 + simplex.noise2D(0, 5) * 180}, 100%, 50%)`)
-  fill.addColorStop(1, `hsl(${180 + simplex.noise2D(0, 5.5) * 180}, 100%, 50%)`)
-
-  // Fill rectangle
-  c.fillStyle = fill
-  c.fillRect(0, 0, width, height)
-
-  // Stripe
-  const stripe = c.createLinearGradient(0, 0, 1, height)
-  stripe.addColorStop(
-    0,
-    `hsl(${180 + simplex.noise2D(0, 10) * 180}, 100%, 50%)`
-  )
-  stripe.addColorStop(
+  fill.addColorStop(0, `hsl(${180 + simplex1.noise2D(0, 5) * 180}, 100%, 50%)`)
+  fill.addColorStop(
     1,
-    `hsl(${180 + simplex.noise2D(0, 10.5) * 180}, 100%, 50%)`
+    `hsl(${180 + simplex1.noise2D(0, 5.5) * 180}, 100%, 50%)`
   )
+  c.fillStyle = fill
+  c.fillRect(bleed, bleed, width - bleed * 2, height - bleed * 2)
 
-  c.fillStyle = stripe
+  // strips
+  c.fillStyle = '#000'
 
-  const strips = 21
-  const stripWidth = (width - bleed * 2) / strips
-  for (let x = bleed + stripWidth; x < width - bleed; x += stripWidth * 2) {
+  let verticalStrips = columns * 2 + 1
+  const stripWidth = (width - bleed * 2) / verticalStrips
+  for (let x = bleed; x < width - bleed; x += stripWidth * 2) {
     c.fillRect(x, 0, stripWidth, height)
+  }
+
+  let horizontalStrips = rows * 2 + 1
+  const stripHeight = (height - bleed * 2) / horizontalStrips
+  for (let y = bleed; y < height - bleed; y += stripHeight * 2) {
+    c.fillRect(0, y, width, stripHeight)
   }
 }
 

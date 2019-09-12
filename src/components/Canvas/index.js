@@ -117,7 +117,7 @@ class Canvas extends Component {
       : bleedWidth / canvasWrapperWidth / window.devicePixelRatio
 
     c.fillStyle = settings.backgroundColor
-    c.fillRect(0, 0, width + bleed * 2, width + bleed * 2)
+    c.fillRect(0, 0, bleedWidth, bleedWidth)
 
     if (designVisible) c.drawImage(designCanvas, 0, 0)
 
@@ -135,22 +135,44 @@ class Canvas extends Component {
           seed: cutNoiseSeeds,
         })
       )
+
+      // outline
+      c.beginPath()
+      c.moveTo(0, 0)
+      c.lineTo(width, 0)
+      c.lineTo(width, width)
+      c.lineTo(0, width)
+      c.lineTo(0, 0)
+      c.stroke()
+
       c.restore()
     }
 
     // guides
     c.beginPath()
 
+    // top left
     c.moveTo(bleed, 0)
-    c.lineTo(bleed, bleedWidth)
-
-    c.moveTo(bleedWidth - bleed, 0)
-    c.lineTo(bleedWidth - bleed, bleedWidth)
-
+    c.lineTo(bleed, bleed / 2)
     c.moveTo(0, bleed)
+    c.lineTo(bleed / 2, bleed)
+
+    // top right
+    c.moveTo(bleedWidth - bleed, 0)
+    c.lineTo(bleedWidth - bleed, bleed / 2)
+    c.moveTo(bleedWidth - bleed / 2, bleed)
     c.lineTo(bleedWidth, bleed)
 
+    // bottom left
     c.moveTo(0, bleedWidth - bleed)
+    c.lineTo(bleed / 2, bleedWidth - bleed)
+    c.moveTo(bleed, bleedWidth)
+    c.lineTo(bleed, bleedWidth - bleed / 2)
+
+    // bottom right
+    c.moveTo(bleedWidth - bleed, bleedWidth)
+    c.lineTo(bleedWidth - bleed, bleedWidth - bleed / 2)
+    c.moveTo(bleedWidth - bleed / 2, bleedWidth - bleed)
     c.lineTo(bleedWidth, bleedWidth - bleed)
 
     c.stroke()

@@ -123,7 +123,7 @@ class Canvas extends Component {
       : bleedWidth / canvasWrapperWidth / window.devicePixelRatio
 
     c.fillStyle = settings.backgroundColor
-    c.fillRect(0, 0, bleedWidth, bleedWidth)
+    c.fillRect(0, 0, bleedWidth, bleedHeight)
 
     if (designVisible) c.drawImage(designCanvas, 0, 0)
 

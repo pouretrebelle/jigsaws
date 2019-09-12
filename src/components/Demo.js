@@ -59,16 +59,15 @@ class Demo extends Component {
     const {
       canvasWrapperBoundingBox,
       canvasWrapperWidth,
-      width,
+      canvasWrapperHeight,
       bleedWidth,
-      height,
       bleedHeight,
       hovering,
     } = this.props.store
     const wrapperBox = canvasWrapperBoundingBox
 
     let canvasWidth = canvasWrapperWidth
-    let canvasHeight = canvasWidth * (height / width || 1)
+    let canvasHeight = canvasWrapperHeight
 
     let x = 0
     let y = 0

@@ -1,4 +1,4 @@
-import { observable, action, toJS } from 'mobx'
+import { observable, action } from 'mobx'
 
 const randomSeed = () =>
   Math.random()
@@ -22,6 +22,7 @@ class store {
   @observable canvasWrapper = undefined
   @observable canvasWrapperBoundingBox = undefined
   @observable canvasWrapperWidth = 500
+  @observable canvasWrapperHeight = 500
   @observable hovering = false
 
   @observable design = undefined
@@ -31,9 +32,11 @@ class store {
 
   @observable canvas = undefined
   @observable designCanvas = undefined
-  @observable width = undefined
   @observable bleed = undefined
+  @observable width = undefined
   @observable bleedWidth = undefined
+  @observable height = undefined
+  @observable bleedHeight = undefined
 
   @observable cut = undefined
   @observable cutVisible = undefined
@@ -56,8 +59,21 @@ class store {
   updateDimensions = () => {
     if (!this.canvasWrapper) return
     const wrapperBox = this.canvasWrapper.getBoundingClientRect()
-    this.canvasWrapperWidth =
-      Math.min(wrapperBox.width, wrapperBox.height) - 100
+
+    const canvasRatio = this.settings.width / this.settings.height
+    const verticalMargins = wrapperBox.width / wrapperBox.height > canvasRatio
+
+    let width, height
+    if (verticalMargins) {
+      height = wrapperBox.height - 100
+      width = height * canvasRatio
+    } else {
+      width = wrapperBox.width - 100
+      height = width / canvasRatio
+    }
+
+    this.canvasWrapperWidth = width
+    this.canvasWrapperHeight = height
     this.canvasWrapperBoundingBox = wrapperBox
   }
 
@@ -69,6 +85,10 @@ class store {
   @action
   load = ({ settings, cut, design }) => {
     this.settings = Object.assign(this.settings, settings)
+
+    // square defaults
+    this.settings.height = settings.height || settings.width
+    this.settings.columns = settings.columns || settings.rows
 
     this.designVersion = localStorage.getItem(`design-${settings.sketch}`) || 1
     this.designVisible = !!parseInt(localStorage.getItem(`design-visible`))
@@ -126,10 +146,12 @@ class store {
   }
 
   @action
-  setWidths = ({ width, bleedWidth, bleed }) => {
+  setSizing = ({ width, bleedWidth, height, bleedHeight, bleed }) => {
     this.width = width
-    this.bleed = bleed
     this.bleedWidth = bleedWidth
+    this.height = height
+    this.bleedHeight = bleedHeight
+    this.bleed = bleed
   }
 
   @action

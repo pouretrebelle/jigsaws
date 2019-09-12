@@ -51,7 +51,7 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
-    const { settings, setCanvases, setWidths } = this.props.store
+    const { settings, setCanvases, setSizing } = this.props.store
     const canvas = this.canvas
 
     const designCanvas = document.createElement('canvas')
@@ -59,15 +59,17 @@ class Canvas extends Component {
 
     const bleed = Math.round(settings.bleed * MM_TO_INCH * settings.dpi)
     const width = Math.round(settings.width * MM_TO_INCH * settings.dpi)
+    const height = Math.round(settings.height * MM_TO_INCH * settings.dpi)
     const bleedWidth = width + bleed * 2
+    const bleedHeight = height + bleed * 2
 
     canvas.width = bleedWidth
-    canvas.height = bleedWidth
+    canvas.height = bleedHeight
 
     designCanvas.width = bleedWidth
-    designCanvas.height = bleedWidth
+    designCanvas.height = bleedHeight
 
-    setWidths({ width, bleedWidth, bleed })
+    setSizing({ width, bleedWidth, height, bleedHeight, bleed })
 
     this.drawDesign()
   }
@@ -77,6 +79,7 @@ class Canvas extends Component {
       design,
       bleed,
       bleedWidth,
+      bleedHeight,
       designCanvas,
       designNoiseSeeds,
       settings,
@@ -87,6 +90,7 @@ class Canvas extends Component {
       Object.assign({}, settings, {
         c,
         width: bleedWidth,
+        height: bleedHeight,
         bleed,
         seed: designNoiseSeeds,
       })
@@ -100,9 +104,11 @@ class Canvas extends Component {
     const {
       cut,
       cutVisible,
-      width,
       bleed,
+      width,
       bleedWidth,
+      height,
+      bleedHeight,
       canvasWrapperWidth,
       designVisible,
       designCanvas,
@@ -117,7 +123,7 @@ class Canvas extends Component {
       : bleedWidth / canvasWrapperWidth / window.devicePixelRatio
 
     c.fillStyle = settings.backgroundColor
-    c.fillRect(0, 0, bleedWidth, bleedWidth)
+    c.fillRect(0, 0, bleedWidth, bleedHeight)
 
     if (designVisible) c.drawImage(designCanvas, 0, 0)
 
@@ -132,19 +138,13 @@ class Canvas extends Component {
         Object.assign({}, settings, {
           c,
           width,
+          height,
           seed: cutNoiseSeeds,
         })
       )
 
       // outline
-      c.beginPath()
-      c.moveTo(0, 0)
-      c.lineTo(width, 0)
-      c.lineTo(width, width)
-      c.lineTo(0, width)
-      c.lineTo(0, 0)
-      c.stroke()
-
+      c.strokeRect(0, 0, width, height)
       c.restore()
     }
 
@@ -164,22 +164,23 @@ class Canvas extends Component {
     c.lineTo(bleedWidth, bleed)
 
     // bottom left
-    c.moveTo(0, bleedWidth - bleed)
-    c.lineTo(bleed / 2, bleedWidth - bleed)
-    c.moveTo(bleed, bleedWidth)
-    c.lineTo(bleed, bleedWidth - bleed / 2)
+    c.moveTo(0, bleedHeight - bleed)
+    c.lineTo(bleed / 2, bleedHeight - bleed)
+    c.moveTo(bleed, bleedHeight)
+    c.lineTo(bleed, bleedHeight - bleed / 2)
 
     // bottom right
-    c.moveTo(bleedWidth - bleed, bleedWidth)
-    c.lineTo(bleedWidth - bleed, bleedWidth - bleed / 2)
-    c.moveTo(bleedWidth - bleed / 2, bleedWidth - bleed)
-    c.lineTo(bleedWidth, bleedWidth - bleed)
+    c.moveTo(bleedWidth - bleed, bleedHeight)
+    c.lineTo(bleedWidth - bleed, bleedHeight - bleed / 2)
+    c.moveTo(bleedWidth - bleed / 2, bleedHeight - bleed)
+    c.lineTo(bleedWidth, bleedHeight - bleed)
 
     c.stroke()
   }
 
   render() {
-    return <canvas ref={(element) => (this.canvas = element)} {...this.props} />
+    const { store, ...props } = this.props // eslint-disable-line no-unused-vars
+    return <canvas ref={(element) => (this.canvas = element)} {...props} />
   }
 }
 

@@ -59,23 +59,28 @@ class Demo extends Component {
     const {
       canvasWrapperBoundingBox,
       canvasWrapperWidth,
+      width,
       bleedWidth,
+      height,
+      bleedHeight,
       hovering,
     } = this.props.store
     const wrapperBox = canvasWrapperBoundingBox
 
-    let width = canvasWrapperWidth
+    let canvasWidth = canvasWrapperWidth
+    let canvasHeight = canvasWidth * (height / width || 1)
 
     let x = 0
     let y = 0
     if (hovering) {
-      width = bleedWidth / (window.devicePixelRatio || 1)
+      canvasWidth = bleedWidth / (window.devicePixelRatio || 1)
+      canvasHeight = bleedHeight / (window.devicePixelRatio || 1)
 
       const throughX = (this.mouseX - wrapperBox.x) / wrapperBox.width
       const throughY = (this.mouseY - wrapperBox.y) / wrapperBox.height
 
-      x = (width - wrapperBox.width) * throughX
-      y = (width - wrapperBox.height) * throughY
+      x = (canvasWidth - wrapperBox.width) * throughX
+      y = (canvasHeight - wrapperBox.height) * throughY
     }
 
     return (
@@ -93,8 +98,8 @@ class Demo extends Component {
         >
           <StyledCanvas
             style={{
-              width: width,
-              height: width,
+              width: canvasWidth,
+              height: canvasHeight,
               transform: hovering && `translate(-${x}px, -${y}px)`,
             }}
           />

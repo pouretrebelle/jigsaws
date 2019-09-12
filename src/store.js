@@ -31,9 +31,11 @@ class store {
 
   @observable canvas = undefined
   @observable designCanvas = undefined
-  @observable width = undefined
   @observable bleed = undefined
+  @observable width = undefined
   @observable bleedWidth = undefined
+  @observable height = undefined
+  @observable bleedHeight = undefined
 
   @observable cut = undefined
   @observable cutVisible = undefined
@@ -69,6 +71,10 @@ class store {
   @action
   load = ({ settings, cut, design }) => {
     this.settings = Object.assign(this.settings, settings)
+
+    // square defaults
+    this.settings.height = settings.height || settings.width
+    this.settings.columns = settings.columns || settings.rows
 
     this.designVersion = localStorage.getItem(`design-${settings.sketch}`) || 1
     this.designVisible = !!parseInt(localStorage.getItem(`design-visible`))
@@ -126,10 +132,12 @@ class store {
   }
 
   @action
-  setWidths = ({ width, bleedWidth, bleed }) => {
+  setSizing = ({ width, bleedWidth, height, bleedHeight, bleed }) => {
     this.width = width
-    this.bleed = bleed
     this.bleedWidth = bleedWidth
+    this.height = height
+    this.bleedHeight = bleedHeight
+    this.bleed = bleed
   }
 
   @action

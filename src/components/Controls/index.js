@@ -72,20 +72,21 @@ class Controls extends Component {
 
   exportCut = () => {
     const { store } = this.props
-    const { cut, width, settings, cutNoiseSeeds } = store
+    const { cut, width, height, settings, cutNoiseSeeds } = store
 
-    let svgC = new C2S(width, width)
+    let svgC = new C2S(width, height)
 
     cut(
       Object.assign({}, settings, {
         c: svgC,
-        width: width,
+        width,
+        height,
         seed: cutNoiseSeeds,
       })
     )
 
     // add outline
-    svgC.strokeRect(0, 0, width, width)
+    svgC.strokeRect(0, 0, width, height)
 
     // create blob of svg content
     const blob = new Blob([svgC.getSerializedSvg()], {
@@ -119,8 +120,13 @@ class Controls extends Component {
         <H1>Sketch {settings.sketch}</H1>
 
         <Meta>width: {settings.width}mm</Meta>
+        {settings.width !== settings.height && (
+          <Meta>height: {settings.height}mm</Meta>
+        )}
         <Meta>bleed: {settings.bleed}mm</Meta>
-        {settings.rows && <Meta>pieces: {Math.pow(settings.rows, 2)}</Meta>}
+        {settings.rows && (
+          <Meta>pieces: {settings.rows * settings.columns}</Meta>
+        )}
 
         <Section>
           <h2>

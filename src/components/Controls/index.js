@@ -7,6 +7,7 @@ import C2S from 'canvas2svg'
 import Input from './Input'
 import ExportButton from './ExportButton'
 import RefreshButton from './RefreshButton'
+import ToggleButton from './ToggleButton'
 import {
   formatVersion,
   getCutExportFilename,
@@ -104,10 +105,13 @@ class Controls extends Component {
   render() {
     const {
       settings,
+      designVisible,
       designVersion,
       designNoiseSeeds,
+      cutVisible,
       cutVersion,
       cutNoiseSeeds,
+      toggleVisibility,
     } = this.props.store
 
     return (
@@ -119,7 +123,13 @@ class Controls extends Component {
         {settings.rows && <Meta>pieces: {Math.pow(settings.rows, 2)}</Meta>}
 
         <Section>
-          <h2>Design</h2>
+          <h2>
+            Design
+            <ToggleButton
+              active={designVisible}
+              onClick={() => toggleVisibility('design')}
+            />
+          </h2>
           {settings.designNoiseSeeds && (
             <>
               <H3>
@@ -144,7 +154,13 @@ class Controls extends Component {
         </Section>
 
         <Section>
-          <h2>Cut</h2>
+          <h2>
+            Cut
+            <ToggleButton
+              active={cutVisible}
+              onClick={() => toggleVisibility('cut')}
+            />
+          </h2>
           {settings.cutNoiseSeeds && (
             <>
               <H3>

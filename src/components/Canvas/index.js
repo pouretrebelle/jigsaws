@@ -77,27 +77,66 @@ class Canvas extends Component {
   drawDesign = () => {
     const {
       design,
-      bleed,
+      width,
       bleedWidth,
       bleedHeight,
+      bleed,
       designCanvas,
       designNoiseSeeds,
       settings,
     } = this.props.store
     const c = designCanvas.getContext('2d')
+    c.clearRect(0, 0, bleedWidth, bleedHeight)
+
+    const scale = width / settings.width
+    c.save()
+    c.scale(scale, scale)
 
     design(
       Object.assign({}, settings, {
         c,
-        width: bleedWidth,
-        height: bleedHeight,
-        bleed,
+        width: settings.width + settings.bleed * 2,
+        height: settings.height + settings.bleed * 2,
+        bleed: settings.bleed,
         seed: designNoiseSeeds,
       })
     )
 
+    c.restore()
+
     // then draw canvas with new design
     this.drawCanvas()
+
+    // guides
+    c.strokeStyle = settings.lineColor
+    c.lineWidth = 0.2 * scale // 0.2mm
+    c.beginPath()
+
+    // top left
+    c.moveTo(bleed, 0)
+    c.lineTo(bleed, bleed / 2)
+    c.moveTo(0, bleed)
+    c.lineTo(bleed / 2, bleed)
+
+    // top right
+    c.moveTo(bleedWidth - bleed, 0)
+    c.lineTo(bleedWidth - bleed, bleed / 2)
+    c.moveTo(bleedWidth - bleed / 2, bleed)
+    c.lineTo(bleedWidth, bleed)
+
+    // bottom left
+    c.moveTo(0, bleedHeight - bleed)
+    c.lineTo(bleed / 2, bleedHeight - bleed)
+    c.moveTo(bleed, bleedHeight)
+    c.lineTo(bleed, bleedHeight - bleed / 2)
+
+    // bottom right
+    c.moveTo(bleedWidth - bleed, bleedHeight)
+    c.lineTo(bleedWidth - bleed, bleedHeight - bleed / 2)
+    c.moveTo(bleedWidth - bleed / 2, bleedHeight - bleed)
+    c.lineTo(bleedWidth, bleedHeight - bleed)
+
+    c.stroke()
   }
 
   drawCanvas = () => {
@@ -147,35 +186,6 @@ class Canvas extends Component {
       c.strokeRect(0, 0, width, height)
       c.restore()
     }
-
-    // guides
-    c.beginPath()
-
-    // top left
-    c.moveTo(bleed, 0)
-    c.lineTo(bleed, bleed / 2)
-    c.moveTo(0, bleed)
-    c.lineTo(bleed / 2, bleed)
-
-    // top right
-    c.moveTo(bleedWidth - bleed, 0)
-    c.lineTo(bleedWidth - bleed, bleed / 2)
-    c.moveTo(bleedWidth - bleed / 2, bleed)
-    c.lineTo(bleedWidth, bleed)
-
-    // bottom left
-    c.moveTo(0, bleedHeight - bleed)
-    c.lineTo(bleed / 2, bleedHeight - bleed)
-    c.moveTo(bleed, bleedHeight)
-    c.lineTo(bleed, bleedHeight - bleed / 2)
-
-    // bottom right
-    c.moveTo(bleedWidth - bleed, bleedHeight)
-    c.lineTo(bleedWidth - bleed, bleedHeight - bleed / 2)
-    c.moveTo(bleedWidth - bleed / 2, bleedHeight - bleed)
-    c.lineTo(bleedWidth, bleedHeight - bleed)
-
-    c.stroke()
   }
 
   render() {

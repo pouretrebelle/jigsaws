@@ -160,6 +160,7 @@ class Canvas extends Component {
     const pixel = hovering
       ? window.devicePixelRatio
       : bleedWidth / canvasWrapperWidth / window.devicePixelRatio
+    const cutScale = width / settings.width
 
     c.fillStyle = settings.backgroundColor
     c.fillRect(0, 0, bleedWidth, bleedHeight)
@@ -168,22 +169,24 @@ class Canvas extends Component {
 
     c.strokeStyle = settings.lineColor
     c.fillStyle = settings.lineColor
-    c.lineWidth = pixel * 2
+    c.lineWidth = (pixel * 2) / cutScale
 
     if (cutVisible) {
       c.save()
       c.translate(bleed, bleed)
+      c.scale(cutScale, cutScale)
+      // c.strokeRect(0, 0, settings.width, settings.height)
+
       cut(
         Object.assign({}, settings, {
           c,
-          width,
-          height,
+          width: settings.width,
+          height: settings.height,
           seed: cutNoiseSeeds,
         })
       )
 
       // outline
-      c.strokeRect(0, 0, width, height)
       c.restore()
     }
   }

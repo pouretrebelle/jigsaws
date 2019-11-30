@@ -1,5 +1,5 @@
 import SimplexNoise from 'simplex-noise'
-import Vector2 from './Vector2'
+import Vector2 from '../../utils/Vector2'
 
 const tweakDist = (m, alt, rows, simplex) => {
   const edgeAvoidanceScalar =

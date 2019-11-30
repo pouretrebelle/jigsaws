@@ -14,6 +14,7 @@ import {
   getDesignExportFilename,
   getCanvasExportFilename,
 } from 'utils/exportUtils'
+import { changeDpiBlob } from 'changedpi'
 
 const H1 = styled.h1`
   margin: 0 0 0.5rem;
@@ -65,7 +66,9 @@ class Controls extends Component {
   exportDesign = () => {
     const { store } = this.props
     store.designCanvas.toBlob((blob) => {
-      saveAs(blob, getDesignExportFilename(store))
+      changeDpiBlob(blob, store.settings.dpi).then((blob) => {
+        saveAs(blob, getDesignExportFilename(store))
+      })
     })
     store.incrementVersion('design')
   }

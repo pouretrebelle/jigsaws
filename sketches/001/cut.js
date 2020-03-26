@@ -21,7 +21,7 @@ class Point extends Vector2 {
   }
 }
 
-const drawCurves = (c, p1, p2, flip) => {
+const addToCurves = (c, p1, p2, flip) => {
   const tVmult = 0.25 // push of t towards other side of piece
   const tVdiv = 0.4 // push of p1c and p2c away from other side of piece
   const tWidth = 0.7 // how far t1 and t2 are from the canter
@@ -37,11 +37,9 @@ const drawCurves = (c, p1, p2, flip) => {
   const t2 = t.plusNew(pV.multiplyNew(tWidth / 2))
   const p2c = p2.minusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
 
-  c.beginPath()
   c.moveTo(p1.x, p1.y)
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
-  c.stroke()
 }
 
 const cut = ({ c, width, columns, height, rows, seed }) => {
@@ -67,20 +65,32 @@ const cut = ({ c, width, columns, height, rows, seed }) => {
     }
   }
 
+  // vertical
   for (let x = 0; x < columns; x++) {
+    c.beginPath()
     for (let y = 0; y < rows; y++) {
-      const left = crossPoints[x][y + 1]
       const corner = crossPoints[x + 1][y + 1]
       const right = crossPoints[x + 1][y]
 
       if (x < columns - 1) {
-        drawCurves(c, right, corner, simplex3.noise2D(x * 2, y * 2) < 0)
-      }
-
-      if (y < rows - 1) {
-        drawCurves(c, left, corner, simplex4.noise2D(x * 2, y * 2) < 0)
+        addToCurves(c, right, corner, simplex3.noise2D(x * 2, y * 2) < 0)
       }
     }
+    c.stroke()
+  }
+
+  // horizontal
+  for (let y = 0; y < rows; y++) {
+    c.beginPath()
+    for (let x = 0; x < columns; x++) {
+      const left = crossPoints[x][y + 1]
+      const corner = crossPoints[x + 1][y + 1]
+
+      if (y < rows - 1) {
+        addToCurves(c, left, corner, simplex4.noise2D(x * 2, y * 2) < 0)
+      }
+    }
+    c.stroke()
   }
 }
 

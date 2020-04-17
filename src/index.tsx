@@ -7,5 +7,3 @@ ReactDOM.render(
   <AppProvider sketch={sketch.toString().padStart(3, '0')} />,
   document.getElementById('root')
 )
-
-// import './style.sass';

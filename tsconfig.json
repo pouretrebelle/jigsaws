@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": "./src",
+    "outDir": "./docs/",
+    "experimentalDecorators": true
+  }
+}

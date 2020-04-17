@@ -9,7 +9,7 @@ const sketchNumber = process.env.SKETCH
 
 module.exports = (env, argv) => ({
   devtool: 'eval-source-map',
-  entry: './src/index.js',
+  entry: './src/index.tsx',
   output: {
     path: path.join(__dirname, '../docs/'),
     filename: '[name].js',
@@ -26,6 +26,11 @@ module.exports = (env, argv) => ({
   ],
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: 'ts-loader',
+      },
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,

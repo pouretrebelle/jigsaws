@@ -20,10 +20,10 @@ const Select = styled.select`
 `
 
 const Selector = () => {
-  const [{ sketch }, dispatch] = useContext(SketchContext)
+  const [{ sketch, initialSketch }, dispatch] = useContext(SketchContext)
 
   useEffect(() => {
-    dispatch(loadSketch('001'))
+    dispatch(loadSketch(initialSketch))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -32,7 +32,7 @@ const Selector = () => {
       <H1>
         Sketch
         <Select
-          value={sketch?.id}
+          value={sketch?.id || initialSketch}
           onChange={(e) => dispatch(loadSketch(e.target.value))}
         >
           {SKETCH_IDS.map((id) => (

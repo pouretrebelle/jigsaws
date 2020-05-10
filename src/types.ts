@@ -1,4 +1,5 @@
 export interface State {
+  initialSketch: string
   sketch?: Sketch
   cutVisible: boolean
   cutNoiseSeeds: string[]

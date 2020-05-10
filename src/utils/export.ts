@@ -1,21 +1,40 @@
 import { saveAs } from 'file-saver'
 import C2S from 'canvas2svg'
 import { State } from 'types'
-import { drawDesign, drawCut } from 'components/Canvas/draw'
+import { drawDesign, drawCut, drawBackground } from 'components/Canvas/draw'
 
 const MM_TO_INCH = 0.0393701
 const SVG_MULIPLIER = 3.7795
+const CANVAS_EXPORT_SIZE = 2000
+const CANVAS_EXPORT_LINE_WIDTH = 2
 
 const formatSeeds = (seeds: string[]) => seeds.join('-')
 
-export const exportCanvas = ({
-  sketch,
-  designNoiseSeeds,
-  cutNoiseSeeds,
-}: State) => {
-  const [canvas] = document.getElementsByTagName('canvas')
-  if (!canvas) return console.error('Cannot find canvas')
+export const exportCanvas = (state: State) => {
+  const { sketch, designNoiseSeeds, cutNoiseSeeds } = state
   if (!sketch) return
+
+  const { width, bleed, lineColor } = sketch.settings
+
+  const canvas = document.createElement('canvas') as HTMLCanvasElement
+  canvas.width = CANVAS_EXPORT_SIZE
+  canvas.height = CANVAS_EXPORT_SIZE
+
+  const c = canvas.getContext('2d') as CanvasRenderingContext2D
+
+  const scale = CANVAS_EXPORT_SIZE / (width + bleed * 2)
+  const drawArgs = {
+    canvas,
+    c,
+    lineWidth: CANVAS_EXPORT_LINE_WIDTH / scale,
+    state,
+  }
+
+  drawBackground(drawArgs)
+  c.scale(scale, scale)
+  drawDesign(drawArgs)
+  c.strokeStyle = lineColor
+  drawCut(drawArgs)
 
   canvas.toBlob((blob) => {
     if (blob)

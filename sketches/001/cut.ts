@@ -1,6 +1,6 @@
 import SimplexNoise from 'simplex-noise'
-import Vector2 from './Vector2'
 import { Cut } from 'types'
+import Vector2 from 'utils/Vector2'
 
 const tweakDist = (
   m: number,
@@ -73,7 +73,7 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
+export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
   c.beginPath()
   c.moveTo(0, 0)
   c.lineTo(width, 0)

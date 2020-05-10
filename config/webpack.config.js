@@ -1,5 +1,3 @@
-'use strict'
-
 const { readdirSync } = require('fs')
 const path = require('path')
 const webpack = require('webpack')

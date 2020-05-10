@@ -2,7 +2,7 @@ import React, { createRef, useEffect, useState, useContext } from 'react'
 import styled from 'styled-components'
 
 import { SketchContext } from 'Provider'
-import { useWindowSize } from 'utils/hooks'
+import { useWindowSize } from 'lib/hooks'
 import { drawBackground, drawDesign, drawCut, drawGuides } from './draw'
 import { ActionType } from 'types'
 import Loader from 'components/Loader'

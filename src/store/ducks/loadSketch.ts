@@ -2,7 +2,7 @@ import React from 'react'
 
 import { State, SketchSettings, Action, ActionType } from 'types'
 
-import { makeRandomSeedArray } from 'utils/seeds'
+import { makeRandomSeedArray } from 'lib/seeds'
 import { removePending, addPending } from '../actions'
 
 interface Payload extends Pick<State, 'error'> {

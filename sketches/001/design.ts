@@ -1,16 +1,7 @@
 import SimplexNoise from 'simplex-noise'
+import { Design } from 'types'
 
-interface Args {
-  c: CanvasRenderingContext2D
-  seed: string[]
-  width: number
-  height: number
-  bleed: number
-  rows: number
-  columns: number
-}
-
-const design = ({
+export const design = ({
   c,
   seed,
   width,
@@ -18,7 +9,7 @@ const design = ({
   bleed,
   rows,
   columns,
-}: Args): void => {
+}: Design): void => {
   const simplex1 = new SimplexNoise(seed[0])
 
   c.fillStyle = '#000'
@@ -49,5 +40,3 @@ const design = ({
     c.fillRect(0, y, width, stripHeight)
   }
 }
-
-export default design

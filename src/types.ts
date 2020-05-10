@@ -64,9 +64,19 @@ export interface Sketch {
 
 export interface Cut {
   c: CanvasRenderingContext2D
+  seed: string[]
   width: number
   height: number
   rows: number
   columns: number
+}
+
+export interface Design {
+  c: CanvasRenderingContext2D
   seed: string[]
+  width: number
+  height: number
+  bleed: number
+  rows: number
+  columns: number
 }

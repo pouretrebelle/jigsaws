@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { State, Layer, ActionType } from '../../types'
-import { makeRandomSeedArray, makeRandomSeed } from 'utils/seeds'
+import { makeRandomSeedArray, makeRandomSeed } from 'lib/seeds'
 
 interface Payload {
   layer: Layer

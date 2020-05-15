@@ -43,16 +43,31 @@ export enum Layer {
   Design = 'design',
 }
 
+export interface SketchConstructorSettings {
+  width: number
+  columns: number
+  bleed: number
+  height?: number
+  rows?: number
+  lineColor?: string
+  backgroundColor?: string
+  cutNoiseSeeds: number
+  designNoiseSeeds: number
+}
+
 export interface SketchSettings {
   width: number
   height: number
   bleed: number
-  rows?: number
-  columns?: number
+  rows: number
+  columns: number
   lineColor: string
   backgroundColor: string
   cutNoiseSeeds: number
   designNoiseSeeds: number
+  bleedWidth: number
+  bleedHeight: number
+  bleedRatio: number
 }
 
 export interface Sketch {

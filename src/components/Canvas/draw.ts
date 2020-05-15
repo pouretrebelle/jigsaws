@@ -17,17 +17,22 @@ export const drawBackground = ({ canvas, c, state }: DrawArgs) => {
 export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
   if (!state.sketch) return
 
-  const { width, rows, columns, bleed } = state.sketch.settings
-  const bleedWidth = width + bleed * 2
+  const {
+    bleedWidth,
+    bleedHeight,
+    rows,
+    columns,
+    bleed,
+  } = state.sketch.settings
 
   state.sketch.design({
     c,
     seed: state.designNoiseSeeds,
     width: bleedWidth,
-    height: bleedWidth,
-    bleed: bleed,
-    rows: rows,
-    columns: columns,
+    height: bleedHeight,
+    bleed,
+    rows,
+    columns,
   })
 }
 
@@ -38,7 +43,7 @@ export const drawCut = ({
 }: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>) => {
   if (!state.sketch) return
 
-  const { width, rows, columns, bleed } = state.sketch.settings
+  const { width, height, rows, columns, bleed } = state.sketch.settings
 
   c.save()
   c.lineWidth = lineWidth
@@ -46,10 +51,10 @@ export const drawCut = ({
   state.sketch.cut({
     c,
     seed: state.cutNoiseSeeds,
-    width: width,
-    height: width,
-    rows: rows,
-    columns: columns,
+    width,
+    height,
+    rows,
+    columns,
   })
   c.restore()
 }
@@ -57,9 +62,7 @@ export const drawCut = ({
 export const drawGuides = ({ c, lineWidth, state }: DrawArgs) => {
   if (!state.sketch) return
 
-  const { width, bleed } = state.sketch.settings
-  const bleedWidth = width + bleed * 2
-  const bleedHeight = width + bleed * 2
+  const { bleed, bleedWidth, bleedHeight } = state.sketch.settings
 
   // guides
   c.lineWidth = lineWidth / 2

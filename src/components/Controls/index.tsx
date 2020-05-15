@@ -40,13 +40,9 @@ const Controls = () => {
   return (
     <>
       <Meta>width: {settings.width}mm</Meta>
-      {settings.width !== settings.height && (
-        <Meta>height: {settings.height}mm</Meta>
-      )}
+      <Meta>height: {settings.height}mm</Meta>
       <Meta>bleed: {settings.bleed}mm</Meta>
-      {settings.rows && settings.columns && (
-        <Meta>pieces: {settings.rows * settings.columns}</Meta>
-      )}
+      <Meta>pieces: {settings.rows * settings.columns}</Meta>
 
       <Section>
         <h2>

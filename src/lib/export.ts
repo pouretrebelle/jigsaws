@@ -5,7 +5,7 @@ import { drawDesign, drawCut, drawBackground } from 'components/Canvas/draw'
 
 const MM_TO_INCH = 0.0393701
 const SVG_MULIPLIER = 3.7795
-const CANVAS_EXPORT_SIZE = 2000
+const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2
 
 const formatSeeds = (seeds: string[]) => seeds.join('-')
@@ -14,15 +14,15 @@ export const exportCanvas = (state: State) => {
   const { sketch, designNoiseSeeds, cutNoiseSeeds } = state
   if (!sketch) return
 
-  const { width, bleed, lineColor } = sketch.settings
+  const { bleedWidth, bleedRatio, lineColor } = sketch.settings
 
   const canvas = document.createElement('canvas') as HTMLCanvasElement
-  canvas.width = CANVAS_EXPORT_SIZE
-  canvas.height = CANVAS_EXPORT_SIZE
+  canvas.width = CANVAS_EXPORT_WIDTH
+  canvas.height = CANVAS_EXPORT_WIDTH * bleedRatio
 
   const c = canvas.getContext('2d') as CanvasRenderingContext2D
 
-  const scale = CANVAS_EXPORT_SIZE / (width + bleed * 2)
+  const scale = CANVAS_EXPORT_WIDTH / bleedWidth
   const drawArgs = {
     canvas,
     c,

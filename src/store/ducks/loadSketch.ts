@@ -1,6 +1,12 @@
 import React from 'react'
 
-import { State, SketchSettings, Action, ActionType } from 'types'
+import {
+  State,
+  SketchConstructorSettings,
+  SketchSettings,
+  Action,
+  ActionType,
+} from 'types'
 
 import { makeRandomSeedArray } from 'lib/seeds'
 import { removePending, addPending } from '../actions'
@@ -9,7 +15,7 @@ interface Payload extends Pick<State, 'error'> {
   id: string
   design: any
   cut: any
-  settings: SketchSettings
+  settings: SketchConstructorSettings
 }
 
 export const reducer: React.Reducer<
@@ -20,7 +26,21 @@ export const reducer: React.Reducer<
     case ActionType.LoadSketch: {
       const { id, design, cut, settings } = action.payload
 
-      const sketch = { id, design, cut, settings }
+      const height = settings.height || settings.width
+      const bleedWidth = settings.width + settings.bleed * 2
+      const bleedHeight = height + settings.bleed * 2
+      const augmentedSettings = {
+        ...settings,
+        bleedWidth,
+        bleedHeight,
+        bleedRatio: bleedHeight / bleedWidth,
+        backgroundColor: settings.backgroundColor || '#000',
+        lineColor: settings.lineColor || '#fff',
+        height,
+        rows: settings.rows || settings.columns,
+      } as SketchSettings
+
+      const sketch = { id, design, cut, settings: augmentedSettings }
 
       const cutNoiseSeeds = [
         ...state.cutNoiseSeeds,

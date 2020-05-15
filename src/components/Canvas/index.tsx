@@ -8,6 +8,7 @@ import { ActionType } from 'types'
 import Loader from 'components/Loader'
 
 const PIXEL_DENSITY = window.devicePixelRatio || 1
+const CANVAS_PADDING = 50
 
 interface CanvasWrapperProps {
   $isHovering: boolean
@@ -52,7 +53,10 @@ const Canvas: React.FC = () => {
   const [wrapperBoundingBox, setWrapperBoundingBox] = useState<DOMRect>(
     new DOMRect()
   )
-  const [canvasSize, setCanvasSize] = useState(0)
+  const [
+    { width: canvasWidth, height: canvasHeight },
+    setCanvasDimensions,
+  ] = useState({ width: 0, height: 0 })
   const canvasElement = createRef<HTMLCanvasElement>()
   const wrapperElement = createRef<HTMLDivElement>()
 
@@ -61,9 +65,8 @@ const Canvas: React.FC = () => {
     if (sketch) {
       const canvas = canvasElement.current as HTMLCanvasElement
       const c = canvas.getContext('2d') as CanvasRenderingContext2D
-      const { width, bleed, lineColor } = sketch.settings
-      const bleedWidth = width + bleed * 2
-      const scale = (canvasSize / bleedWidth) * PIXEL_DENSITY
+      const { bleedWidth, lineColor } = sketch.settings
+      const scale = (canvasWidth / bleedWidth) * PIXEL_DENSITY
       const lineWidth = ((isHovering ? 2 : 1) * PIXEL_DENSITY) / scale
 
       const drawArgs = {
@@ -83,7 +86,14 @@ const Canvas: React.FC = () => {
       c.restore()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasSize, designVisible, cutVisible, designNoiseSeeds, cutNoiseSeeds])
+  }, [
+    canvasWidth,
+    canvasHeight,
+    designVisible,
+    cutVisible,
+    designNoiseSeeds,
+    cutNoiseSeeds,
+  ])
 
   // wrapper sizing
   useEffect(() => {
@@ -92,15 +102,38 @@ const Canvas: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowWidth, windowHeight])
 
+  const setCanvasSize = (width: number, height: number) => {
+    setCanvasDimensions({ width, height })
+    const canvas = canvasElement.current as HTMLCanvasElement
+    canvas.width = width * PIXEL_DENSITY
+    canvas.height = height * PIXEL_DENSITY
+  }
+
   // canvas sizing
   useEffect(() => {
-    const size = isHovering
-      ? 2000
-      : Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) - 100
-    setCanvasSize(size)
-    const canvas = canvasElement.current as HTMLCanvasElement
-    canvas.width = size * PIXEL_DENSITY
-    canvas.height = size * PIXEL_DENSITY
+    const bleedRatio = sketch ? sketch.settings.bleedRatio : 1
+
+    if (isHovering) {
+      const width = 2000
+      setCanvasSize(width, width * bleedRatio)
+    } else {
+      const wrapperRatio =
+        (wrapperBoundingBox.height - CANVAS_PADDING * 2) /
+        (wrapperBoundingBox.width - CANVAS_PADDING * 2)
+
+      if (wrapperRatio > bleedRatio) {
+        const width =
+          Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) -
+          CANVAS_PADDING * 2
+        setCanvasSize(width, width * bleedRatio)
+      } else {
+        const height =
+          Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) -
+          CANVAS_PADDING * 2
+        setCanvasSize(height / bleedRatio, height)
+      }
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrapperBoundingBox, isHovering])
 
@@ -108,8 +141,8 @@ const Canvas: React.FC = () => {
     const throughX = (pageX - wrapperBoundingBox.x) / wrapperBoundingBox.width
     const throughY = (pageY - wrapperBoundingBox.y) / wrapperBoundingBox.height
     setHoverOffset({
-      x: (canvasSize - wrapperBoundingBox.width) * throughX,
-      y: (canvasSize - wrapperBoundingBox.height) * throughY,
+      x: (canvasWidth - wrapperBoundingBox.width) * throughX,
+      y: (canvasHeight - wrapperBoundingBox.height) * throughY,
     })
   }
 
@@ -139,8 +172,8 @@ const Canvas: React.FC = () => {
       <StyledCanvas
         ref={canvasElement}
         style={{
-          width: canvasSize,
-          height: canvasSize,
+          width: canvasWidth,
+          height: canvasHeight,
           transform: isHovering
             ? `translate(-${hoverOffset.x}px, -${hoverOffset.y}px)`
             : undefined,

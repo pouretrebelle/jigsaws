@@ -11,18 +11,17 @@ const PIXEL_DENSITY = window.devicePixelRatio || 1
 const CANVAS_PADDING = 50
 
 interface CanvasWrapperProps {
-  $isHovering: boolean
+  $isZooming: boolean
 }
 
-const CanvasWrapper = styled.div<CanvasWrapperProps>`
+const StyledCanvasWrapper = styled.div<CanvasWrapperProps>`
   flex: 1 1 0;
   height: 100%;
   position: relative;
   overflow: hidden;
-  cursor: zoom-in;
 
-  ${({ $isHovering }) =>
-    !$isHovering &&
+  ${({ $isZooming }) =>
+    !$isZooming &&
     `
       display: flex;
       align-items: center;
@@ -45,7 +44,8 @@ const Canvas: React.FC = () => {
   } = state
 
   const { width: windowWidth, height: windowHeight } = useWindowSize()
-  const [isHovering, setIsHovering] = useState(false)
+  const [shouldZoom, setShouldZoom] = useState(false)
+  const [isZooming, setIsZooming] = useState(false)
   const [hoverOffset, setHoverOffset] = useState({
     x: 0,
     y: 0,
@@ -67,7 +67,7 @@ const Canvas: React.FC = () => {
       const c = canvas.getContext('2d') as CanvasRenderingContext2D
       const { bleedWidth, lineColor } = sketch.settings
       const scale = (canvasWidth / bleedWidth) * PIXEL_DENSITY
-      const lineWidth = ((isHovering ? 2 : 1) * PIXEL_DENSITY) / scale
+      const lineWidth = ((isZooming ? 2 : 1) * PIXEL_DENSITY) / scale
 
       const drawArgs = {
         canvas,
@@ -113,9 +113,10 @@ const Canvas: React.FC = () => {
   useEffect(() => {
     const bleedRatio = sketch ? sketch.settings.bleedRatio : 1
 
-    if (isHovering) {
+    if (shouldZoom) {
       const width = 2000
       setCanvasSize(width, width * bleedRatio)
+      setIsZooming(true)
     } else {
       const wrapperRatio =
         (wrapperBoundingBox.height - CANVAS_PADDING * 2) /
@@ -132,10 +133,11 @@ const Canvas: React.FC = () => {
           CANVAS_PADDING * 2
         setCanvasSize(height / bleedRatio, height)
       }
+      setIsZooming(false)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wrapperBoundingBox, isHovering])
+  }, [wrapperBoundingBox, shouldZoom, sketch?.id])
 
   const onMouseMoved = ({ pageX, pageY }: React.MouseEvent) => {
     const throughX = (pageX - wrapperBoundingBox.x) / wrapperBoundingBox.width
@@ -147,15 +149,11 @@ const Canvas: React.FC = () => {
   }
 
   return (
-    <CanvasWrapper
+    <StyledCanvasWrapper
       ref={wrapperElement}
-      onMouseEnter={(e) => {
-        onMouseMoved(e)
-        setIsHovering(true)
-      }}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={onMouseMoved}
       onMouseMove={onMouseMoved}
-      $isHovering={isHovering}
+      $isZooming={isZooming}
     >
       {state.pending.includes(ActionType.LoadSketch) && (
         <Loader
@@ -171,15 +169,17 @@ const Canvas: React.FC = () => {
 
       <StyledCanvas
         ref={canvasElement}
+        onClick={() => setShouldZoom(!shouldZoom)}
         style={{
           width: canvasWidth,
           height: canvasHeight,
-          transform: isHovering
+          cursor: isZooming ? 'zoom-out' : 'zoom-in',
+          transform: isZooming
             ? `translate(-${hoverOffset.x}px, -${hoverOffset.y}px)`
             : undefined,
         }}
       />
-    </CanvasWrapper>
+    </StyledCanvasWrapper>
   )
 }
 

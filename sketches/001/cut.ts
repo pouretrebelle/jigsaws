@@ -82,10 +82,10 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
-  const simplex1 = new SimplexNoise(seed[0])
-  const simplex2 = new SimplexNoise(seed[1])
-  const simplex3 = new SimplexNoise(seed[2])
-  const simplex4 = new SimplexNoise(seed[3])
+  const simplex0 = new SimplexNoise(seed[0])
+  const simplex1 = new SimplexNoise(seed[1])
+  const simplex2 = new SimplexNoise(seed[2])
+  const simplex3 = new SimplexNoise(seed[3])
   const crossPoints = [] as Point[][]
 
   for (let x = 0; x < columns + 1; x++) {
@@ -96,8 +96,8 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
         y,
         rows,
         columns,
-        simplexX: simplex1,
-        simplexY: simplex2,
+        simplexX: simplex0,
+        simplexY: simplex1,
         width,
         height,
       })
@@ -112,7 +112,7 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
       const right = crossPoints[x + 1][y]
 
       if (x < columns - 1) {
-        addToCurves(c, right, corner, simplex3.noise2D(x * 2, y * 2) < 0)
+        addToCurves(c, right, corner, simplex2.noise2D(x * 2, y * 2) < 0)
       }
     }
     c.stroke()
@@ -126,7 +126,7 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
       const corner = crossPoints[x + 1][y + 1]
 
       if (y < rows - 1) {
-        addToCurves(c, left, corner, simplex4.noise2D(x * 2, y * 2) < 0)
+        addToCurves(c, left, corner, simplex3.noise2D(x * 2, y * 2) < 0)
       }
     }
     c.stroke()

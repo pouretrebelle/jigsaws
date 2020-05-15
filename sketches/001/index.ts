@@ -1,16 +1,17 @@
+import { BACKGROUND } from './design/constants'
+import { SketchConstructorSettings } from 'types'
 export { design } from './design'
 export { cut } from './cut'
 
 export const settings = {
-  width: 300,
-  height: 300,
+  width: 280,
+  height: 280,
   bleed: 10,
-  rows: 20,
-  columns: 20,
+  rows: 14,
+  columns: 14,
 
   cutNoiseSeeds: 4,
-  designNoiseSeeds: 1,
+  designNoiseSeeds: 6,
 
-  lineColor: 'white',
-  backgroundColor: 'black',
-}
+  backgroundColor: BACKGROUND,
+} as SketchConstructorSettings

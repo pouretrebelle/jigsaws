@@ -102,13 +102,13 @@ class Vector2 {
     return this.x * v.x + this.y * v.y
   }
 
-  angle = (useDegrees: boolean) => {
+  angle = (useDegrees?: boolean) => {
     return (
       Math.atan2(this.y, this.x) * (useDegrees ? Vector2Const.TO_DEGREES : 1)
     )
   }
 
-  rotate = (angle: number, useDegrees: boolean) => {
+  rotate = (angle: number, useDegrees?: boolean) => {
     const cosRY = Math.cos(angle * (useDegrees ? Vector2Const.TO_RADIANS : 1))
     const sinRY = Math.sin(angle * (useDegrees ? Vector2Const.TO_RADIANS : 1))
     Vector2Const.temp.copyFrom(this)
@@ -128,7 +128,7 @@ class Vector2 {
     return Vector2Const.temp.magnitudeSquared() < tolerance * tolerance
   }
 
-  rotateAroundPoint = (point: Vector2, angle: number, useDegrees: boolean) => {
+  rotateAroundPoint = (point: Vector2, angle: number, useDegrees?: boolean) => {
     Vector2Const.temp.copyFrom(this)
     Vector2Const.temp.minusEq(point)
     Vector2Const.temp.rotate(angle, useDegrees)

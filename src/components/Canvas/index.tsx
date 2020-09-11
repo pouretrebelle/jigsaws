@@ -1,4 +1,10 @@
-import React, { createRef, useEffect, useState, useContext } from 'react'
+import React, {
+  createRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useContext,
+} from 'react'
 import styled from 'styled-components'
 
 import { SketchContext } from 'Provider'
@@ -61,7 +67,7 @@ const Canvas: React.FC = () => {
   const wrapperElement = createRef<HTMLDivElement>()
 
   // drawing
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (sketch) {
       const canvas = canvasElement.current as HTMLCanvasElement
       const c = canvas.getContext('2d') as CanvasRenderingContext2D
@@ -110,7 +116,7 @@ const Canvas: React.FC = () => {
   }
 
   // canvas sizing
-  useEffect(() => {
+  useLayoutEffect(() => {
     const bleedRatio = sketch ? sketch.settings.bleedRatio : 1
 
     if (shouldZoom) {

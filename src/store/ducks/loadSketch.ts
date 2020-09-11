@@ -80,7 +80,7 @@ export const loadSketch = (id: string) => (
 ) => {
   dispatch(addPending(ActionType.LoadSketch))
 
-  import(/* webpackChunkName: "[request]" */ `../../../sketches/${id}`)
+  import(/* webpackChunkName: "[request]" */ `../../../sketches/${id}/index.ts`)
     .then((res) => {
       dispatch({
         type: ActionType.LoadSketch,

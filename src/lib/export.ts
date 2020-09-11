@@ -6,9 +6,10 @@ import { drawDesign, drawCut, drawBackground } from 'components/Canvas/draw'
 
 const MM_TO_INCH = 0.0393701
 const SVG_MULIPLIER = 3.7795
-const CANVAS_ANIMATION_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2
+const ANIMATION_FRAMES = 250
+const ANIMATION_EXPORT_WIDTH = 1000
 
 const formatSeeds = (seeds: string[]) => seeds.join('-')
 
@@ -49,49 +50,6 @@ export const exportCanvas = (state: State) => {
   })
 }
 
-export const exportCanvasAnimation = (state: State) => {
-  const FRAMES = 250
-  const FRAME_INCREMENT = 0.005
-
-  const { sketch, designNoiseSeeds } = state
-  if (!sketch) return
-
-  const { bleedWidth, bleedRatio } = sketch.settings
-
-  const canvas = document.createElement('canvas') as HTMLCanvasElement
-  canvas.width = CANVAS_ANIMATION_EXPORT_WIDTH
-  canvas.height = CANVAS_ANIMATION_EXPORT_WIDTH * bleedRatio
-
-  const c = canvas.getContext('2d') as CanvasRenderingContext2D
-
-  const scale = CANVAS_ANIMATION_EXPORT_WIDTH / bleedWidth
-  const drawArgs = {
-    canvas,
-    c,
-    lineWidth: CANVAS_EXPORT_LINE_WIDTH / scale,
-    state,
-  }
-
-  const videoWriter = new WebMWriter({
-    quality: 0.999,
-    frameRate: 25,
-  })
-
-  c.save()
-  drawBackground(drawArgs)
-  c.scale(scale, scale)
-  for (let i = 0; i < FRAMES; i++) {
-    drawDesign({ c, state, noiseStart: i * FRAME_INCREMENT })
-    videoWriter.addFrame(canvas)
-    console.info(`add frame ${i + 1}`)
-  }
-  c.restore()
-
-  videoWriter.complete().then((blob: Blob) => {
-    saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.webm`)
-  })
-}
-
 export const exportDesign = (state: State) => {
   const { sketch, designNoiseSeeds } = state
   if (!sketch) return
@@ -110,6 +68,48 @@ export const exportDesign = (state: State) => {
 
   canvas.toBlob((blob) => {
     if (blob) saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.png`)
+  })
+}
+
+export const exportDesignAnimation = (state: State) => {
+  const FRAME_INCREMENT = 1 / ANIMATION_FRAMES
+
+  const { sketch, designNoiseSeeds } = state
+  if (!sketch) return
+
+  const { bleedWidth, bleedRatio } = sketch.settings
+
+  const canvas = document.createElement('canvas') as HTMLCanvasElement
+  canvas.width = ANIMATION_EXPORT_WIDTH
+  canvas.height = ANIMATION_EXPORT_WIDTH * bleedRatio
+
+  const c = canvas.getContext('2d') as CanvasRenderingContext2D
+
+  const scale = ANIMATION_EXPORT_WIDTH / bleedWidth
+  const drawArgs = {
+    canvas,
+    c,
+    lineWidth: CANVAS_EXPORT_LINE_WIDTH / scale,
+    state,
+  }
+
+  const videoWriter = new WebMWriter({
+    quality: 0.999,
+    frameRate: 25,
+  })
+
+  c.save()
+  drawBackground(drawArgs)
+  c.scale(scale, scale)
+  for (let i = 0; i < ANIMATION_FRAMES; i++) {
+    drawDesign({ c, state: { ...state, noiseStart: i * FRAME_INCREMENT } })
+    videoWriter.addFrame(canvas)
+    console.info(`add frame ${i + 1}`)
+  }
+  c.restore()
+
+  videoWriter.complete().then((blob: Blob) => {
+    saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.webm`)
   })
 }
 

@@ -5,7 +5,6 @@ interface DrawArgs {
   c: CanvasRenderingContext2D
   lineWidth: number
   state: State
-  noiseStart?: number
 }
 
 export const drawBackground = ({ canvas, c, state }: DrawArgs) => {
@@ -15,11 +14,7 @@ export const drawBackground = ({ canvas, c, state }: DrawArgs) => {
   c.fillRect(0, 0, canvas.width, canvas.height)
 }
 
-export const drawDesign = ({
-  c,
-  state,
-  noiseStart = 0,
-}: Pick<DrawArgs, 'c' | 'state' | 'noiseStart'>) => {
+export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
   if (!state.sketch) return
 
   const {
@@ -33,7 +28,7 @@ export const drawDesign = ({
   state.sketch.design({
     c,
     seed: state.designNoiseSeeds,
-    noiseStart,
+    noiseStart: state.noiseStart,
     width: bleedWidth,
     height: bleedHeight,
     bleed,

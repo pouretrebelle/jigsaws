@@ -2,13 +2,19 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 
 import { SketchContext } from 'Provider'
-import { toggleVisibility, updateSeed, exportSketch } from 'store/actions'
+import {
+  toggleVisibility,
+  updateSeed,
+  exportSketch,
+  updateNoiseStart,
+} from 'store/actions'
 import { Layer, ExportPart, ActionType } from 'types'
 
 import Input from './Input'
 import ExportButton from './ExportButton'
 import RefreshButton from './RefreshButton'
 import ToggleButton from './ToggleButton'
+import RangeSlider from './RangeSlider'
 
 const Meta = styled.p`
   font-size: 0.625rem;
@@ -27,6 +33,7 @@ const Controls = () => {
   const [state, dispatch] = useContext(SketchContext)
   const {
     sketch,
+    noiseStart,
     designVisible,
     designNoiseSeeds,
     cutVisible,
@@ -73,6 +80,23 @@ const Controls = () => {
         >
           Export design
         </ExportButton>
+
+        <RangeSlider
+          label="Preview animation frames"
+          min={0}
+          max={1}
+          step={0.004}
+          value={noiseStart}
+          onChange={(e) => {
+            dispatch(updateNoiseStart(Number(e.target.value)))
+          }}
+        />
+        <ExportButton
+          onClick={() => dispatch(exportSketch(ExportPart.DesignAnimation))}
+          loading={state.pending.includes(ActionType.ExportDesignAnimation)}
+        >
+          Export animation
+        </ExportButton>
       </Section>
 
       <Section>
@@ -108,12 +132,6 @@ const Controls = () => {
           loading={state.pending.includes(ActionType.ExportCanvas)}
         >
           Export canvas
-        </ExportButton>
-        <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.CanvasAnimation))}
-          loading={state.pending.includes(ActionType.ExportCanvasAnimation)}
-        >
-          Export canvas animation
         </ExportButton>
       </Section>
     </>

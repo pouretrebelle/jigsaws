@@ -1,6 +1,7 @@
 export interface State {
   initialSketch: string
   sketch?: Sketch
+  noiseStart: number
   cutVisible: boolean
   cutNoiseSeeds: string[]
   designVisible: boolean
@@ -14,8 +15,8 @@ export interface State {
 export enum ExportPart {
   Cut = 'cut',
   Design = 'design',
+  DesignAnimation = 'designAnimation',
   Canvas = 'canvas',
-  CanvasAnimation = 'canvasAnimation',
 }
 
 export enum ActionType {
@@ -25,10 +26,11 @@ export enum ActionType {
   LoadSketchError = 'LOAD_SKETCH_ERROR',
   ToggleVisibility = 'TOGGLE_VISIBILITY',
   UpdateSeed = 'UPDATE_SEED',
+  UpdateNoiseStart = 'UPDATE_NOISE_START',
   ExportCut = 'EXPORT_CUT',
   ExportDesign = 'EXPORT_DESIGN',
+  ExportDesignAnimation = 'EXPORT_DESIGN_ANIMATION',
   ExportCanvas = 'EXPORT_CANVAS',
-  ExportCanvasAnimation = 'EXPORT_CANVAS_ANIMATION',
 }
 
 export interface Action {

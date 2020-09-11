@@ -2,12 +2,12 @@ import React from 'react'
 
 import { State, Action, ActionType, ExportPart } from 'types'
 
-import { removePending, addPending } from '../actions'
+import { removePending, addPending, updateNoiseStart } from '../actions'
 import {
   exportCut,
   exportDesign,
   exportCanvas,
-  exportCanvasAnimation,
+  exportDesignAnimation,
 } from 'lib/export'
 
 const exportActions = {
@@ -23,9 +23,9 @@ const exportActions = {
     actionType: ActionType.ExportCanvas,
     exportFunction: exportCanvas,
   },
-  [ExportPart.CanvasAnimation]: {
-    actionType: ActionType.ExportCanvasAnimation,
-    exportFunction: exportCanvasAnimation,
+  [ExportPart.DesignAnimation]: {
+    actionType: ActionType.ExportDesignAnimation,
+    exportFunction: exportDesignAnimation,
   },
 }
 
@@ -38,6 +38,11 @@ export const exportSketch = (part: ExportPart) => async (
   if (!actionType) return
 
   dispatch(addPending(actionType))
+
+  // reset noise start
+  if (actionType !== ActionType.ExportCut) {
+    dispatch(updateNoiseStart(0))
+  }
 
   await new Promise((resolve) => {
     setTimeout(() => resolve(), 100)

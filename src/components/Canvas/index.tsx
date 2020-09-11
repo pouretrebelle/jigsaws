@@ -43,6 +43,7 @@ const Canvas: React.FC = () => {
   const [state] = useContext(SketchContext)
   const {
     sketch,
+    noiseStart,
     designVisible,
     cutVisible,
     designNoiseSeeds,
@@ -95,6 +96,7 @@ const Canvas: React.FC = () => {
   }, [
     canvasWidth,
     canvasHeight,
+    noiseStart,
     designVisible,
     cutVisible,
     designNoiseSeeds,

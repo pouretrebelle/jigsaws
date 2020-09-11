@@ -1,5 +1,5 @@
 import React, {
-  createRef,
+  useRef,
   useEffect,
   useLayoutEffect,
   useState,
@@ -64,44 +64,8 @@ const Canvas: React.FC = () => {
     { width: canvasWidth, height: canvasHeight },
     setCanvasDimensions,
   ] = useState({ width: 0, height: 0 })
-  const canvasElement = createRef<HTMLCanvasElement>()
-  const wrapperElement = createRef<HTMLDivElement>()
-
-  // drawing
-  useLayoutEffect(() => {
-    if (sketch) {
-      const canvas = canvasElement.current as HTMLCanvasElement
-      const c = canvas.getContext('2d') as CanvasRenderingContext2D
-      const { bleedWidth, lineColor } = sketch.settings
-      const scale = (canvasWidth / bleedWidth) * PIXEL_DENSITY
-      const lineWidth = ((isZooming ? 2 : 1) * PIXEL_DENSITY) / scale
-
-      const drawArgs = {
-        canvas,
-        c,
-        lineWidth,
-        state,
-      }
-
-      drawBackground(drawArgs)
-      c.save()
-      c.scale(scale, scale)
-      if (designVisible) drawDesign(drawArgs)
-      c.strokeStyle = lineColor
-      if (cutVisible) drawCut(drawArgs)
-      drawGuides(drawArgs)
-      c.restore()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    canvasWidth,
-    canvasHeight,
-    noiseStart,
-    designVisible,
-    cutVisible,
-    designNoiseSeeds,
-    cutNoiseSeeds,
-  ])
+  const canvasElement = useRef<HTMLCanvasElement>(null)
+  const wrapperElement = useRef<HTMLDivElement>(null)
 
   // wrapper sizing
   useEffect(() => {
@@ -146,6 +110,42 @@ const Canvas: React.FC = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrapperBoundingBox, shouldZoom, sketch?.id])
+
+  // drawing
+  useLayoutEffect(() => {
+    if (sketch) {
+      const canvas = canvasElement.current as HTMLCanvasElement
+      const c = canvas.getContext('2d') as CanvasRenderingContext2D
+      const { bleedWidth, lineColor } = sketch.settings
+      const scale = (canvasWidth / bleedWidth) * PIXEL_DENSITY
+      const lineWidth = ((isZooming ? 2 : 1) * PIXEL_DENSITY) / scale
+
+      const drawArgs = {
+        canvas,
+        c,
+        lineWidth,
+        state,
+      }
+
+      drawBackground(drawArgs)
+      c.save()
+      c.scale(scale, scale)
+      if (designVisible) drawDesign(drawArgs)
+      c.strokeStyle = lineColor
+      if (cutVisible) drawCut(drawArgs)
+      drawGuides(drawArgs)
+      c.restore()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    canvasWidth,
+    canvasHeight,
+    noiseStart,
+    designVisible,
+    cutVisible,
+    designNoiseSeeds,
+    cutNoiseSeeds,
+  ])
 
   const onMouseMoved = ({ pageX, pageY }: React.MouseEvent) => {
     const throughX = (pageX - wrapperBoundingBox.x) / wrapperBoundingBox.width

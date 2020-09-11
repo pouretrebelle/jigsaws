@@ -1,7 +1,7 @@
 import Vector2 from 'utils/Vector2'
 
 import { PRETTY_HUES } from './constants'
-import { randomFromNoise, map } from 'utils/numberUtils'
+import { map } from 'utils/numberUtils'
 import { hsl } from 'utils/colorUtils'
 
 const DOT_MIN_SIZE = 15
@@ -50,10 +50,10 @@ class Dot {
 
     this.size = map(sizeRandom, 0, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
     this.pos = new Vector2(x, y)
-    this.vel = new Vector2(1 + velocityRandom * 2)
+    this.vel = new Vector2(2 + velocityRandom)
     this.ang = directionRandom * 360
-    this.rot = 0.02 + 0.02 * rotationRandom
-    this.dir = Math.round(randomFromNoise(rotationRandom))
+    this.rot = 0.03 + 0.03 * rotationRandom
+    this.dir = 1 // Math.round(randomFromNoise(rotationRandom))
 
     this.vel.rotate(this.ang)
   }

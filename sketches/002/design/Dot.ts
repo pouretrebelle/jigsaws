@@ -56,11 +56,11 @@ class Dot {
     this.color = getColor(hue)
     this.shadow = getColor(hue2)
 
-    this.size = map(sizeRandom, 0, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
+    this.size = map(sizeRandom, -1, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
     this.pos = new Vector2(0, 0)
     this.vel = new Vector2(3)
-    this.ang = directionRandom * 360
-    this.rot = 0.02 + 0.05 * rotationRandom
+    this.ang = directionRandom * Math.PI * 2
+    this.rot = 0.02 + 0.04 * rotationRandom
     this.dir = false //!!Math.round(rotationRandom)
     this.curve = 0.5 + curveRandom
 

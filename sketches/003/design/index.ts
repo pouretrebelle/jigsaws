@@ -16,7 +16,15 @@ export enum Seeds {
   Curve,
 }
 
-export const design = ({ c, simplex, seed, width, height, bleed }: Design) => {
+export const design = ({
+  c,
+  simplex,
+  seed,
+  width,
+  height,
+  bleed,
+  noiseStart,
+}: Design) => {
   c.fillStyle = BACKGROUND
   c.fillRect(0, 0, width, height)
 
@@ -30,11 +38,17 @@ export const design = ({ c, simplex, seed, width, height, bleed }: Design) => {
   for (let i = 0; i < DOT_COUNT; i++) {
     dots.push(
       new Dot({
-        y: map(i, 0, DOT_COUNT - 1, height - bleed, bleed),
+        y: map(
+          i + simplex[Seeds.Size].noise2D(1 + i, noiseStart) * 2,
+          0,
+          DOT_COUNT - 1,
+          height - bleed,
+          bleed
+        ),
         color: shuffledColors[i],
         flip: !!(i % 2),
-        sizeRandom: randomFromNoise(simplex[Seeds.Size].noise2D(1, i)),
-        rotationRandom: randomFromNoise(simplex[Seeds.Rotation].noise2D(1, i)),
+        sizeRandom: simplex[Seeds.Size].noise3D(1, i, noiseStart * 2),
+        rotationRandom: simplex[Seeds.Rotation].noise2D(1, i),
         curveRandom: randomFromNoise(simplex[Seeds.Curve].noise2D(1, i)),
       })
     )

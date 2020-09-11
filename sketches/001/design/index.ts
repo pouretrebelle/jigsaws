@@ -22,23 +22,22 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   for (let i = 0; i < DOT_COUNT; i++) {
     const x =
-      (width * simplex[Seeds.Position].noise2D(noiseStart + 1, i)) / 2 +
+      (width * simplex[Seeds.Position].noise2D(1 + noiseStart, i)) / 2 +
       width / 2
     const y =
-      (height * simplex[Seeds.Position].noise2D(noiseStart + 2, i)) / 2 +
+      (height * simplex[Seeds.Position].noise2D(2 + noiseStart, i)) / 2 +
       height / 2
 
     const colorRandom = randomFromNoise(simplex[Seeds.Color].noise2D(1, i))
     const shadowRandom = randomFromNoise(simplex[Seeds.Color].noise2D(2, i))
     const sizeRandom = randomFromNoise(simplex[Seeds.Size].noise2D(1, i))
-    const velocityRandom = randomFromNoise(
-      simplex[Seeds.Velocity].noise2D(noiseStart / 10000, i)
-    )
+    const velocityRandom = simplex[Seeds.Velocity].noise2D(noiseStart * 0.01, i)
     const directionRandom = randomFromNoise(
-      simplex[Seeds.Direction].noise2D(1, i)
+      simplex[Seeds.Direction].noise2D(1 + noiseStart * 0.0005, i)
     )
-    const rotationRandom = randomFromNoise(
-      simplex[Seeds.Rotation].noise2D(1, i)
+    const rotationRandom = simplex[Seeds.Rotation].noise2D(
+      1 + noiseStart * 0.1,
+      i
     )
 
     const dot = new Dot({

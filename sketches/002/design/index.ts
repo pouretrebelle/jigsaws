@@ -28,14 +28,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       new Dot({
         colorRandom: randomFromNoise(simplex[Seeds.Color].noise2D(1, i)),
         shadowRandom: randomFromNoise(simplex[Seeds.Color].noise2D(2, i)),
-        sizeRandom: randomFromNoise(simplex[Seeds.Size].noise2D(0, i)),
+        sizeRandom: simplex[Seeds.Size].noise2D(1 + noiseStart * 2, i),
         directionRandom: randomFromNoise(
-          simplex[Seeds.Direction].noise2D(0, i)
+          simplex[Seeds.Direction].noise2D(1 + noiseStart * 0.01, 1 + i)
         ),
-        rotationRandom: randomFromNoise(
-          simplex[Seeds.Rotation].noise2D(noiseStart, i)
-        ),
-        curveRandom: randomFromNoise(simplex[Seeds.Curve].noise2D(0, i)),
+        rotationRandom: randomFromNoise(simplex[Seeds.Rotation].noise2D(1, i)),
+        curveRandom: randomFromNoise(simplex[Seeds.Curve].noise2D(1, i)),
       })
     )
   }

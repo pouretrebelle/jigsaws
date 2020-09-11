@@ -10,7 +10,7 @@ const SVG_MULIPLIER = 3.7795
 const CUT_PIECES_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2
-const ANIMATION_FRAMES = 250
+const ANIMATION_FRAMES = 500
 const ANIMATION_EXPORT_WIDTH = 1000
 
 const formatSeeds = (seeds: string[]) => seeds.join('-')

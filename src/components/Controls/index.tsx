@@ -67,11 +67,15 @@ const Controls = () => {
                 onClick={() => dispatch(updateSeed(Layer.Design))}
               />
             </H3>
-            {designNoiseSeeds.map(
-              (seed: string, i: number): React.ReactElement => (
-                <Input key={seed} layer={Layer.Design} index={i} value={seed} />
-              )
-            )}
+            {settings.designNoiseSeeds.map((label, i) => (
+              <Input
+                key={label}
+                layer={Layer.Design}
+                index={i}
+                label={label}
+                value={designNoiseSeeds[i]}
+              />
+            ))}
           </>
         )}
         <ExportButton
@@ -113,8 +117,14 @@ const Controls = () => {
               Noise seed{cutNoiseSeeds.length > 1 && 's'}{' '}
               <RefreshButton onClick={() => dispatch(updateSeed(Layer.Cut))} />
             </H3>
-            {cutNoiseSeeds.map((seed, i) => (
-              <Input key={seed} layer={Layer.Cut} index={i} value={seed} />
+            {settings.cutNoiseSeeds.map((label, i) => (
+              <Input
+                key={label}
+                layer={Layer.Cut}
+                index={i}
+                label={label}
+                value={cutNoiseSeeds[i]}
+              />
             ))}
           </>
         )}

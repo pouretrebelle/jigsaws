@@ -50,7 +50,7 @@ class Dot {
 
     this.size = map(sizeRandom, 0, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
     this.pos = new Vector2(x, y)
-    this.vel = new Vector2(1 + Math.floor(velocityRandom * 2))
+    this.vel = new Vector2(1 + velocityRandom * 2)
     this.ang = directionRandom * 360
     this.rot = 0.02 + 0.02 * rotationRandom
     this.dir = Math.round(randomFromNoise(rotationRandom))

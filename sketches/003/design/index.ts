@@ -1,4 +1,3 @@
-import SimplexNoise from 'simplex-noise'
 import shuffleSeed from 'shuffle-seed'
 
 import { Design } from 'types'
@@ -10,18 +9,21 @@ import { BACKGROUND, COLORS } from './constants'
 const DOT_COUNT = 12
 const DOT_DRAW_FRAMES = 200
 
-export const design = ({ c, seed, width, height, bleed }: Design) => {
+export enum Seeds {
+  Color,
+  Size,
+  Rotation,
+  Curve,
+}
+
+export const design = ({ c, simplex, seed, width, height, bleed }: Design) => {
   c.fillStyle = BACKGROUND
   c.fillRect(0, 0, width, height)
 
-  const simplex1 = new SimplexNoise(seed[1])
-  const simplex2 = new SimplexNoise(seed[2])
-  const simplex3 = new SimplexNoise(seed[3])
-
   let shuffledColors = [
-    ...shuffleSeed.shuffle(COLORS, seed[0]),
-    ...shuffleSeed.shuffle(COLORS, seed[0] + 1),
-    ...shuffleSeed.shuffle(COLORS, seed[0] + 2),
+    ...shuffleSeed.shuffle(COLORS, seed[Seeds.Color]),
+    ...shuffleSeed.shuffle(COLORS, seed[Seeds.Color] + 1),
+    ...shuffleSeed.shuffle(COLORS, seed[Seeds.Color] + 2),
   ]
 
   const dots = []
@@ -31,9 +33,9 @@ export const design = ({ c, seed, width, height, bleed }: Design) => {
         y: map(i, 0, DOT_COUNT - 1, height - bleed, bleed),
         color: shuffledColors[i],
         flip: !!(i % 2),
-        sizeRandom: randomFromNoise(simplex1.noise2D(1, i)),
-        rotationRandom: randomFromNoise(simplex2.noise2D(1, i)),
-        curveRandom: randomFromNoise(simplex3.noise2D(1, i)),
+        sizeRandom: randomFromNoise(simplex[Seeds.Size].noise2D(1, i)),
+        rotationRandom: randomFromNoise(simplex[Seeds.Rotation].noise2D(1, i)),
+        curveRandom: randomFromNoise(simplex[Seeds.Curve].noise2D(1, i)),
       })
     )
   }

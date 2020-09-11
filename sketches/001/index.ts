@@ -1,7 +1,7 @@
 import { BACKGROUND } from './design/constants'
 import { SketchConstructorSettings } from 'types'
-export { design } from './design'
-export { cut } from './cut'
+export { design, Seeds as DesignNoiseSeeds } from './design'
+export { cut, Seeds as CutNoiseSeeds } from './cut'
 
 export const settings = {
   width: 280,
@@ -9,9 +9,6 @@ export const settings = {
   bleed: 10,
   rows: 14,
   columns: 14,
-
-  cutNoiseSeeds: 4,
-  designNoiseSeeds: 6,
 
   backgroundColor: BACKGROUND,
 } as SketchConstructorSettings

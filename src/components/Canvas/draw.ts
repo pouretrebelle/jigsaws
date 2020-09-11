@@ -1,4 +1,5 @@
 import { State } from 'types'
+import SimplexNoise from 'simplex-noise'
 
 interface DrawArgs {
   canvas: HTMLCanvasElement
@@ -25,8 +26,11 @@ export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
     bleed,
   } = state.sketch.settings
 
+  const simplex = state.designNoiseSeeds.map((seed) => new SimplexNoise(seed))
+
   state.sketch.design({
     c,
+    simplex,
     seed: state.designNoiseSeeds,
     noiseStart: state.noiseStart,
     width: bleedWidth,
@@ -46,11 +50,14 @@ export const drawCut = ({
 
   const { width, height, rows, columns, bleed } = state.sketch.settings
 
+  const simplex = state.cutNoiseSeeds.map((seed) => new SimplexNoise(seed))
+
   c.save()
   c.lineWidth = lineWidth
   c.translate(bleed, bleed)
   state.sketch.cut({
     c,
+    simplex,
     seed: state.cutNoiseSeeds,
     width,
     height,

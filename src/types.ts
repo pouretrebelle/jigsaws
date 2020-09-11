@@ -1,3 +1,5 @@
+import SimplexNoise from "simplex-noise"
+
 export interface State {
   initialSketch: string
   sketch?: Sketch
@@ -55,8 +57,8 @@ export interface SketchConstructorSettings {
   rows?: number
   lineColor?: string
   backgroundColor?: string
-  cutNoiseSeeds: number
-  designNoiseSeeds: number
+  cutNoiseSeeds: string[]
+  designNoiseSeeds: string[]
 }
 
 export interface SketchSettings {
@@ -67,8 +69,8 @@ export interface SketchSettings {
   columns: number
   lineColor: string
   backgroundColor: string
-  cutNoiseSeeds: number
-  designNoiseSeeds: number
+  cutNoiseSeeds: string[]
+  designNoiseSeeds: string[]
   bleedWidth: number
   bleedHeight: number
   bleedRatio: number
@@ -83,6 +85,7 @@ export interface Sketch {
 
 export interface Cut {
   c: CanvasRenderingContext2D
+  simplex: SimplexNoise[]
   seed: string[]
   width: number
   height: number
@@ -92,6 +95,7 @@ export interface Cut {
 
 export interface Design {
   c: CanvasRenderingContext2D
+  simplex: SimplexNoise[]
   seed: string[]
   width: number
   height: number

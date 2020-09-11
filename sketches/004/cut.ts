@@ -2,6 +2,13 @@ import SimplexNoise from 'simplex-noise'
 import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
 
+export enum Seeds {
+  SwayX,
+  SwayY,
+  FlipX,
+  FlipY,
+}
+
 const tweakDist = (
   m: number,
   alt: number,
@@ -14,7 +21,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -73,7 +80,7 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
+export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   c.beginPath()
   c.moveTo(0, 0)
   c.lineTo(width, 0)
@@ -82,10 +89,6 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
-  const simplex0 = new SimplexNoise(seed[0])
-  const simplex1 = new SimplexNoise(seed[1])
-  const simplex2 = new SimplexNoise(seed[2])
-  const simplex3 = new SimplexNoise(seed[3])
   const crossPoints = [] as Point[][]
 
   for (let x = 0; x < columns + 1; x++) {
@@ -96,8 +99,8 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
         y,
         rows,
         columns,
-        simplexX: simplex0,
-        simplexY: simplex1,
+        simplexX: simplex[Seeds.SwayX],
+        simplexY: simplex[Seeds.SwayY],
         width,
         height,
       })
@@ -112,7 +115,12 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
       const right = crossPoints[x + 1][y]
 
       if (x < columns - 1) {
-        addToCurves(c, right, corner, simplex2.noise2D(x * 2, y * 2) < 0)
+        addToCurves(
+          c,
+          right,
+          corner,
+          simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0
+        )
       }
     }
     c.stroke()
@@ -126,7 +134,12 @@ export const cut = ({ c, width, columns, height, rows, seed }: Cut) => {
       const corner = crossPoints[x + 1][y + 1]
 
       if (y < rows - 1) {
-        addToCurves(c, left, corner, simplex3.noise2D(x * 2, y * 2) < 0)
+        addToCurves(
+          c,
+          left,
+          corner,
+          simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0
+        )
       }
     }
     c.stroke()

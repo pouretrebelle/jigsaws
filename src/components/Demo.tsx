@@ -23,7 +23,7 @@ const StyledSidebar = styled.aside`
   overflow: auto;
 
   @media (min-width: 700px) {
-    width: 150px;
+    width: 200px;
     max-height: 100%;
     padding-right: 1.5rem;
     box-shadow: inset -30px 0 30px -30px rgba(0, 0, 0, 0.1);

@@ -5,69 +5,66 @@ import { Layer } from 'types'
 import { updateSeed } from 'store/actions'
 import { SketchContext } from 'Provider'
 
-interface WrapperProps {
-  $index: number
-}
 
-const Wrapper = styled.div<WrapperProps>`
+const StyledWrapper = styled.label`
+  display: flex;
   position: relative;
   font-size: 0.75rem;
   margin: 0.25rem 0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 
-  ${({ $index }) =>
-    $index !== undefined &&
-    `
-    &:before {
-      content: "${$index}";
-      display: inline-block;
-      position: absolute;
-      top: 1px;
-      width: 1.5rem;
-      padding: 0.25rem 0;
-      text-align: center;
-      border-right: 1px solid #ccc;
-    }
-  `};
+  &:focus-within {
+    border: 1px solid #aaa;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+`
+
+const StyledLabel = styled.span`
+  flex: 1 0 50%;
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #f1f1f1;
+  border-right: 1px solid #ccc;
 `
 
 const StyledInput = styled.input`
   width: 100%;
-  padding: 0.25rem 0.5rem 0.25rem 2rem;
+  flex: 1 1 50%;
+  padding: 0.25rem 2rem 0.25rem 0.5rem;
   background: transparent;
-  border: 1px solid #ccc;
-  border-radius: 3px;
   font-size: inherit;
-
-  &:focus {
-    border: 1px solid #aaa;
-  }
 `
 
 const RefreshWrapper = styled.div`
   position: absolute;
   right: 0;
-  top: 1px;
+  top: 0;
   padding: 0.325rem;
-  opacity: 0;
+  opacity: 0.2;
   transition: opacity 0.2s linear;
 
-  ${Wrapper}:hover & {
+  ${StyledWrapper}:hover & {
     opacity: 1;
   }
 `
 
 interface Props {
+  label: string
   value: string
   layer: Layer
   index: number
 }
 
-const Input: React.FC<Props> = ({ value, layer, index, ...props }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [state, dispatch] = useContext(SketchContext)
+const Input: React.FC<Props> = ({ label, value, layer, index, ...props }) => {
+  const [, dispatch] = useContext(SketchContext)
 
   return (
-    <Wrapper $index={index}>
+    <StyledWrapper>
+      <StyledLabel>{label}</StyledLabel>
       <StyledInput
         type="text"
         minLength={1}
@@ -79,7 +76,7 @@ const Input: React.FC<Props> = ({ value, layer, index, ...props }) => {
       <RefreshWrapper>
         <RefreshButton onClick={() => dispatch(updateSeed(layer, index))} />
       </RefreshWrapper>
-    </Wrapper>
+    </StyledWrapper>
   )
 }
 

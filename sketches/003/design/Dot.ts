@@ -46,11 +46,11 @@ class Dot {
       this.shadow = FOREGROUND
     }
 
-    this.size = map(sizeRandom, 0, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
+    this.size = map(sizeRandom, -1, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
     this.pos = new Vector2(-this.size, y)
     this.vel = new Vector2(3)
-    this.ang = (-0.5 + rotationRandom) * (flip ? -1 : 1)
-    this.rot = 0.02 + 0.05 * rotationRandom
+    this.ang = rotationRandom * 0.3 * (flip ? -1 : 1)
+    this.rot = 0.05 + 0.03 * rotationRandom
     this.dir = flip
     this.curveOffset = 2 + curveRandom * 3
 

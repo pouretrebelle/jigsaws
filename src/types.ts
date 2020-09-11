@@ -15,6 +15,7 @@ export enum ExportPart {
   Cut = 'cut',
   Design = 'design',
   Canvas = 'canvas',
+  CanvasAnimation = 'canvasAnimation',
 }
 
 export enum ActionType {
@@ -27,6 +28,7 @@ export enum ActionType {
   ExportCut = 'EXPORT_CUT',
   ExportDesign = 'EXPORT_DESIGN',
   ExportCanvas = 'EXPORT_CANVAS',
+  ExportCanvasAnimation = 'EXPORT_CANVAS_ANIMATION',
 }
 
 export interface Action {
@@ -94,4 +96,5 @@ export interface Design {
   bleed: number
   rows: number
   columns: number
+  noiseStart: number
 }

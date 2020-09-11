@@ -109,6 +109,12 @@ const Controls = () => {
         >
           Export canvas
         </ExportButton>
+        <ExportButton
+          onClick={() => dispatch(exportSketch(ExportPart.CanvasAnimation))}
+          loading={state.pending.includes(ActionType.ExportCanvasAnimation)}
+        >
+          Export canvas animation
+        </ExportButton>
       </Section>
     </>
   )

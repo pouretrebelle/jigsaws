@@ -3,7 +3,12 @@ import React from 'react'
 import { State, Action, ActionType, ExportPart } from 'types'
 
 import { removePending, addPending } from '../actions'
-import { exportCut, exportDesign, exportCanvas } from 'lib/export'
+import {
+  exportCut,
+  exportDesign,
+  exportCanvas,
+  exportCanvasAnimation,
+} from 'lib/export'
 
 const exportActions = {
   [ExportPart.Cut]: {
@@ -17,6 +22,10 @@ const exportActions = {
   [ExportPart.Canvas]: {
     actionType: ActionType.ExportCanvas,
     exportFunction: exportCanvas,
+  },
+  [ExportPart.CanvasAnimation]: {
+    actionType: ActionType.ExportCanvasAnimation,
+    exportFunction: exportCanvasAnimation,
   },
 }
 

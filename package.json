@@ -53,6 +53,7 @@
     "ts-loader": "^7.0.2",
     "typescript": "^3.7.5",
     "url-loader": "2.3.0",
+    "webm-writer": "^0.3.0",
     "webpack": "4.42.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "3.10.3"

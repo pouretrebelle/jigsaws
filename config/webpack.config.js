@@ -10,6 +10,9 @@ const sketches = readdirSync('sketches', { withFileTypes: true })
 module.exports = (env, argv) => ({
   devtool: 'eval-source-map',
   entry: './src/index.tsx',
+  node: {
+    fs: 'empty',
+  },
   output: {
     path: path.join(__dirname, '../docs/'),
     filename: '[name].js',

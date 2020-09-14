@@ -58,7 +58,8 @@ const addToCurves = (
   c: CanvasRenderingContext2D,
   p1: Vector2,
   p2: Vector2,
-  flip: boolean
+  flip: boolean,
+  moveTo: boolean,
 ) => {
   const tVmult = 0.25 // push of t towards other side of piece
   const tVdiv = 0.4 // push of p1c and p2c away from other side of piece
@@ -75,7 +76,7 @@ const addToCurves = (
   const t2 = t.plusNew(pV.multiplyNew(tWidth / 2))
   const p2c = p2.minusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
 
-  c.moveTo(p1.x, p1.y)
+  if (moveTo) c.moveTo(p1.x, p1.y)
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
@@ -119,7 +120,8 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
           c,
           right,
           corner,
-          simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0
+          simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+          true
         )
       }
     }
@@ -138,7 +140,8 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
           c,
           left,
           corner,
-          simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0
+          simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
+          true
         )
       }
     }
@@ -146,4 +149,89 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   }
 }
 
-export default cut
+export const cutSeparate = ({ c, width, columns, height, rows, simplex }: Cut) => {
+  const crossPoints = [] as Point[][]
+
+  for (let x = 0; x < columns + 1; x++) {
+    if (!crossPoints[x]) crossPoints.push([])
+    for (let y = 0; y < rows + 1; y++) {
+      crossPoints[x][y] = new Point({
+        x,
+        y,
+        rows,
+        columns,
+        simplexX: simplex[Seeds.SwayX],
+        simplexY: simplex[Seeds.SwayY],
+        width,
+        height,
+      })
+    }
+  }
+
+  for (let x = 0; x < columns; x++) {
+    for (let y = 0; y < rows; y++) {
+      c.beginPath()
+      const topLeft = crossPoints[x][y]
+      const topRight = crossPoints[x + 1][y]
+      const bottomLeft = crossPoints[x][y + 1]
+      const bottomRight = crossPoints[x + 1][y + 1]
+
+      c.moveTo(topLeft.x, topLeft.y)
+
+      // top
+      if (y === 0) {
+        c.lineTo(topRight.x, topRight.y)
+      } else {
+        addToCurves(
+          c,
+          topLeft,
+          topRight,
+          simplex[Seeds.FlipY].noise2D(x, y - 1) < 0,
+          false
+        )
+      }
+
+      // right
+      if (x < columns - 1) {
+        addToCurves(
+          c,
+          topRight,
+          bottomRight,
+          simplex[Seeds.FlipX].noise2D(x, y) < 0,
+          false
+        )
+      } else {
+        c.lineTo(bottomRight.x, bottomRight.y)
+      }
+
+      // bottom
+      if (y < rows - 1) {
+        addToCurves(
+          c,
+          bottomRight,
+          bottomLeft,
+          simplex[Seeds.FlipY].noise2D(x, y) >= 0,
+          false
+        )
+      } else {
+        c.lineTo(bottomLeft.x, bottomLeft.y)
+      }
+
+      // left
+      if (x === 0) {
+        c.lineTo(topLeft.x, topLeft.y)
+      } else {
+        addToCurves(
+          c,
+          bottomLeft,
+          topLeft,
+          simplex[Seeds.FlipX].noise2D(x - 1, y) >= 0,
+          false
+        )
+      }
+
+      c.closePath()
+      c.stroke()
+    }
+  }
+}

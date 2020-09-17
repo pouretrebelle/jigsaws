@@ -1,8 +1,9 @@
 import { saveAs } from 'file-saver'
 import C2S from 'canvas2svg'
 import WebMWriter from 'webm-writer'
+
 import { State } from 'types'
-import { drawDesign, drawCut, drawBackground } from 'components/Canvas/draw'
+import { drawDesign, drawCut, drawBackground } from 'lib/draw'
 
 const MM_TO_INCH = 0.0393701
 const SVG_MULIPLIER = 3.7795

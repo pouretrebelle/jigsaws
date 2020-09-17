@@ -1,4 +1,14 @@
-# jigsaws
+# Jigsaw Design IDE
+
+A development environment for [abstractpuzzl.es](http://abstractpuzzl.es/) jigsaw design
+
+![Screenshot of interface](/screenshot.png?raw=true)
+
+### Features
+
+- All designs use [simplex-noise](https://www.npmjs.com/package/simplex-noise) with 3 letter seeds for randomness, so every state can be recreated
+- Exports SVGs for laser cutting, high definition PNGs for printing, and WEBM animations
+- Intuitive interface with zoom functionality
 
 ## :raised_hands: Development
 

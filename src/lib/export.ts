@@ -6,6 +6,7 @@ import { drawDesign, drawCut, drawBackground } from 'components/Canvas/draw'
 
 const MM_TO_INCH = 0.0393701
 const SVG_MULIPLIER = 3.7795
+const CUT_PIECES_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2
 const ANIMATION_FRAMES = 250
@@ -124,11 +125,32 @@ export const exportCut = (state: State) => {
     SVG_MULIPLIER * (height + bleed * 2)
   )
   c.scale(SVG_MULIPLIER)
-  drawCut({ c, lineWidth: 0.1, state })
+  drawCut({ c, lineWidth: 0.1, state }, false)
 
   const blob = new Blob([c.getSerializedSvg()], {
     type: 'text/plain',
   })
 
   saveAs(blob, `${sketch.id}_${formatSeeds(cutNoiseSeeds)}.svg`)
+}
+
+export const exportCutPieces = (state: State) => {
+  const { sketch, cutNoiseSeeds } = state
+  if (!sketch) return
+
+  const { width, height, bleed } = sketch.settings
+
+  let c = new C2S(
+    CUT_PIECES_EXPORT_WIDTH,
+    (CUT_PIECES_EXPORT_WIDTH * height) / width
+  )
+  c.scale(CUT_PIECES_EXPORT_WIDTH / width)
+  c.translate(-bleed, -bleed) // don't include bleed in pieces export
+  drawCut({ c, lineWidth: 0.1, state }, true)
+
+  const blob = new Blob([c.getSerializedSvg()], {
+    type: 'text/plain',
+  })
+
+  saveAs(blob, `${sketch.id}_pieces_${formatSeeds(cutNoiseSeeds)}.svg`)
 }

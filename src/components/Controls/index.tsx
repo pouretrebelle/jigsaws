@@ -134,6 +134,12 @@ const Controls = () => {
         >
           Export cut
         </ExportButton>
+        <ExportButton
+          onClick={() => dispatch(exportSketch(ExportPart.cutPieces))}
+          loading={state.pending.includes(ActionType.ExportCutPieces)}
+        >
+          Export cut pieces
+        </ExportButton>
       </Section>
 
       <Section>

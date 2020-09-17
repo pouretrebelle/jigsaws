@@ -1,4 +1,4 @@
-import SimplexNoise from "simplex-noise"
+import SimplexNoise from 'simplex-noise'
 
 export interface State {
   initialSketch: string
@@ -15,9 +15,10 @@ export interface State {
 }
 
 export enum ExportPart {
-  Cut = 'cut',
   Design = 'design',
   DesignAnimation = 'designAnimation',
+  Cut = 'cut',
+  cutPieces = 'cutPieces',
   Canvas = 'canvas',
 }
 
@@ -29,9 +30,10 @@ export enum ActionType {
   ToggleVisibility = 'TOGGLE_VISIBILITY',
   UpdateSeed = 'UPDATE_SEED',
   UpdateNoiseStart = 'UPDATE_NOISE_START',
-  ExportCut = 'EXPORT_CUT',
   ExportDesign = 'EXPORT_DESIGN',
   ExportDesignAnimation = 'EXPORT_DESIGN_ANIMATION',
+  ExportCut = 'EXPORT_CUT',
+  ExportCutPieces = 'EXPORT_CUT_PIECES',
   ExportCanvas = 'EXPORT_CANVAS',
 }
 
@@ -80,6 +82,7 @@ export interface Sketch {
   id: string
   design: any
   cut: any
+  cutPieces: any
   settings: SketchSettings
 }
 

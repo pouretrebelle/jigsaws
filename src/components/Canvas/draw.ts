@@ -41,11 +41,10 @@ export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
   })
 }
 
-export const drawCut = ({
-  c,
-  lineWidth,
-  state,
-}: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>) => {
+export const drawCut = (
+  { c, lineWidth, state }: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>,
+  cutPieces: boolean = false
+) => {
   if (!state.sketch) return
 
   const { width, height, rows, columns, bleed } = state.sketch.settings
@@ -55,7 +54,7 @@ export const drawCut = ({
   c.save()
   c.lineWidth = lineWidth
   c.translate(bleed, bleed)
-  state.sketch.cut({
+  state.sketch[cutPieces ? 'cutPieces' : 'cut']({
     c,
     simplex,
     seed: state.cutNoiseSeeds,

@@ -59,7 +59,7 @@ const addToCurves = (
   p1: Vector2,
   p2: Vector2,
   flip: boolean,
-  moveTo: boolean,
+  moveTo: boolean
 ) => {
   const tVmult = 0.25 // push of t towards other side of piece
   const tVdiv = 0.4 // push of p1c and p2c away from other side of piece
@@ -149,7 +149,14 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   }
 }
 
-export const cutSeparate = ({ c, width, columns, height, rows, simplex }: Cut) => {
+export const cutPieces = ({
+  c,
+  width,
+  columns,
+  height,
+  rows,
+  simplex,
+}: Cut) => {
   const crossPoints = [] as Point[][]
 
   for (let x = 0; x < columns + 1; x++) {

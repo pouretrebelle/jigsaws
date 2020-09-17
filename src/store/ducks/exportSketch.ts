@@ -4,28 +4,33 @@ import { State, Action, ActionType, ExportPart } from 'types'
 
 import { removePending, addPending, updateNoiseStart } from '../actions'
 import {
-  exportCut,
   exportDesign,
-  exportCanvas,
   exportDesignAnimation,
+  exportCut,
+  exportCutPieces,
+  exportCanvas,
 } from 'lib/export'
 
 const exportActions = {
-  [ExportPart.Cut]: {
-    actionType: ActionType.ExportCut,
-    exportFunction: exportCut,
-  },
   [ExportPart.Design]: {
     actionType: ActionType.ExportDesign,
     exportFunction: exportDesign,
   },
-  [ExportPart.Canvas]: {
-    actionType: ActionType.ExportCanvas,
-    exportFunction: exportCanvas,
-  },
   [ExportPart.DesignAnimation]: {
     actionType: ActionType.ExportDesignAnimation,
     exportFunction: exportDesignAnimation,
+  },
+  [ExportPart.Cut]: {
+    actionType: ActionType.ExportCut,
+    exportFunction: exportCut,
+  },
+  [ExportPart.cutPieces]: {
+    actionType: ActionType.ExportCutPieces,
+    exportFunction: exportCutPieces,
+  },
+  [ExportPart.Canvas]: {
+    actionType: ActionType.ExportCanvas,
+    exportFunction: exportCanvas,
   },
 }
 

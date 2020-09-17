@@ -2,6 +2,7 @@ import React from 'react'
 
 import {
   State,
+  Sketch,
   SketchConstructorSettings,
   SketchSettings,
   Action,
@@ -18,10 +19,7 @@ const getKeysFromEnum = (enumObject: EnumObject): string[] =>
     (key) => typeof enumObject[key as any] === 'number'
   )
 
-interface Payload extends Pick<State, 'error'> {
-  id: string
-  design: any
-  cut: any
+interface Payload extends Omit<Sketch, 'settings'>, Pick<State, 'error'> {
   settings: SketchConstructorSettings
   DesignNoiseSeeds: EnumObject
   CutNoiseSeeds: EnumObject
@@ -34,12 +32,12 @@ export const reducer: React.Reducer<
   switch (action.type) {
     case ActionType.LoadSketch: {
       const {
-        id,
-        design,
-        cut,
         settings,
         DesignNoiseSeeds,
         CutNoiseSeeds,
+        error,
+        id,
+        ...rest
       } = action.payload
 
       const height = settings.height || settings.width
@@ -58,7 +56,11 @@ export const reducer: React.Reducer<
         cutNoiseSeeds: getKeysFromEnum(CutNoiseSeeds),
       } as SketchSettings
 
-      const sketch = { id, design, cut, settings: augmentedSettings }
+      const sketch = {
+        id,
+        ...rest,
+        settings: augmentedSettings,
+      }
 
       const cutNoiseSeedCount = augmentedSettings.cutNoiseSeeds.length
       const cutNoiseSeeds = [

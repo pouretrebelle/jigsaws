@@ -1,10 +1,10 @@
 export const COLOR = {
-  BACKGROUND: '#FFFFFF',
-  TEXT: '#000000',
+  BACKGROUND: '#fffcf9',
+  TEXT: '#242733',
 }
 
 export const FONT = {
   FAMILY: {
-    BODY: 'Roboto, Helvetica, sans-serif',
+    BODY: 'Helvetica, Ariel, sans-serif',
   },
 }

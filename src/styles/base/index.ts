@@ -1,11 +1,9 @@
 import { createGlobalStyle } from 'styled-components'
 import { COLOR, FONT } from '../tokens'
 import reset from './reset'
-import fonts from './fonts'
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
-  ${fonts}
 
   html {
     width: 100%;

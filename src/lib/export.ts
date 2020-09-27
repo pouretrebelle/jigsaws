@@ -11,7 +11,7 @@ const CUT_PIECES_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2
 const ANIMATION_FRAMES = 500
-const ANIMATION_EXPORT_WIDTH = 1000
+const ANIMATION_EXPORT_WIDTH = 2000
 
 const formatSeeds = (seeds: string[]) => seeds.join('-')
 
@@ -106,7 +106,7 @@ export const exportDesignAnimation = (state: State) => {
   for (let i = 0; i < ANIMATION_FRAMES; i++) {
     drawDesign({ c, state: { ...state, noiseStart: i * FRAME_INCREMENT } })
     videoWriter.addFrame(canvas)
-    console.info(`add frame ${i + 1}`)
+    console.info(`add frame ${i + 1}/${ANIMATION_FRAMES}`)
   }
   c.restore()
 

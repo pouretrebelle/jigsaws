@@ -1,25 +1,31 @@
 import { hsl } from 'utils/colorUtils'
 
-export const COLORS = [
-  // hsl(5, 100, 70),
-  hsl(10, 100, 70),
-  hsl(20, 100, 70),
-  hsl(40, 100, 70),
-  hsl(100, 95, 75),
-  hsl(150, 100, 55),
-  // hsl(145, 90, 70),
-  // hsl(150, 90, 70),
-  // hsl(155, 90, 70),
-  // hsl(170, 100, 60),
-  // hsl(180, 100, 60),
-  // hsl(190, 100, 60),
-  // hsl(200, 100, 70),
-  // hsl(280, 100, 70),
-  // hsl(290, 100, 70),
-  hsl(300, 100, 70),
-  // hsl(320, 100, 70),
-  hsl(330, 100, 70),
-]
+const getColor = (hue: number): string => {
+  let sat = 100
+  let bri = 70
+  if (hue < 200 && hue > 40) {
+    sat = 80
+    bri = 60
+  }
+  if (hue <= 150) {
+    sat = 85
+  }
+  return hsl(hue, sat, bri)
+}
 
-export const BACKGROUND = hsl(265, 100, 68)
-export const FOREGROUND = [hsl(190, 100, 60), BACKGROUND]
+export const BACKGROUND_COLORS = [300, 320, 330].map(getColor)
+
+export const FOREGROUND_COLORS = [
+  145,
+  150,
+  155,
+  160,
+  170,
+  180,
+  190,
+  195,
+  200,
+  260,
+  270,
+  280,
+].map(getColor)

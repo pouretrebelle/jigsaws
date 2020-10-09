@@ -57,7 +57,10 @@ module.exports = (env, argv) => ({
     ],
   },
   resolve: {
-    modules: ['src', 'node_modules'],
+    modules: ['src', 'node_modules', 'utils'],
     extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      utils: path.resolve(__dirname, '../utils'),
+    },
   },
 })

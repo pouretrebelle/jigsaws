@@ -1,4 +1,6 @@
 export const PRETTY_HUES = [
+  5,
+  20,
   145,
   150,
   155,

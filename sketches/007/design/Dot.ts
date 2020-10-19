@@ -3,7 +3,6 @@ import { map, randomFromNoise } from 'utils/numberUtils'
 
 const DOT_MIN_SIZE = 15
 const DOT_MAX_SIZE = 30
-const DOT_SHADOW_LAG = 1.5
 const DOT_LAG = 3
 const MIN_FRAMES = 150
 const MIN_FRAMES_FOR_FLIP = 10
@@ -14,7 +13,6 @@ interface DotConstructor {
   x: number
   y: number
   color: string
-  shadow: string
   sizeRandom: number
   curveRandom: number
   startAngleRandom: number
@@ -24,7 +22,6 @@ interface DotConstructor {
 class Dot {
   i: number
   color: string
-  shadow: string
   size: number
   pos: Vector2
   initialPos: Vector2
@@ -41,7 +38,6 @@ class Dot {
     x,
     y,
     color,
-    shadow,
     sizeRandom,
     curveRandom,
     startAngleRandom,
@@ -49,7 +45,6 @@ class Dot {
   }: DotConstructor) {
     this.i = i
     this.color = color
-    this.shadow = shadow
 
     this.size = map(sizeRandom, -1, 1, DOT_MIN_SIZE, DOT_MAX_SIZE)
     this.pos = new Vector2(x, y)
@@ -99,38 +94,45 @@ class Dot {
     this.frame++
   }
 
-  draw(c: CanvasRenderingContext2D) {
-    c.save()
+  updateBackward() {
+    // trying and failing to map the direction back to where we started
+    // but it looks nice so going with it
+    this.frame--
+    if (
+      (this.lastFlippedAtFrame - this.frame > MIN_FRAMES_FOR_FLIP &&
+        randomFromNoise(this.changeDirFunc(this.frame * 0.1)) > 0.98) ||
+      this.frame - this.lastFlippedAtFrame > MAX_FRAMES_FOR_FLIP
+    ) {
+      this.dir = !this.dir
+      this.lastFlippedAtFrame = this.frame
+    }
 
-    const shadowPos = this.initialPos
-      .minusNew(this.pos)
-      .normalise()
-      .multiplyEq(DOT_SHADOW_LAG)
-      .plusEq(this.pos)
+    // rotate
+    if (this.dir) {
+      this.vel.rotate(-this.rot)
+    } else {
+      this.vel.rotate(this.rot)
+    }
 
-    // draw shadow dot
-    c.fillStyle = this.shadow
-    this.drawDot(c, shadowPos)
-
-    // draw upper dot
-    c.fillStyle = this.color
-    this.drawDot(c, this.pos)
-
-    c.restore()
+    // add velocity to position
+    this.pos.minusEq(this.vel)
   }
 
-  drawDot(c: CanvasRenderingContext2D, pos: Vector2) {
+  draw(c: CanvasRenderingContext2D, backwards: boolean) {
+    const normalDir = this.vel
+      .clone()
+      .normalise()
+      .rotate(Math.PI / 2)
+      .multiplyEq(backwards ? -this.size : this.size)
+    const pos = this.pos.plusNew(normalDir)
+
+    c.save()
+    c.fillStyle = this.color
+
     c.beginPath()
-    c.moveTo(pos.x, pos.y + this.size)
-    c.lineTo(
-      pos.x + Math.sin((Math.PI * 2) / 3) * this.size,
-      pos.y + Math.cos((Math.PI * 2) / 3) * this.size
-    )
-    c.lineTo(
-      pos.x - Math.sin((Math.PI * 2) / 3) * this.size,
-      pos.y + Math.cos((Math.PI * 2) / 3) * this.size
-    )
+    c.arc(pos.x, pos.y, this.size, 0, Math.PI * 2)
     c.fill()
+    c.restore()
   }
 }
 

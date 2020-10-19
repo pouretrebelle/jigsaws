@@ -6,12 +6,12 @@ import Dot from './Dot'
 import { PRETTY_HUES } from './constants'
 import { arrayValueFromRandom, arrayValuesFromSimplex } from 'utils/arrayUtils'
 
-const COLOR_COUNT = 7
-const DOT_COUNT = 14
+const COLOR_COUNT = 10
+const DOT_COUNT = 20
 const DOT_MIN_SIZE = 5
-const DOT_MAX_SIZE = 40
-const DOT_MIN_LENGTH = 20
-const DOT_MAX_LENGTH = 60
+const DOT_MAX_SIZE = 30
+const DOT_MIN_LENGTH = 100
+const DOT_MAX_LENGTH = 500
 
 export enum Seeds {
   Color,
@@ -81,7 +81,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         startAngleRandom: simplex[Seeds.Curve].noise2D(0, i),
         sizeFunc: (frame: number) =>
           map(
-            simplex[Seeds.Size].noise3D(i, noiseStart * 2, frame * 0.02),
+            simplex[Seeds.Size].noise3D(i, noiseStart * 2, frame * 0.003),
             -1,
             1,
             DOT_MIN_SIZE,
@@ -93,21 +93,17 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
   }
 
+  c.save()
+  c.globalAlpha = 0.3
+
   for (let t = 0; t < DOT_MAX_LENGTH; t++) {
     dots.forEach((dot, i) => {
       if (dot.shouldDraw()) {
-        dot.draw(c, false)
+        dot.draw(c)
         dot.update()
       }
     })
   }
 
-  for (let t = 0; t < DOT_MAX_LENGTH; t++) {
-    dots.forEach((dot, i) => {
-      if (dot.frame > 0) {
-        dot.draw(c, true)
-        dot.updateBackward()
-      }
-    })
-  }
+  c.restore()
 }

@@ -6,9 +6,9 @@ import Dot from './Dot'
 import { PRETTY_HUES } from './constants'
 import { arrayValueFromRandom, arrayValuesFromSimplex } from 'utils/arrayUtils'
 
-const COLOR_COUNT = 8
-const DOT_COUNT = 40
-const DOT_DRAW_FRAMES = 250
+const COLOR_COUNT = 12
+const DOT_COUNT = 12
+const DOT_DRAW_FRAMES = 50
 
 export enum Seeds {
   Color,
@@ -51,21 +51,20 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       new Dot({
         i,
         x: map(
-          simplex[Seeds.Position].noise3D(1, i, noiseStart * 0.2),
+          simplex[Seeds.Position].noise3D(Math.PI, i, noiseStart * 0.2),
           -1,
           1,
           0,
           width
         ),
         y: map(
-          simplex[Seeds.Position].noise3D(i, 1, noiseStart * 0.2),
+          simplex[Seeds.Position].noise3D(i, Math.PI, noiseStart * 0.2),
           -1,
           1,
           0,
           height
         ),
         color: dotColors[i % dotColors.length],
-        shadow: background,
         sizeRandom: simplex[Seeds.Size].noise2D(i, noiseStart),
         curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 1),
         startAngleRandom: simplex[Seeds.Curve].noise2D(0, i),
@@ -78,8 +77,17 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   for (let t = 0; t < DOT_DRAW_FRAMES; t++) {
     dots.forEach((dot, i) => {
       if (dot.shouldDraw(width, height)) {
-        dot.draw(c)
+        dot.draw(c, false)
         dot.update()
+      }
+    })
+  }
+
+  for (let t = 0; t < DOT_DRAW_FRAMES; t++) {
+    dots.forEach((dot, i) => {
+      if (dot.frame > 0) {
+        dot.draw(c, true)
+        dot.updateBackward()
       }
     })
   }

@@ -6,16 +6,19 @@ import Dot from './Dot'
 import { PRETTY_HUES } from './constants'
 import { arrayValueFromRandom, arrayValuesFromSimplex } from 'utils/arrayUtils'
 
-const COLOR_COUNT = 12
-const DOT_COUNT = 12
-const DOT_DRAW_FRAMES = 50
+const COLOR_COUNT = 7
+const DOT_COUNT = 14
+const DOT_MIN_SIZE = 5
+const DOT_MAX_SIZE = 40
+const DOT_MIN_LENGTH = 20
+const DOT_MAX_LENGTH = 60
 
 export enum Seeds {
   Color,
   Position,
+  Length,
   Size,
   Curve,
-  Flip,
 }
 
 const getColorFromHue = (hue: number): string => {
@@ -51,39 +54,55 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       new Dot({
         i,
         x: map(
-          simplex[Seeds.Position].noise3D(Math.PI, i, noiseStart * 0.2),
+          simplex[Seeds.Position].noise3D(Math.PI, i * 5, noiseStart * 0.3),
           -1,
           1,
           0,
           width
         ),
         y: map(
-          simplex[Seeds.Position].noise3D(i, Math.PI, noiseStart * 0.2),
+          simplex[Seeds.Position].noise3D(i * 5, Math.PI, noiseStart * 0.3),
           -1,
           1,
           0,
           height
         ),
         color: dotColors[i % dotColors.length],
-        sizeRandom: simplex[Seeds.Size].noise2D(i, noiseStart),
+        maxFrames: Math.floor(
+          map(
+            randomFromNoise(simplex[Seeds.Length].noise2D(1, i * 10)),
+            0,
+            1,
+            DOT_MIN_LENGTH,
+            DOT_MAX_LENGTH
+          )
+        ),
         curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 1),
         startAngleRandom: simplex[Seeds.Curve].noise2D(0, i),
+        sizeFunc: (frame: number) =>
+          map(
+            simplex[Seeds.Size].noise3D(i, noiseStart * 2, frame * 0.02),
+            -1,
+            1,
+            DOT_MIN_SIZE,
+            DOT_MAX_SIZE
+          ),
         changeDirFunc: (frame: number) =>
-          simplex[Seeds.Flip].noise2D(i, frame * 0.1),
+          simplex[Seeds.Curve].noise2D(1 + i, frame * 0.1),
       })
     )
   }
 
-  for (let t = 0; t < DOT_DRAW_FRAMES; t++) {
+  for (let t = 0; t < DOT_MAX_LENGTH; t++) {
     dots.forEach((dot, i) => {
-      if (dot.shouldDraw(width, height)) {
+      if (dot.shouldDraw()) {
         dot.draw(c, false)
         dot.update()
       }
     })
   }
 
-  for (let t = 0; t < DOT_DRAW_FRAMES; t++) {
+  for (let t = 0; t < DOT_MAX_LENGTH; t++) {
     dots.forEach((dot, i) => {
       if (dot.frame > 0) {
         dot.draw(c, true)

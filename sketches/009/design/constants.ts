@@ -10,6 +10,7 @@ export const PRETTY_HUES = [
   190,
   195,
   200,
+  250,
   260,
   270,
   280,

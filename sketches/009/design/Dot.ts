@@ -1,9 +1,9 @@
 import Vector2 from 'utils/Vector2'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-const DOT_LAG = 3
-const MIN_FRAMES_FOR_FLIP = 10
-const MAX_FRAMES_FOR_FLIP = 50
+const DOT_LAG = 0.5
+const MIN_FRAMES_FOR_FLIP = 60
+const MAX_FRAMES_FOR_FLIP = 300
 
 interface DotConstructor {
   i: number
@@ -52,7 +52,7 @@ class Dot {
     this.initialPos = this.pos.clone()
     this.vel = new Vector2(DOT_LAG)
     this.ang = map(randomFromNoise(startAngleRandom), 0, 1, 0, Math.PI * 2)
-    this.rot = 0.02 + 0.02 * curveRandom
+    this.rot = 0.008 + 0.008 * curveRandom
     this.dir = changeDirFunc(0) > 0 ? true : false
     this.size = sizeFunc(0)
     this.sizeFunc = sizeFunc
@@ -72,7 +72,7 @@ class Dot {
 
     if (
       (this.frame - this.lastFlippedAtFrame > MIN_FRAMES_FOR_FLIP &&
-        randomFromNoise(this.changeDirFunc(this.frame * 0.1)) > 0.98) ||
+        randomFromNoise(this.changeDirFunc(this.frame * 0.1)) > 0.997) ||
       this.frame - this.lastFlippedAtFrame > MAX_FRAMES_FOR_FLIP
     ) {
       this.dir = !this.dir
@@ -91,45 +91,12 @@ class Dot {
     this.frame++
   }
 
-  updateBackward() {
-    this.size = this.sizeFunc(this.frame)
-
-    // trying and failing to map the direction back to where we started
-    // but it looks nice so going with it
-    this.frame--
-    if (
-      (this.lastFlippedAtFrame - this.frame > MIN_FRAMES_FOR_FLIP &&
-        randomFromNoise(this.changeDirFunc(this.frame * 0.1)) > 0.98) ||
-      this.frame - this.lastFlippedAtFrame > MAX_FRAMES_FOR_FLIP
-    ) {
-      this.dir = !this.dir
-      this.lastFlippedAtFrame = this.frame
-    }
-
-    // rotate
-    if (this.dir) {
-      this.vel.rotate(-this.rot)
-    } else {
-      this.vel.rotate(this.rot)
-    }
-
-    // add velocity to position
-    this.pos.minusEq(this.vel)
-  }
-
-  draw(c: CanvasRenderingContext2D, backwards: boolean) {
-    const normalDir = this.vel
-      .clone()
-      .normalise()
-      .rotate(Math.PI / 2)
-      .multiplyEq(backwards ? -this.size : this.size)
-    const pos = this.pos.plusNew(normalDir)
-
+  draw(c: CanvasRenderingContext2D) {
     c.save()
     c.fillStyle = this.color
 
     c.beginPath()
-    c.arc(pos.x, pos.y, this.size, 0, Math.PI * 2)
+    c.arc(this.pos.x, this.pos.y, this.size, 0, Math.PI * 2)
     c.fill()
     c.restore()
   }

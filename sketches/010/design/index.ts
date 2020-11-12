@@ -3,11 +3,8 @@ import { map, randomFromNoise } from 'utils/numberUtils'
 import { hsl } from 'utils/colorUtils'
 
 import Dot from './Dot'
-import { PRETTY_HUES } from './constants'
+import { DOT_COUNT, FLOW_FIDELITY, FRAMES, PRETTY_HUES } from './constants'
 import { arrayValueFromRandom } from 'utils/arrayUtils'
-
-const DOT_COUNT = 400
-const FRAMES = 100
 
 export enum Seeds {
   Flow,
@@ -38,7 +35,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.lineCap = 'round'
   c.lineWidth = 1
 
-  const dots = []
+  const dots: Dot[] = []
   for (let i = 0; i < DOT_COUNT; i++) {
     dots.push(
       new Dot({
@@ -64,8 +61,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   }
 
   const getFlowAngle = (dot: Dot): number => {
-    const noiseX = map(dot.pos.x, 0, width, 0, 1, true)
-    const noiseY = map(dot.pos.y, 0, height, 0, 1, true)
+    const noiseX = map(dot.pos.x, 0, width, 0, FLOW_FIDELITY, true)
+    const noiseY = map(dot.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
       simplex[Seeds.Flow].noise2D(noiseX, noiseY),
@@ -78,12 +75,14 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   c.save()
 
-  for (let t = 0; t < FRAMES; t++) {
-    dots.forEach((dot, i) => {
-      dot.update(getFlowAngle(dot))
-      dot.draw(c)
-    })
-  }
+  dots.forEach((dot, i) => {
+    for (let t = 0; t < FRAMES; t++) {
+      if (dot.canDraw(dots)) {
+        dot.update(getFlowAngle(dot))
+        dot.draw(c)
+      }
+    }
+  })
 
   c.restore()
 }

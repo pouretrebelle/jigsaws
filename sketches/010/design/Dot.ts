@@ -1,6 +1,6 @@
 import Vector2 from 'utils/Vector2'
 import { map } from 'utils/numberUtils'
-import { AVOIDANCE_THRESHOLD, DISTANCE_PER_FRAME } from './constants'
+import { AVOIDANCE_THRESHOLD, DISTANCE_PER_FRAME, THICKENSS_INCREMENT, THICKNESS } from './constants'
 
 interface DotConstructor {
   i: number
@@ -20,6 +20,7 @@ const temp = new Vector2()
 class Dot {
   i: number
   color: string
+  thickness: number
   pos: Vector2
   prevPos: PrevPos[]
   vel: Vector2
@@ -30,6 +31,7 @@ class Dot {
   constructor({ i, x, y, color, curveRandom }: DotConstructor) {
     this.i = i
     this.color = color
+    this.thickness = THICKNESS
     this.active = true
 
     this.pos = new Vector2(x, y)
@@ -44,6 +46,8 @@ class Dot {
 
     this.prevPos.push({ x: this.pos.x, y: this.pos.y })
 
+    this.thickness += THICKENSS_INCREMENT
+
     this.frame++
   }
 
@@ -57,7 +61,7 @@ class Dot {
         this.pos.copyTo(temp)
         temp.x -= pos.x
         temp.y -= pos.y
-        return temp.magnitude() < AVOIDANCE_THRESHOLD
+        return temp.magnitude() < AVOIDANCE_THRESHOLD + this.thickness
       })
     })
 
@@ -74,6 +78,7 @@ class Dot {
 
     c.fillStyle = this.color
     c.strokeStyle = this.color
+    c.lineWidth = this.thickness
 
     c.beginPath()
 

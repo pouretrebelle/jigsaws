@@ -1,10 +1,11 @@
+import chroma from 'chroma-js'
+
 import { Design } from 'types'
 import { map, randomFromNoise } from 'utils/numberUtils'
 import { hsl } from 'utils/colorUtils'
 
 import Dot from './Dot'
-import { DOT_COUNT, FLOW_FIDELITY, FRAMES, PRETTY_HUES } from './constants'
-import { arrayValueFromRandom } from 'utils/arrayUtils'
+import { COLOR_COUNT, DOT_COUNT, FLOW_FIDELITY, FRAMES } from './constants'
 
 export enum Seeds {
   Flow,
@@ -13,22 +14,10 @@ export enum Seeds {
   Curve,
 }
 
-const getColorFromHue = (hue: number): string => {
-  let sat = 100
-  let bri = 70
-  if (hue < 200 && hue > 40) {
-    sat = 80
-    bri = 60
-  }
-  return hsl(hue, sat, bri)
-}
+const colorScale = chroma.scale('YlGnBu')
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
-  const backgroundHue = arrayValueFromRandom(
-    PRETTY_HUES,
-    randomFromNoise(simplex[Seeds.Color].noise2D(1, 1))
-  )
-  const background = getColorFromHue(backgroundHue)
+  const background = colorScale(0.6).brighten(1.5).luminance(0.3).hex()
 
   c.fillStyle = background
   c.fillRect(0, 0, width, height)
@@ -54,7 +43,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
           0,
           height
         ),
-        color: '#fff',
+        color: colorScale(map(i % COLOR_COUNT, 0, COLOR_COUNT - 1, 0, 1)).hex(),
         curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 1),
       })
     )

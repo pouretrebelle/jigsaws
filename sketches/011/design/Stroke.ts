@@ -13,7 +13,6 @@ interface StroketConstructor {
   i: number
   x: number
   y: number
-  curveRandom: number
 }
 
 interface Point {
@@ -30,11 +29,10 @@ class Stroke {
   pos: Vector2
   points: Point[]
   vel: Vector2
-  curve: number
   length: number = 0
   active: boolean
 
-  constructor({ i, x, y, curveRandom }: StroketConstructor) {
+  constructor({ i, x, y }: StroketConstructor) {
     this.i = i
     this.thickness = THICKNESS
     this.active = true
@@ -42,11 +40,10 @@ class Stroke {
     this.pos = new Vector2(x, y)
     this.points = [{ x, y, size: this.thickness }]
     this.vel = new Vector2()
-    this.curve = map(curveRandom, -1, 1, -0.2, 0.2)
   }
 
   update(angle: number) {
-    this.vel.reset(DISTANCE_PER_FRAME, 0).rotate(angle + this.curve)
+    this.vel.reset(DISTANCE_PER_FRAME, 0).rotate(angle)
     this.pos.plusEq(this.vel)
 
     this.points.push({

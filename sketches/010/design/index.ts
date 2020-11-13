@@ -1,7 +1,7 @@
 import { Design } from 'types'
 import { map } from 'utils/numberUtils'
 
-import Dot from './Dot'
+import Stroke from './Stroke'
 import { COLOR_SCALE, DOT_COUNT, FLOW_FIDELITY, FRAMES } from './constants'
 
 export enum Seeds {
@@ -19,9 +19,9 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.lineCap = 'round'
   c.lineWidth = 1
 
-  const getFlowAngle = (dot: Dot): number => {
-    const noiseX = map(dot.pos.x, 0, width, 0, FLOW_FIDELITY, true)
-    const noiseY = map(dot.pos.y, 0, height, 0, FLOW_FIDELITY, true)
+  const getFlowAngle = (stroke: Stroke): number => {
+    const noiseX = map(stroke.pos.x, 0, width, 0, FLOW_FIDELITY, true)
+    const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
       simplex[Seeds.Flow].noise2D(noiseX, noiseY),
@@ -34,9 +34,9 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   c.save()
 
-  const dots: Dot[] = []
+  const strokes: Stroke[] = []
   for (let i = 0; i < DOT_COUNT; i++) {
-    const dot = new Dot({
+    const stroke = new Stroke({
       i,
       x: map(
         simplex[Seeds.Position].noise3D(Math.PI, i * 5, noiseStart * 0.3),
@@ -56,13 +56,13 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     })
 
     for (let t = 0; t < FRAMES; t++) {
-      if (dot.canDraw(dots)) {
-        dot.update(getFlowAngle(dot))
+      if (stroke.canDraw(strokes)) {
+        stroke.update(getFlowAngle(stroke))
       }
-      dot.draw(c)
+      stroke.draw(c)
     }
 
-    dots.push(dot)
+    strokes.push(stroke)
   }
 
   c.restore()

@@ -9,7 +9,7 @@ import {
   THICKNESS,
 } from './constants'
 
-interface DotConstructor {
+interface StroketConstructor {
   i: number
   x: number
   y: number
@@ -24,17 +24,17 @@ interface Point {
 
 const temp = new Vector2()
 
-class Dot {
+class Stroke {
   i: number
   thickness: number
   pos: Vector2
   points: Point[]
   vel: Vector2
   curve: number
-  frame: number = 0
+  length: number = 0
   active: boolean
 
-  constructor({ i, x, y, curveRandom }: DotConstructor) {
+  constructor({ i, x, y, curveRandom }: StroketConstructor) {
     this.i = i
     this.thickness = THICKNESS
     this.active = true
@@ -57,16 +57,16 @@ class Dot {
 
     this.thickness += THICKENSS_INCREMENT
 
-    this.frame++
+    this.length++
   }
 
-  canDraw(dots: Dot[]) {
+  canDraw(strokes: Stroke[]) {
     if (!this.active) return false
 
-    const tooClose = dots.some((dot) => {
-      if (dot.i === this.i) return false
+    const tooClose = strokes.some((stroke) => {
+      if (stroke.i === this.i) return false
 
-      return dot.points.some((point) => {
+      return stroke.points.some((point) => {
         this.pos.copyTo(temp)
         temp.x -= point.x
         temp.y -= point.y
@@ -88,7 +88,7 @@ class Dot {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    const color = COLOR_SCALE(map(this.frame, 0, FRAMES, 1.5, 0)).hex()
+    const color = COLOR_SCALE(map(this.length, 0, FRAMES, 1.5, 0)).hex()
     c.strokeStyle = color
     c.lineWidth = this.thickness
 
@@ -105,4 +105,4 @@ class Dot {
   }
 }
 
-export default Dot
+export default Stroke

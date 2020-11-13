@@ -2,13 +2,20 @@ import { Design } from 'types'
 import { map } from 'utils/numberUtils'
 
 import Stroke from './Stroke'
-import { COLOR_SCALE, DOT_COUNT, FLOW_FIDELITY, FRAMES } from './constants'
+import {
+  COLOR_SCALE,
+  DOT_COUNT,
+  FLOW_FIDELITY,
+  LENGTH_VARIATION,
+  MAX_LENGTH,
+} from './constants'
 
 export enum Seeds {
   Flow,
   Color,
   Position,
   Curve,
+  Length,
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
@@ -36,6 +43,14 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const strokes: Stroke[] = []
   for (let i = 0; i < DOT_COUNT; i++) {
+    const strokeLength = map(
+      simplex[Seeds.Length].noise2D(i * 5, noiseStart * 0.1),
+      -1,
+      1,
+      MAX_LENGTH,
+      MAX_LENGTH - LENGTH_VARIATION
+    )
+
     const stroke = new Stroke({
       i,
       x: map(
@@ -55,7 +70,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 1),
     })
 
-    for (let t = 0; t < FRAMES; t++) {
+    for (let t = 0; t < strokeLength; t++) {
       if (stroke.canDraw(strokes)) {
         stroke.update(getFlowAngle(stroke))
       }

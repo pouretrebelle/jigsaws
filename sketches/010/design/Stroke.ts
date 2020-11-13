@@ -4,7 +4,7 @@ import {
   AVOIDANCE_THRESHOLD,
   COLOR_SCALE,
   DISTANCE_PER_FRAME,
-  FRAMES,
+  MAX_LENGTH,
   THICKENSS_INCREMENT,
   THICKNESS,
 } from './constants'
@@ -88,7 +88,9 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    const color = COLOR_SCALE(map(this.length, 0, FRAMES, 1.5, 0)).hex()
+    const color = COLOR_SCALE(
+      map(this.length, 0, MAX_LENGTH, 1.2, 0)
+    ).hex()
     c.strokeStyle = color
     c.lineWidth = this.thickness
 

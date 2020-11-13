@@ -1,6 +1,11 @@
 import Vector2 from 'utils/Vector2'
 import { map } from 'utils/numberUtils'
-import { AVOIDANCE_THRESHOLD, DISTANCE_PER_FRAME, THICKENSS_INCREMENT, THICKNESS } from './constants'
+import {
+  AVOIDANCE_THRESHOLD,
+  DISTANCE_PER_FRAME,
+  THICKENSS_INCREMENT,
+  THICKNESS,
+} from './constants'
 
 interface DotConstructor {
   i: number
@@ -10,9 +15,10 @@ interface DotConstructor {
   curveRandom: number
 }
 
-interface PrevPos {
+interface PrevPoint {
   x: number
   y: number
+  thickness: number
 }
 
 const temp = new Vector2()
@@ -22,7 +28,7 @@ class Dot {
   color: string
   thickness: number
   pos: Vector2
-  prevPos: PrevPos[]
+  prevPoints: PrevPoint[]
   vel: Vector2
   curve: number
   frame: number = 0
@@ -35,7 +41,7 @@ class Dot {
     this.active = true
 
     this.pos = new Vector2(x, y)
-    this.prevPos = []
+    this.prevPoints = []
     this.vel = new Vector2()
     this.curve = map(curveRandom, -1, 1, -0.2, 0.2)
   }
@@ -44,7 +50,11 @@ class Dot {
     this.vel.reset(DISTANCE_PER_FRAME, 0).rotate(angle + this.curve)
     this.pos.plusEq(this.vel)
 
-    this.prevPos.push({ x: this.pos.x, y: this.pos.y })
+    this.prevPoints.push({
+      x: this.pos.x,
+      y: this.pos.y,
+      thickness: this.thickness,
+    })
 
     this.thickness += THICKENSS_INCREMENT
 
@@ -57,11 +67,11 @@ class Dot {
     const tooClose = dots.some((dot) => {
       if (dot.i === this.i) return false
 
-      return dot.prevPos.some((pos) => {
+      return dot.prevPoints.some((point) => {
         this.pos.copyTo(temp)
-        temp.x -= pos.x
-        temp.y -= pos.y
-        return temp.magnitude() < AVOIDANCE_THRESHOLD + this.thickness
+        temp.x -= point.x
+        temp.y -= point.y
+        return temp.magnitude() < AVOIDANCE_THRESHOLD + (this.thickness + point.thickness)/2
       })
     })
 

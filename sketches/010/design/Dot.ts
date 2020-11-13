@@ -2,7 +2,9 @@ import Vector2 from 'utils/Vector2'
 import { map } from 'utils/numberUtils'
 import {
   AVOIDANCE_THRESHOLD,
+  COLOR_SCALE,
   DISTANCE_PER_FRAME,
+  FRAMES,
   THICKENSS_INCREMENT,
   THICKNESS,
 } from './constants'
@@ -11,37 +13,34 @@ interface DotConstructor {
   i: number
   x: number
   y: number
-  color: string
   curveRandom: number
 }
 
-interface PrevPoint {
+interface Point {
   x: number
   y: number
-  thickness: number
+  size: number
 }
 
 const temp = new Vector2()
 
 class Dot {
   i: number
-  color: string
   thickness: number
   pos: Vector2
-  prevPoints: PrevPoint[]
+  points: Point[]
   vel: Vector2
   curve: number
   frame: number = 0
   active: boolean
 
-  constructor({ i, x, y, color, curveRandom }: DotConstructor) {
+  constructor({ i, x, y, curveRandom }: DotConstructor) {
     this.i = i
-    this.color = color
     this.thickness = THICKNESS
     this.active = true
 
     this.pos = new Vector2(x, y)
-    this.prevPoints = []
+    this.points = [{ x, y, size: this.thickness }]
     this.vel = new Vector2()
     this.curve = map(curveRandom, -1, 1, -0.2, 0.2)
   }
@@ -50,10 +49,10 @@ class Dot {
     this.vel.reset(DISTANCE_PER_FRAME, 0).rotate(angle + this.curve)
     this.pos.plusEq(this.vel)
 
-    this.prevPoints.push({
+    this.points.push({
       x: this.pos.x,
       y: this.pos.y,
-      thickness: this.thickness,
+      size: this.thickness,
     })
 
     this.thickness += THICKENSS_INCREMENT
@@ -67,11 +66,14 @@ class Dot {
     const tooClose = dots.some((dot) => {
       if (dot.i === this.i) return false
 
-      return dot.prevPoints.some((point) => {
+      return dot.points.some((point) => {
         this.pos.copyTo(temp)
         temp.x -= point.x
         temp.y -= point.y
-        return temp.magnitude() < AVOIDANCE_THRESHOLD + (this.thickness + point.thickness)/2
+        return (
+          temp.magnitude() <
+          AVOIDANCE_THRESHOLD + (this.thickness + point.size) / 2
+        )
       })
     })
 
@@ -86,20 +88,19 @@ class Dot {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    c.fillStyle = this.color
-    c.strokeStyle = this.color
+    const color = COLOR_SCALE(map(this.frame, 0, FRAMES, 1.5, 0)).hex()
+    c.strokeStyle = color
     c.lineWidth = this.thickness
 
-    c.beginPath()
+    this.points.forEach(({ x, y, size }, i) => {
+      if (i === 0) return
+      c.beginPath()
+      c.lineWidth = size
+      c.moveTo(this.points[i - 1].x, this.points[i - 1].y)
+      c.lineTo(x, y)
+      c.stroke()
+    })
 
-    this.pos.copyTo(temp)
-    temp.minusEq(this.vel)
-    c.moveTo(temp.x, temp.y)
-
-    temp.plusEq(this.vel).plusEq(this.vel)
-    c.lineTo(temp.x, temp.y)
-
-    c.stroke()
     c.restore()
   }
 }

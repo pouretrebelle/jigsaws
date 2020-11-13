@@ -59,8 +59,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       if (stroke.canDraw(strokes)) {
         stroke.update(getFlowAngle(stroke))
       }
-      stroke.draw(c)
     }
+    stroke.draw(c)
 
     strokes.push(stroke)
   }

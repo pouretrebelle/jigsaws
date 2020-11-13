@@ -1,5 +1,5 @@
 import { Design } from 'types'
-import { map } from 'utils/numberUtils'
+import { map, randomFromNoise } from 'utils/numberUtils'
 
 import Stroke from './Stroke'
 import {
@@ -28,7 +28,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
-      simplex[Seeds.Flow].noise2D(noiseX, noiseY),
+      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.5),
       -1,
       1,
       -Math.PI,
@@ -41,7 +41,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   const strokes: Stroke[] = []
   for (let i = 0; i < DOT_COUNT; i++) {
     const strokeLength = map(
-      simplex[Seeds.Length].noise2D(i * 5, noiseStart * 0.1),
+      simplex[Seeds.Length].noise2D(i * 5, Math.PI * 2),
       -1,
       1,
       MAX_LENGTH,
@@ -50,21 +50,9 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
     const stroke = new Stroke({
       i,
-      x: map(
-        simplex[Seeds.Position].noise3D(Math.PI, i * 5, noiseStart * 0.3),
-        -1,
-        1,
-        0,
-        width
-      ),
-      y: map(
-        simplex[Seeds.Position].noise3D(i * 5, Math.PI, noiseStart * 0.3),
-        -1,
-        1,
-        0,
-        height
-      ),
-      curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 1),
+      x: map(randomFromNoise(simplex[Seeds.Position].noise2D(Math.PI, i * 5)), 0, 1, 0, width),
+      y: map(randomFromNoise(simplex[Seeds.Position].noise2D(i * 5, Math.PI)), 0, 1, 0, height),
+      curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart),
     })
 
     for (let t = 0; t < strokeLength; t++) {

@@ -3,7 +3,7 @@ import { map } from 'utils/numberUtils'
 
 import Stroke from './Stroke'
 import {
-  COLOR_SCALE,
+  BACKGROUND,
   DOT_COUNT,
   FLOW_FIDELITY,
   LENGTH_VARIATION,
@@ -12,16 +12,13 @@ import {
 
 export enum Seeds {
   Flow,
-  Color,
   Position,
   Curve,
   Length,
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
-  const background = COLOR_SCALE(0.6).brighten(1.5).luminance(0.3).hex()
-
-  c.fillStyle = background
+  c.fillStyle = BACKGROUND
   c.fillRect(0, 0, width, height)
   c.lineCap = 'round'
   c.lineWidth = 1

@@ -88,9 +88,7 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    const color = COLOR_SCALE(
-      map(this.length, 0, MAX_LENGTH, 1.2, 0)
-    ).hex()
+    const color = COLOR_SCALE(map(this.length, 0, MAX_LENGTH, 0, 1)).hex()
     c.strokeStyle = color
     c.lineWidth = this.thickness
 

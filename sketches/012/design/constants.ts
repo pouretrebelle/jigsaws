@@ -1,18 +1,16 @@
 import chroma from 'chroma-js'
 
-export const DOT_COUNT = 500
-export const MAX_LENGTH = 250
-export const MIN_LENGTH = 20
-export const LENGTH_VARIATION = 75
+export const DOT_COUNT = 400
+export const COLOR_COUNT = 5
+export const MAX_LENGTH = 30
+export const MIN_LENGTH = 10
+export const LENGTH_VARIATION = 10
 export const FLOW_FIDELITY = 1
 export const DISTANCE_PER_FRAME = 1
 export const AVOIDANCE_THRESHOLD = 1
 export const THICKNESS = 1
-export const THICKENSS_INCREMENT = 0.01
+export const THICKENSS_INCREMENT = 0.3
 
-const COLORS = ['#FBEEDA', '#38FFB6', '#425BFF', '#7800A3',]// '#3D0016']
+const COLORS = ['#FBEEDA', '#38FFB6', '#425BFF', '#7800A3']
 export const COLOR_SCALE = chroma.scale(COLORS)
-export const BACKGROUND = COLOR_SCALE(1)
-.brighten(1)
-.desaturate(0.5)
-  .hex()
+export const BACKGROUND = COLOR_SCALE(0.5).darken(2).desaturate(0.5).hex()

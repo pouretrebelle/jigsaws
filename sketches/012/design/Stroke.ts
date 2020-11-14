@@ -14,6 +14,7 @@ interface StroketConstructor {
   i: number
   x: number
   y: number
+  color: string
 }
 
 interface Point {
@@ -32,11 +33,13 @@ class Stroke {
   vel: Vector2
   length: number = 0
   active: boolean
+  color: string
 
-  constructor({ i, x, y }: StroketConstructor) {
+  constructor({ i, x, y, color }: StroketConstructor) {
     this.i = i
     this.thickness = THICKNESS
     this.active = true
+    this.color = color
 
     this.pos = new Vector2(x, y)
     this.points = [{ x, y, size: this.thickness }]
@@ -86,10 +89,7 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    const color = COLOR_SCALE(
-      map(this.length, MIN_LENGTH, MAX_LENGTH, 0, 1)
-    ).hex()
-    c.strokeStyle = color
+    c.strokeStyle = this.color
     c.lineWidth = this.thickness
 
     this.points.forEach(({ x, y, size }, i) => {

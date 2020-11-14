@@ -10,10 +10,9 @@ import {
   THICKNESS,
 } from './constants'
 
-interface StroketConstructor {
+interface StrokeConstructor {
   i: number
-  x: number
-  y: number
+  pos: Vector2
 }
 
 interface Point {
@@ -32,14 +31,16 @@ class Stroke {
   vel: Vector2
   length: number = 0
   active: boolean
+  color: string
 
-  constructor({ i, x, y }: StroketConstructor) {
+  constructor({ i, pos }: StrokeConstructor) {
     this.i = i
     this.thickness = THICKNESS
     this.active = true
+    this.color = '#000'
 
-    this.pos = new Vector2(x, y)
-    this.points = [{ x, y, size: this.thickness }]
+    this.pos = pos
+    this.points = [{ x: pos.x, y: pos.y, size: this.thickness }]
     this.vel = new Vector2()
   }
 
@@ -89,6 +90,7 @@ class Stroke {
     const color = COLOR_SCALE(
       map(this.length, MIN_LENGTH, MAX_LENGTH, 0, 1)
     ).hex()
+    this.color = color
     c.strokeStyle = color
     c.lineWidth = this.thickness
 
@@ -102,6 +104,15 @@ class Stroke {
     })
 
     c.restore()
+  }
+
+  shortestDistToPos(pos: Vector2) {
+    return this.points.reduce((curr, point) => {
+      pos.copyTo(temp)
+      temp.x -= point.x
+      temp.y -= point.y
+      return Math.min(temp.magnitude() - point.size / 2, curr)
+    }, Infinity)
   }
 }
 

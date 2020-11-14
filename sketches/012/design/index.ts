@@ -25,12 +25,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.lineCap = 'round'
   c.lineWidth = 1
 
-  const getFlowAngle = (stroke: Stroke): number => {
+  const getFlowAngle = (stroke: Stroke, colorIndex: number): number => {
     const noiseX = map(stroke.pos.x, 0, width, 0, FLOW_FIDELITY, true)
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
-      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.5),
+      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.5 + colorIndex * 0.1),
       -1,
       1,
       -Math.PI,
@@ -42,6 +42,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const strokes: Stroke[] = []
   for (let i = 0; i < DOT_COUNT; i++) {
+    const colorIndex = i % COLOR_COUNT
     const strokeLength = map(
       simplex[Seeds.Length].noise2D(i * 5, Math.PI * 2),
       -1,
@@ -66,12 +67,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         0,
         height
       ),
-      color: COLOR_SCALE((i % (COLOR_COUNT)) / (COLOR_COUNT - 1)).hex(),
+      color: COLOR_SCALE(colorIndex / (COLOR_COUNT - 1)).hex(),
     })
 
     for (let t = 0; t < strokeLength; t++) {
       if (stroke.canDraw(strokes)) {
-        stroke.update(getFlowAngle(stroke))
+        stroke.update(getFlowAngle(stroke, colorIndex))
       }
     }
 

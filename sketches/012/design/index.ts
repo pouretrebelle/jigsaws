@@ -98,12 +98,11 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
 
     if (
-      obstacleDistance > AVOIDANCE_THRESHOLD + MIN_DOT_RADIUS &&
-      obstacleDistance < MAX_DOT_RADIUS
+      obstacleDistance > AVOIDANCE_THRESHOLD + MIN_DOT_RADIUS
     ) {
       const dot = new Dot({
         pos,
-        radius: obstacleDistance - AVOIDANCE_THRESHOLD,
+        radius: Math.min(obstacleDistance - AVOIDANCE_THRESHOLD, MAX_DOT_RADIUS),
         color: strokes[strokeIndex].color,
       })
       dot.draw(c)

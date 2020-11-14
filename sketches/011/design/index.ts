@@ -8,6 +8,7 @@ import {
   FLOW_FIDELITY,
   LENGTH_VARIATION,
   MAX_LENGTH,
+  MIN_LENGTH,
 } from './constants'
 
 export enum Seeds {
@@ -57,10 +58,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       if (stroke.canDraw(strokes)) {
         stroke.update(getFlowAngle(stroke))
       }
-      stroke.draw(c)
     }
 
-    strokes.push(stroke)
+    if (stroke.length > MIN_LENGTH) {
+      stroke.draw(c)
+      strokes.push(stroke)
+    }
   }
 
   c.restore()

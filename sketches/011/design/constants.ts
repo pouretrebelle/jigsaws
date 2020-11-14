@@ -1,7 +1,8 @@
 import chroma from 'chroma-js'
 
-export const DOT_COUNT = 300
+export const DOT_COUNT = 500
 export const MAX_LENGTH = 250
+export const MIN_LENGTH = 20
 export const LENGTH_VARIATION = 75
 export const FLOW_FIDELITY = 1
 export const DISTANCE_PER_FRAME = 1

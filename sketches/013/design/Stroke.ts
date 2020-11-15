@@ -4,8 +4,6 @@ import {
   AVOIDANCE_THRESHOLD,
   COLOR_SCALE,
   DISTANCE_PER_FRAME,
-  MAX_LENGTH,
-  MIN_LENGTH,
   THICKENSS_INCREMENT,
   THICKNESS,
 } from './constants'
@@ -45,6 +43,10 @@ class Stroke {
   }
 
   update(angle: number) {
+    if (this.length === 0) {
+      this.color = COLOR_SCALE(map(angle, 0, Math.PI*2, 0, 1, true)).hex()
+    }
+
     this.vel.reset(DISTANCE_PER_FRAME, 0).rotate(angle)
     this.pos.plusEq(this.vel)
 
@@ -87,11 +89,7 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    const color = COLOR_SCALE(
-      map(this.length, MIN_LENGTH, MAX_LENGTH, 0, 1)
-    ).hex()
-    this.color = color
-    c.strokeStyle = color
+    c.strokeStyle = this.color
     c.lineWidth = this.thickness
 
     this.points.forEach(({ x, y, size }, i) => {

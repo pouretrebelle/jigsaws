@@ -1,5 +1,4 @@
 import chroma from 'chroma-js'
-import { rotateHue } from 'utils/colorUtils'
 
 export const DOT_COUNT = 300
 export const MAX_LENGTH = 150
@@ -12,6 +11,4 @@ export const THICKENSS_INCREMENT = 0.05
 
 const COLORS = ['#FBEEDA', '#38FFB6', '#425BFF', '#7800A3', '#3D0016']
 export const COLOR_SCALE = chroma.scale(COLORS)
-export const BACKGROUND = chroma(rotateHue(COLOR_SCALE(0.25), 180))
-  .desaturate(0.75)
-  .hex()
+export const BACKGROUND = '#d05fcf'

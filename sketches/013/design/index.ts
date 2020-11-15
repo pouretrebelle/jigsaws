@@ -10,12 +10,7 @@ import {
   LENGTH_VARIATION,
   MAX_LENGTH,
   MIN_LENGTH,
-  DOT_ATTEMPTS,
-  AVOIDANCE_THRESHOLD,
-  MIN_DOT_RADIUS,
-  MAX_DOT_RADIUS,
 } from './constants'
-import Dot from './Dot'
 
 export enum Seeds {
   Flow,
@@ -76,37 +71,6 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     if (stroke.length > MIN_LENGTH) {
       stroke.draw(c)
       strokes.push(stroke)
-    }
-  }
-
-  const dots: Dot[] = []
-  for (let i = 0; i < DOT_ATTEMPTS; i++) {
-    const pos = getRandomPos(i + STROKE_ATTEMPTS)
-
-    const [strokeDistance, strokeIndex] = strokes.reduce(
-      ([dist, i], stroke, strokeI) => {
-        const strokeDist = stroke.shortestDistToPos(pos)
-        if (strokeDist < dist) return [strokeDist, strokeI]
-        return [dist, i]
-      },
-      [Infinity, i]
-    )
-
-    const obstacleDistance = dots.reduce(
-      (curr, dot) => Math.min(curr, pos.dist(dot.pos) - dot.radius),
-      strokeDistance
-    )
-
-    if (
-      obstacleDistance > AVOIDANCE_THRESHOLD + MIN_DOT_RADIUS
-    ) {
-      const dot = new Dot({
-        pos,
-        radius: Math.min(obstacleDistance - AVOIDANCE_THRESHOLD, MAX_DOT_RADIUS),
-        color: strokes[strokeIndex].color,
-      })
-      dot.draw(c)
-      dots.push(dot)
     }
   }
 

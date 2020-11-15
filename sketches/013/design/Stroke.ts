@@ -103,15 +103,6 @@ class Stroke {
 
     c.restore()
   }
-
-  shortestDistToPos(pos: Vector2) {
-    return this.points.reduce((curr, point) => {
-      pos.copyTo(temp)
-      temp.x -= point.x
-      temp.y -= point.y
-      return Math.min(temp.magnitude() - point.size / 2, curr)
-    }, Infinity)
-  }
 }
 
 export default Stroke

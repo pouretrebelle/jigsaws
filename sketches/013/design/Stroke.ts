@@ -1,9 +1,12 @@
+import { rgb } from 'chroma-js'
+
 import Vector2 from 'utils/Vector2'
 import { map } from 'utils/numberUtils'
 import {
   AVOIDANCE_THRESHOLD,
-  COLOR_SCALE,
   DISTANCE_PER_FRAME,
+  MAX_LENGTH,
+  MIN_LENGTH,
   THICKENSS_INCREMENT,
   THICKNESS,
 } from './constants'
@@ -29,13 +32,13 @@ class Stroke {
   vel: Vector2
   length: number = 0
   active: boolean
-  color: string
+  initialAngle: number
 
   constructor({ i, pos }: StrokeConstructor) {
     this.i = i
     this.thickness = THICKNESS
     this.active = true
-    this.color = '#000'
+    this.initialAngle = 0
 
     this.pos = pos
     this.points = [{ x: pos.x, y: pos.y, size: this.thickness }]
@@ -44,7 +47,7 @@ class Stroke {
 
   update(angle: number) {
     if (this.length === 0) {
-      this.color = COLOR_SCALE(map(angle, 0, Math.PI*2, 0, 1, true)).hex()
+      this.initialAngle = angle
     }
 
     this.vel.reset(DISTANCE_PER_FRAME, 0).rotate(angle)
@@ -89,16 +92,28 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    c.strokeStyle = this.color
-    c.lineWidth = this.thickness
+    const angleLerp = map(this.initialAngle, 0, Math.PI * 2, 0, 1, true)
+    const lengthLerp = map(this.length, MIN_LENGTH, MAX_LENGTH, 0, 1)
 
+    let lastDrawn = 0
     this.points.forEach(({ x, y, size }, i) => {
       if (i === 0) return
-      c.beginPath()
-      c.lineWidth = size
-      c.moveTo(this.points[i - 1].x, this.points[i - 1].y)
-      c.lineTo(x, y)
-      c.stroke()
+      if (i - lastDrawn >= size + 1) {
+        const pointLerp = map(i, 0, this.points.length - 1, 0, 1)
+
+        const color = rgb(
+          map(pointLerp, 0, 1, 240, 50) + map(angleLerp, 0, 1, 50, 0),
+          map(angleLerp, 0, 1, 100, 150) + map(pointLerp, 0, 1, 80, -20),
+          map(lengthLerp, 0, 1, 150, 255)
+        ).saturate(1).hex()
+
+        c.fillStyle = color
+
+        lastDrawn = i
+        c.beginPath()
+        c.arc(x, y, size / 2, 0, 2 * Math.PI)
+        c.fill()
+      }
     })
 
     c.restore()

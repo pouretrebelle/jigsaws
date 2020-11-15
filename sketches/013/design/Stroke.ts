@@ -109,7 +109,7 @@ class Stroke {
       pos.copyTo(temp)
       temp.x -= point.x
       temp.y -= point.y
-      return Math.min(temp.magnitude() - point.size / 2, curr)
+      return Math.min(temp.magnitude(), curr)
     }, Infinity)
   }
 }

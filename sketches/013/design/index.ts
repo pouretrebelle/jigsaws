@@ -27,7 +27,6 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.fillStyle = BACKGROUND
   c.fillRect(0, 0, width, height)
   c.lineCap = 'round'
-  c.lineWidth = 1
 
   const getFlowAngle = (stroke: Stroke): number => {
     const noiseX = map(stroke.pos.x, 0, width, 0, FLOW_FIDELITY, true)
@@ -51,6 +50,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
 
   c.save()
+  c.globalAlpha = 0.02
 
   const strokes: Stroke[] = []
   for (let i = 0; i < STROKE_ATTEMPTS; i++) {
@@ -74,7 +74,6 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     }
 
     if (stroke.length > MIN_LENGTH) {
-      stroke.draw(c)
       strokes.push(stroke)
     }
   }
@@ -83,7 +82,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   for (let i = 0; i < DOT_ATTEMPTS; i++) {
     const pos = getRandomPos(i + STROKE_ATTEMPTS)
 
-    const [strokeDistance, strokeIndex] = strokes.reduce(
+    const [obstacleDistance, strokeIndex] = strokes.reduce(
       ([dist, i], stroke, strokeI) => {
         const strokeDist = stroke.shortestDistToPos(pos)
         if (strokeDist < dist) return [strokeDist, strokeI]
@@ -92,17 +91,13 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       [Infinity, i]
     )
 
-    const obstacleDistance = dots.reduce(
-      (curr, dot) => Math.min(curr, pos.dist(dot.pos) - dot.radius),
-      strokeDistance
-    )
-
-    if (
-      obstacleDistance > AVOIDANCE_THRESHOLD + MIN_DOT_RADIUS
-    ) {
+    if (obstacleDistance >  MIN_DOT_RADIUS && Math.round(pos.x) !== Math.round(pos.y)) {
       const dot = new Dot({
         pos,
-        radius: Math.min(obstacleDistance - AVOIDANCE_THRESHOLD, MAX_DOT_RADIUS),
+        radius: Math.min(
+          obstacleDistance,
+          MAX_DOT_RADIUS
+        ),
         color: strokes[strokeIndex].color,
       })
       dot.draw(c)

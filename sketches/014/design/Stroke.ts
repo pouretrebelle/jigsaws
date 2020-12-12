@@ -1,10 +1,10 @@
-import { rgb } from 'chroma-js'
-
 import Vector2 from 'utils/Vector2'
 import { map } from 'utils/numberUtils'
 import {
   AVOIDANCE_THRESHOLD,
+  COLOR_SCALE,
   DISTANCE_PER_FRAME,
+  LENGTH_VARIATION,
   MAX_LENGTH,
   MIN_LENGTH,
   THICKENSS_INCREMENT,
@@ -19,7 +19,6 @@ interface StrokeConstructor {
 interface Point {
   x: number
   y: number
-  size: number
 }
 
 const temp = new Vector2()
@@ -41,7 +40,7 @@ class Stroke {
     this.initialAngle = 0
 
     this.pos = pos
-    this.points = [{ x: pos.x, y: pos.y, size: this.thickness }]
+    this.points = [{ x: pos.x, y: pos.y }]
     this.vel = new Vector2()
   }
 
@@ -56,17 +55,17 @@ class Stroke {
     this.points.push({
       x: this.pos.x,
       y: this.pos.y,
-      size: this.thickness,
     })
 
-    this.thickness += THICKENSS_INCREMENT
+    if (this.length > MIN_LENGTH) this.thickness += THICKENSS_INCREMENT
 
-    this.length++
+    this.length += DISTANCE_PER_FRAME
   }
 
   canDraw(strokes: Stroke[]) {
     if (!this.active) return false
 
+    // should loop over all of this.points as well to see if the increased thickness hits any other strokes?
     const tooClose = strokes.some((stroke) => {
       if (stroke.i === this.i) return false
 
@@ -76,7 +75,7 @@ class Stroke {
         temp.y -= point.y
         return (
           temp.magnitude() <
-          AVOIDANCE_THRESHOLD + (this.thickness + point.size) / 2
+          AVOIDANCE_THRESHOLD + (this.thickness + stroke.thickness) / 2
         )
       })
     })
@@ -92,29 +91,27 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    const angleLerp = map(this.initialAngle, 0, Math.PI * 2, 0, 1, true)
-    const lengthLerp = map(this.length, MIN_LENGTH, MAX_LENGTH, 0, 1)
+    if (this.length > MAX_LENGTH - LENGTH_VARIATION) return
 
-    let lastDrawn = 0
-    this.points.forEach(({ x, y, size }, i) => {
-      if (i === 0) return
-      if (i - lastDrawn >= 3) {
-        const pointLerp = map(i, 0, this.points.length - 1, 0, 1)
+    const lengthLerp = map(
+      this.length,
+      MIN_LENGTH,
+      MAX_LENGTH - LENGTH_VARIATION,
+      0,
+      1
+    )
+    let color = COLOR_SCALE(lengthLerp).hex()
 
-        const color = rgb(
-          map(pointLerp, 0, 1, 240, 50) + map(angleLerp, 0, 1, 50, 0),
-          map(angleLerp, 0, 1, 100, 150) + map(pointLerp, 0, 1, 80, -20),
-          map(lengthLerp, 0, 1, 150, 255)
-        ).saturate(1).hex()
+    c.strokeStyle = color
+    c.lineWidth = this.thickness
+    c.lineCap = 'round'
 
-        c.fillStyle = color
-
-        lastDrawn = i
-        c.beginPath()
-        c.arc(x, y, size / 2, 0, 2 * Math.PI)
-        c.fill()
-      }
+    c.beginPath()
+    this.points.forEach(({ x, y }, i) => {
+      if (i === 0) return c.moveTo(x, y)
+      c.lineTo(x, y)
     })
+    c.stroke()
 
     c.restore()
   }

@@ -28,7 +28,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
-      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.5),
+      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.25),
       -1,
       1,
       -Math.PI,
@@ -52,7 +52,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       i,
       x: map(randomFromNoise(simplex[Seeds.Position].noise2D(Math.PI, i * 5)), 0, 1, 0, width),
       y: map(randomFromNoise(simplex[Seeds.Position].noise2D(i * 5, Math.PI)), 0, 1, 0, height),
-      curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart),
+      curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 0.5),
     })
 
     for (let t = 0; t < strokeLength; t++) {

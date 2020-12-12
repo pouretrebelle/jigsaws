@@ -10,6 +10,7 @@ import {
   LENGTH_VARIATION,
   MAX_LENGTH,
   MIN_LENGTH,
+  DISTANCE_PER_FRAME,
 } from './constants'
 
 export enum Seeds {
@@ -29,7 +30,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
-      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.1),
+      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.02),
       -1,
       1,
       -Math.PI,
@@ -62,7 +63,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       pos: getRandomPos(i),
     })
 
-    for (let t = 0; t < strokeLength; t++) {
+    for (let t = 0; t < strokeLength; t += DISTANCE_PER_FRAME) {
       if (stroke.canDraw(strokes)) {
         stroke.update(getFlowAngle(stroke))
       }

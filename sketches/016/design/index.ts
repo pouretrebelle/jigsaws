@@ -56,7 +56,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.save()
   c.globalCompositeOperation = 'multiply'
 
-  LAYERS.forEach(({ color, composite }, layerI) => {
+  LAYERS.forEach(({ color, composite, opacity }, layerI) => {
+    c.globalAlpha = opacity
     c.globalCompositeOperation = composite
 
     const strokes: Stroke[] = []

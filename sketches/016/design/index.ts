@@ -1,28 +1,53 @@
 import { Design } from 'types'
-import { map } from 'utils/numberUtils'
+import { map, randomFromNoise } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 
 import Stroke from './Stroke'
 import {
-  BACKGROUND,
   STROKE_ATTEMPTS,
   FLOW_FIDELITY,
   LENGTH_VARIATION,
   MAX_LENGTH,
   MIN_LENGTH,
   DISTANCE_PER_FRAME,
-  LAYERS,
   LAYER_SHIFT,
+  HUES,
+  LAYER_COUNT,
 } from './constants'
+import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
 export enum Seeds {
   Flow,
   Position,
   Length,
+  Color
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
-  c.fillStyle = BACKGROUND
+  const layerHues = arrayValuesFromSimplex(
+    HUES,
+    simplex[Seeds.Color],
+    LAYER_COUNT
+  +1)
+  const background = `hsl(${layerHues.shift()}, 40%, 80%)`
+  const layers = layerHues.map((hue, hueI) => {
+    const l = Math.round(
+      map(
+        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI)),
+        0,
+        1,
+        30,
+        80
+      )
+    )
+    return {
+      color: `hsl(${hue}, 100%, ${l}%)`,
+      composite: l < 50 ? 'screen' : 'multiply',
+      opacity: 1,
+    }
+  })
+
+  c.fillStyle = background
   c.fillRect(0, 0, width, height)
   c.lineCap = 'round'
   c.lineWidth = 1
@@ -54,9 +79,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
 
   c.save()
-  c.globalCompositeOperation = 'multiply'
 
-  LAYERS.forEach(({ color, composite, opacity }, layerI) => {
+  layers.forEach(({ color, composite, opacity }, layerI) => {
     c.globalAlpha = opacity
     c.globalCompositeOperation = composite
 

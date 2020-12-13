@@ -1,11 +1,8 @@
 import Vector2 from 'utils/Vector2'
-import { map } from 'utils/numberUtils'
+
 import {
   AVOIDANCE_THRESHOLD,
-  COLOR_SCALE,
   DISTANCE_PER_FRAME,
-  LENGTH_VARIATION,
-  MAX_LENGTH,
   MIN_LENGTH,
   THICKENSS_INCREMENT,
   THICKNESS,
@@ -14,6 +11,7 @@ import {
 interface StrokeConstructor {
   i: number
   pos: Vector2
+  color: string
 }
 
 interface Point {
@@ -26,6 +24,7 @@ const temp = new Vector2()
 class Stroke {
   i: number
   thickness: number
+  color: string
   pos: Vector2
   points: Point[]
   vel: Vector2
@@ -33,9 +32,10 @@ class Stroke {
   active: boolean
   initialAngle: number
 
-  constructor({ i, pos }: StrokeConstructor) {
+  constructor({ i, pos, color }: StrokeConstructor) {
     this.i = i
     this.thickness = THICKNESS
+    this.color = color
     this.active = true
     this.initialAngle = 0
 
@@ -91,18 +91,7 @@ class Stroke {
   draw(c: CanvasRenderingContext2D) {
     c.save()
 
-    if (this.length > MAX_LENGTH - LENGTH_VARIATION) return
-
-    const lengthLerp = map(
-      this.length,
-      MIN_LENGTH,
-      MAX_LENGTH - LENGTH_VARIATION,
-      0,
-      1
-    )
-    let color = COLOR_SCALE(lengthLerp).hex()
-
-    c.strokeStyle = color
+    c.strokeStyle = this.color
     c.lineWidth = this.thickness
     c.lineCap = 'round'
 

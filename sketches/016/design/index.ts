@@ -1,5 +1,5 @@
 import { Design } from 'types'
-import { map, randomFromNoise } from 'utils/numberUtils'
+import { map } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 
 import Stroke from './Stroke'
@@ -45,11 +45,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   }
 
   const getRandomLength = (a: number, b: number) =>
-    map(randomFromNoise(simplex[Seeds.Position].noise2D(a, b)), 0, 1, 0, width)
+    map(simplex[Seeds.Position].noise2D(a, b), -0.8, 0.8, 0, width)
+
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI, i * 5),
-      getRandomLength(i * 5, Math.PI + layerI)
+      getRandomLength(Math.PI + layerI * 2, i*0.01),
+      getRandomLength(i*0.01, Math.PI + layerI * 2)
     )
 
   c.save()

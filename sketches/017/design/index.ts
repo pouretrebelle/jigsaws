@@ -20,15 +20,15 @@ export enum Seeds {
   Flow,
   Position,
   Length,
-  Color
+  Color,
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   const layerHues = arrayValuesFromSimplex(
     HUES,
     simplex[Seeds.Color],
-    LAYER_COUNT
-  +1)
+    LAYER_COUNT + 1
+  )
   const background = `hsl(${layerHues.shift()}, 40%, 80%)`
   const layers = layerHues.map((hue, hueI) => {
     const l = Math.round(
@@ -74,15 +74,19 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 2, i*0.01),
-      getRandomLength(i*0.01, Math.PI + layerI * 2)
+      getRandomLength(Math.PI + layerI * 2, i * 0.01),
+      getRandomLength(i * 0.01, Math.PI + layerI * 2)
     )
 
   c.save()
 
   layers.forEach(({ color, composite, opacity }, layerI) => {
-    c.globalAlpha = opacity
-    c.globalCompositeOperation = composite
+    const layerCanvas = document.createElement('canvas')
+    layerCanvas.width = c.canvas.width
+    layerCanvas.height = c.canvas.height
+    const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
+    layerC.setTransform(c.getTransform())
+
 
     const strokes: Stroke[] = []
     for (let i = 0; i < STROKE_ATTEMPTS; i++) {
@@ -107,10 +111,15 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       }
 
       if (stroke.length > MIN_LENGTH) {
-        stroke.draw(c)
         strokes.push(stroke)
       }
     }
+
+    strokes.forEach((stroke) => stroke.draw(layerC, strokes))
+
+    c.globalAlpha = opacity
+    c.globalCompositeOperation = composite
+    c.drawImage(layerCanvas, 0, 0, width, height)
   })
 
   c.restore()

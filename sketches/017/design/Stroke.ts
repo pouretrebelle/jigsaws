@@ -88,19 +88,32 @@ class Stroke {
     return true
   }
 
-  draw(c: CanvasRenderingContext2D) {
+  draw(c: CanvasRenderingContext2D, strokes: Stroke[]) {
     c.save()
 
-    c.strokeStyle = this.color
-    c.lineWidth = this.thickness
-    c.lineCap = 'round'
+    c.fillStyle = this.color
 
-    c.beginPath()
     this.points.forEach(({ x, y }, i) => {
-      if (i === 0) return c.moveTo(x, y)
-      c.lineTo(x, y)
+      let closestDifference = Infinity
+
+      strokes.forEach((stroke) => {
+        if (stroke.i === this.i) return
+
+        stroke.points.forEach((point) => {
+          temp.reset(x, y)
+          temp.x -= point.x
+          temp.y -= point.y
+
+          closestDifference = Math.min(closestDifference, temp.magnitude())
+        })
+      })
+
+      const thickness = closestDifference / 2 - AVOIDANCE_THRESHOLD / 2
+
+      c.beginPath()
+      c.arc(x, y, thickness, 0, 2 * Math.PI)
+      c.fill()
     })
-    c.stroke()
 
     c.restore()
   }

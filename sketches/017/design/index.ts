@@ -29,15 +29,15 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     simplex[Seeds.Color],
     LAYER_COUNT + 1
   )
-  const background = `hsl(${layerHues.shift()}, 40%, 80%)`
+  const background = `hsl(${layerHues.shift()}, 30%, 40%)`
   const layers = layerHues.map((hue, hueI) => {
     const l = Math.round(
       map(
         randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI)),
         0,
         1,
-        30,
-        80
+        20,
+        60
       )
     )
     return {
@@ -70,7 +70,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   }
 
   const getRandomLength = (a: number, b: number) =>
-    map(simplex[Seeds.Position].noise2D(a, b), -0.8, 0.8, 0, width)
+    map(simplex[Seeds.Position].noise2D(a, b), -0.7, 0.7, 0, width)
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
@@ -86,7 +86,6 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     layerCanvas.height = c.canvas.height
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
     layerC.setTransform(c.getTransform())
-
 
     const strokes: Stroke[] = []
     for (let i = 0; i < STROKE_ATTEMPTS; i++) {

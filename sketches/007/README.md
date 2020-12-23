@@ -1,5 +1,11 @@
 ---
 datePublished: 2020-11-06
+youTubeLink: https://youtu.be/AbPq6hwvSZg
+
+designNoiseSeeds: ['ogt', 'gad', 'uby', 'xhl', 'soc']
+cutNoiseSeeds: ['xpl', 'gbj', 'bqy', 'ebu']
+
+pieces: 225
 ---
 
 # 007

@@ -1,5 +1,11 @@
 ---
 datePublished: 2020-10-28
+youTubeLink: https://youtu.be/fHWUugS2bD4
+
+designNoiseSeeds: ['kdo', 'zya', 'xnv', 'uum', 'ejs']
+cutNoiseSeeds: ['gtx', 'xat', 'eoh', 'que']
+
+pieces: 225
 ---
 
 # 006

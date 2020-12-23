@@ -1,5 +1,11 @@
 ---
 datePublished: 2020-11-21
+youTubeLink: https://youtu.be/cd72laW58rg
+
+designNoiseSeeds: ['lah', 'lll', 'yjd', 'edr', 'yqn']
+cutNoiseSeeds: ['uav', 'efp', 'cka', 'xja']
+
+pieces: 225
 ---
 
 # 009

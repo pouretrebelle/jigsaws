@@ -13,7 +13,8 @@ import { drawBackground, drawDesign, drawCut, drawGuides } from 'lib/draw'
 import { ActionType } from 'types'
 import Loader from 'components/Loader'
 
-const PIXEL_DENSITY = window.devicePixelRatio || 1
+const PIXEL_DENSITY =
+  typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
 const CANVAS_PADDING = 50
 
 interface CanvasWrapperProps {
@@ -57,8 +58,8 @@ const Canvas: React.FC = () => {
     x: 0,
     y: 0,
   })
-  const [wrapperBoundingBox, setWrapperBoundingBox] = useState<DOMRect>(
-    new DOMRect()
+  const [wrapperBoundingBox, setWrapperBoundingBox] = useState<DOMRect | null>(
+    null
   )
   const [
     { width: canvasWidth, height: canvasHeight },
@@ -90,20 +91,22 @@ const Canvas: React.FC = () => {
       setCanvasSize(width, width * bleedRatio)
       setIsZooming(true)
     } else {
-      const wrapperRatio =
-        (wrapperBoundingBox.height - CANVAS_PADDING * 2) /
-        (wrapperBoundingBox.width - CANVAS_PADDING * 2)
+      if (wrapperBoundingBox) {
+        const wrapperRatio =
+          (wrapperBoundingBox.height - CANVAS_PADDING * 2) /
+          (wrapperBoundingBox.width - CANVAS_PADDING * 2)
 
-      if (wrapperRatio > bleedRatio) {
-        const width =
-          Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) -
-          CANVAS_PADDING * 2
-        setCanvasSize(width, width * bleedRatio)
-      } else {
-        const height =
-          Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) -
-          CANVAS_PADDING * 2
-        setCanvasSize(height / bleedRatio, height)
+        if (wrapperRatio > bleedRatio) {
+          const width =
+            Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) -
+            CANVAS_PADDING * 2
+          setCanvasSize(width, width * bleedRatio)
+        } else {
+          const height =
+            Math.min(wrapperBoundingBox.width, wrapperBoundingBox.height) -
+            CANVAS_PADDING * 2
+          setCanvasSize(height / bleedRatio, height)
+        }
       }
       setIsZooming(false)
     }
@@ -148,12 +151,15 @@ const Canvas: React.FC = () => {
   ])
 
   const onMouseMoved = ({ pageX, pageY }: React.MouseEvent) => {
-    const throughX = (pageX - wrapperBoundingBox.x) / wrapperBoundingBox.width
-    const throughY = (pageY - wrapperBoundingBox.y) / wrapperBoundingBox.height
-    setHoverOffset({
-      x: (canvasWidth - wrapperBoundingBox.width) * throughX,
-      y: (canvasHeight - wrapperBoundingBox.height) * throughY,
-    })
+    if (wrapperBoundingBox) {
+      const throughX = (pageX - wrapperBoundingBox.x) / wrapperBoundingBox.width
+      const throughY =
+        (pageY - wrapperBoundingBox.y) / wrapperBoundingBox.height
+      setHoverOffset({
+        x: (canvasWidth - wrapperBoundingBox.width) * throughX,
+        y: (canvasHeight - wrapperBoundingBox.height) * throughY,
+      })
+    }
   }
 
   return (

@@ -3,6 +3,9 @@
     [
       "next/babel",
       {
+        "preset-env": {
+          "useBuiltIns": false
+        },
         "class-properties": { "loose": true }
       }
     ]

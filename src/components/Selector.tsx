@@ -21,19 +21,12 @@ const Select = styled.select`
 `
 
 const Selector = () => {
-  const [{ sketch, sketchId, sketchIds }, dispatch] = useContext(
-    SketchContext
-  )
+  const [{ sketch, sketchId, sketchIds }, dispatch] = useContext(SketchContext)
   const router = useRouter()
 
   useEffect(() => {
     dispatch(loadSketch(sketchId))
   }, [sketchId])
-
-  const load = (sketch: string) => {
-    router.push(`/app/${sketch}`)
-    dispatch(loadSketch(sketch))
-  }
 
   return (
     <>
@@ -41,7 +34,7 @@ const Selector = () => {
         Sketch
         <Select
           value={sketch?.id || sketchId}
-          onChange={(e) => load(e.target.value)}
+          onChange={(e) => router.push(`/app/${e.target.value}`)}
         >
           {sketchIds.map((id) => (
             <option key={id} value={id}>

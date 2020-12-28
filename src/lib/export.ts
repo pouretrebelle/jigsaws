@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver'
 import C2S from 'canvas2svg'
-import WebMWriter from 'webm-writer'
+// import WebMWriter from 'webm-writer'
 
 import { State } from 'types'
 import { drawDesign, drawCut, drawBackground } from 'lib/draw'
@@ -95,24 +95,24 @@ export const exportDesignAnimation = (state: State) => {
     state,
   }
 
-  const videoWriter = new WebMWriter({
-    quality: 0.999,
-    frameRate: 25,
-  })
+  // const videoWriter = new WebMWriter({
+  //   quality: 0.999,
+  //   frameRate: 25,
+  // })
 
-  c.save()
-  drawBackground(drawArgs)
-  c.scale(scale, scale)
-  for (let i = 0; i < ANIMATION_FRAMES; i++) {
-    drawDesign({ c, state: { ...state, noiseStart: i * FRAME_INCREMENT } })
-    videoWriter.addFrame(canvas)
-    console.info(`add frame ${i + 1}/${ANIMATION_FRAMES}`)
-  }
-  c.restore()
+  // c.save()
+  // drawBackground(drawArgs)
+  // c.scale(scale, scale)
+  // for (let i = 0; i < ANIMATION_FRAMES; i++) {
+  //   drawDesign({ c, state: { ...state, noiseStart: i * FRAME_INCREMENT } })
+  //   videoWriter.addFrame(canvas)
+  //   console.info(`add frame ${i + 1}/${ANIMATION_FRAMES}`)
+  // }
+  // c.restore()
 
-  videoWriter.complete().then((blob: Blob) => {
-    saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.webm`)
-  })
+  // videoWriter.complete().then((blob: Blob) => {
+  //   saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.webm`)
+  // })
 }
 
 export const exportCut = (state: State) => {

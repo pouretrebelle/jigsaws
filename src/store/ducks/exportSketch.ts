@@ -49,7 +49,7 @@ export const exportSketch = (part: ExportPart) => async (
     dispatch(updateNoiseStart(0))
   }
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     setTimeout(() => resolve(), 100)
   })
 

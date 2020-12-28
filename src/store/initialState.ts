@@ -9,8 +9,6 @@ const getFromStorage = (
 }
 
 const initialState = {
-  initialSketch: getFromStorage('sketch', SKETCH_IDS[0]),
-
   noiseStart: 0,
 
   cutVisible: getFromStorage('cutVisible', true, true),

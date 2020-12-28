@@ -1,7 +1,6 @@
 import React, {
   useRef,
   useEffect,
-  useLayoutEffect,
   useState,
   useContext,
 } from 'react'
@@ -83,7 +82,7 @@ const Canvas: React.FC = () => {
   }
 
   // canvas sizing
-  useLayoutEffect(() => {
+  useEffect(() => {
     const bleedRatio = sketch ? sketch.settings.bleedRatio : 1
 
     if (shouldZoom) {
@@ -115,7 +114,7 @@ const Canvas: React.FC = () => {
   }, [wrapperBoundingBox, shouldZoom, sketch?.id])
 
   // drawing
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (sketch) {
       const canvas = canvasElement.current as HTMLCanvasElement
       const c = canvas.getContext('2d') as CanvasRenderingContext2D

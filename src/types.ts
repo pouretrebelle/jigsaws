@@ -1,7 +1,8 @@
 import SimplexNoise from 'simplex-noise'
 
 export interface State {
-  initialSketch: string
+  sketchIds: string[]
+  sketchId: string
   sketch?: Sketch
   noiseStart: number
   cutVisible: boolean

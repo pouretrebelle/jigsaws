@@ -115,3 +115,13 @@ export interface Design {
   columns: number
   noiseStart: number
 }
+
+export interface SketchContent {
+  id: string
+  html: string
+  youTubeLink: string
+  appLink: string
+  designNoiseSeeds: string[]
+  cutNoiseSeeds: string[]
+  pieces: number
+}

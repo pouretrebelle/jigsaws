@@ -5,8 +5,9 @@
   "scripts": {
     "ide": "cross-env NODE_ENV=development webpack serve --config=ide/webpack.config.js --mode=development",
     "dev": "next dev -p 4000",
-    "build": "next build",
+    "build": "npm run sync:images && next build",
     "start": "next start",
+    "sync:images": "node scripts/copyImages.js",
     "lint": "eslint . --ext .ts,.tsx",
     "type-check": "tsc --noEmit"
   },

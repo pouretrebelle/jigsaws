@@ -3,7 +3,7 @@ datePublished: 2020-09-25
 youTubeLink: https://youtu.be/g2ldt_mDSXA
 
 designNoiseSeeds: ['rtb', 'wzn', 'tii', 'xnq', 'qgo', 'enq']
-cutNoiseSeeds: ['rsj', 'gbc', 'ptu, 'hnw']
+cutNoiseSeeds: ['rsj', 'gbc', 'ptu', 'hnw']
 
 pieces: 196
 ---

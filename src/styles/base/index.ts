@@ -14,7 +14,6 @@ const GlobalStyle = createGlobalStyle`
     background: ${COLOR.BACKGROUND};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
     height: 100vh;
   }
 

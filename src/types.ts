@@ -123,5 +123,6 @@ export interface SketchContent {
   appLink: string
   designNoiseSeeds: string[]
   cutNoiseSeeds: string[]
+  accentColor?: string
   pieces: number
 }

@@ -10,7 +10,6 @@ import {
   MAX_LENGTH,
   MIN_LENGTH,
   DISTANCE_PER_FRAME,
-  LAYER_SHIFT,
   HUES,
   LAYER_COUNT,
 } from './constants'
@@ -29,17 +28,18 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     simplex[Seeds.Color],
     LAYER_COUNT + 1
   )
-  const background = `hsl(${layerHues.shift()}, 30%, 40%)`
+  const background = `hsl(${layerHues.shift()}, 40%, 45%)`
   const layers = layerHues.map((hue, hueI) => {
-    const l = Math.round(
+    let l = Math.round(
       map(
-        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI)),
+        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI * 5)),
         0,
         1,
         20,
-        60
+        55
       )
     )
+    if (l > 35) l += 20 // avoid the 10% around the background l
     return {
       color: `hsl(${hue}, 100%, ${l}%)`,
       composite: l < 50 ? 'screen' : 'multiply',
@@ -52,7 +52,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.lineCap = 'round'
   c.lineWidth = 1
 
-  const getFlowAngle = (stroke: Stroke, layerI: number): number => {
+  const getFlowAngle = (stroke: Stroke): number => {
     const noiseX = map(stroke.pos.x, 0, width, 0, FLOW_FIDELITY, true)
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
@@ -60,7 +60,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       simplex[Seeds.Flow].noise3D(
         noiseX,
         noiseY,
-        noiseStart * 0.02 + layerI * LAYER_SHIFT
+        noiseStart * 0.02
       ),
       -1,
       1,
@@ -70,12 +70,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   }
 
   const getRandomLength = (a: number, b: number) =>
-    map(simplex[Seeds.Position].noise2D(a, b), -0.7, 0.7, 0, width)
+    map(simplex[Seeds.Position].noise2D(a, b), -0.5, 0.5, 0, width)
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 2, i * 0.01),
-      getRandomLength(i * 0.01, Math.PI + layerI * 2)
+      getRandomLength(Math.PI + layerI * 5, Math.PI + i * 0.01),
+      getRandomLength(Math.PI + i * 0.01, Math.PI + layerI * 5)
     )
 
   c.save()
@@ -105,7 +105,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
       for (let t = 0; t < strokeLength; t += DISTANCE_PER_FRAME) {
         if (stroke.canDraw(strokes)) {
-          stroke.update(getFlowAngle(stroke, layerI))
+          stroke.update(getFlowAngle(stroke))
         }
       }
 

@@ -4,8 +4,10 @@ import {
   AVOIDANCE_THRESHOLD,
   DISTANCE_PER_FRAME,
   MIN_LENGTH,
-  THICKENSS_INCREMENT,
-  THICKNESS,
+  STROKE_THICKNESS_INCREMENT,
+  STROKE_THICKNESS,
+  LINE_WEIGHT,
+  SPINE_WEIGHT,
 } from './constants'
 
 interface StrokeConstructor {
@@ -17,13 +19,14 @@ interface StrokeConstructor {
 interface Point {
   x: number
   y: number
+  angle: number
 }
 
 const temp = new Vector2()
 
 class Stroke {
   i: number
-  thickness: number
+  STROKE_THICKNESS: number
   color: string
   pos: Vector2
   points: Point[]
@@ -34,13 +37,13 @@ class Stroke {
 
   constructor({ i, pos, color }: StrokeConstructor) {
     this.i = i
-    this.thickness = THICKNESS
+    this.STROKE_THICKNESS = STROKE_THICKNESS
     this.color = color
     this.active = true
     this.initialAngle = 0
 
     this.pos = pos
-    this.points = [{ x: pos.x, y: pos.y }]
+    this.points = [{ x: pos.x, y: pos.y, angle: this.initialAngle }]
     this.vel = new Vector2()
   }
 
@@ -55,9 +58,10 @@ class Stroke {
     this.points.push({
       x: this.pos.x,
       y: this.pos.y,
+      angle: this.vel.angle(),
     })
 
-    if (this.length > MIN_LENGTH) this.thickness += THICKENSS_INCREMENT
+    if (this.length > MIN_LENGTH) this.STROKE_THICKNESS += STROKE_THICKNESS_INCREMENT
 
     this.length += DISTANCE_PER_FRAME
   }
@@ -75,7 +79,7 @@ class Stroke {
         temp.y -= point.y
         return (
           temp.magnitude() <
-          AVOIDANCE_THRESHOLD + (this.thickness + stroke.thickness) / 2
+          AVOIDANCE_THRESHOLD + (this.STROKE_THICKNESS + stroke.STROKE_THICKNESS) / 2
         )
       })
     })
@@ -91,9 +95,11 @@ class Stroke {
   draw(c: CanvasRenderingContext2D, strokes: Stroke[]) {
     c.save()
 
-    c.fillStyle = this.color
+    c.strokeStyle = this.color
+    c.lineWidth = LINE_WEIGHT
+    c.lineCap = 'round'
 
-    this.points.forEach(({ x, y }, i) => {
+    this.points.slice(1, -1).forEach(({ x, y, angle }, i) => {
       let closestDifference = Infinity
 
       strokes.forEach((stroke) => {
@@ -108,12 +114,74 @@ class Stroke {
         })
       })
 
-      const thickness = closestDifference / 2 - AVOIDANCE_THRESHOLD / 2
+      const strokeThickness = closestDifference / 2 - AVOIDANCE_THRESHOLD / 2
+
+      temp.reset(0, strokeThickness)
+      temp.rotate(angle)
 
       c.beginPath()
-      c.arc(x, y, thickness, 0, 2 * Math.PI)
-      c.fill()
+      c.moveTo(x + temp.x, y + temp.y)
+      c.lineTo(x - temp.x, y - temp.y)
+      c.stroke()
+
+      // start cap
+      if (i === 0) {
+        temp.rotate(Math.PI / 2)
+        temp.normalise()
+        const angleDiff = angle - this.points[2].angle
+        let nextPos = { x, y }
+        for (let dist = 0; dist <= strokeThickness; dist += DISTANCE_PER_FRAME) {
+          c.lineWidth = SPINE_WEIGHT
+          c.beginPath()
+
+          temp.rotate(angleDiff)
+          nextPos = { x: nextPos.x + temp.x * DISTANCE_PER_FRAME, y: nextPos.y + temp.y * DISTANCE_PER_FRAME }
+          c.moveTo(nextPos.x, nextPos.y)
+          c.lineTo(nextPos.x + temp.x * DISTANCE_PER_FRAME, nextPos.y + temp.y * DISTANCE_PER_FRAME);
+          c.stroke()
+
+          c.lineWidth = LINE_WEIGHT
+          const thisStrokeThickness = Math.sqrt(Math.pow(strokeThickness, 2) * (1 - Math.pow((dist / strokeThickness), 2)))
+          c.beginPath()
+          c.moveTo(nextPos.x + temp.y * thisStrokeThickness, nextPos.y - temp.x * thisStrokeThickness)
+          c.lineTo(nextPos.x - temp.y * thisStrokeThickness, nextPos.y + temp.x * thisStrokeThickness)
+          c.stroke()
+        }
+      }
+
+      // end cap
+      if (i === this.points.length - 3) {
+        temp.rotate(-Math.PI / 2)
+        temp.normalise()
+        const angleDiff = angle - this.points[this.points.length - 3].angle
+        let nextPos = { x, y }
+        for (let dist = 0; dist <= strokeThickness; dist += DISTANCE_PER_FRAME) {
+          c.lineWidth = SPINE_WEIGHT
+          c.beginPath()
+
+          temp.rotate(angleDiff)
+          nextPos = { x: nextPos.x + temp.x * DISTANCE_PER_FRAME, y: nextPos.y + temp.y * DISTANCE_PER_FRAME }
+          c.moveTo(nextPos.x, nextPos.y)
+          c.lineTo(nextPos.x + temp.x * DISTANCE_PER_FRAME, nextPos.y + temp.y * DISTANCE_PER_FRAME);
+          c.stroke()
+
+          c.lineWidth = LINE_WEIGHT
+          const thisStrokeThickness = Math.sqrt(Math.pow(strokeThickness, 2) * (1 - Math.pow((dist / strokeThickness), 2)))
+          c.beginPath()
+          c.moveTo(nextPos.x + temp.y * thisStrokeThickness, nextPos.y - temp.x * thisStrokeThickness)
+          c.lineTo(nextPos.x - temp.y * thisStrokeThickness, nextPos.y + temp.x * thisStrokeThickness)
+          c.stroke()
+        }
+      }
     })
+
+    c.lineWidth = SPINE_WEIGHT
+    c.beginPath()
+    c.moveTo(this.points[0].x, this.points[0].y)
+    this.points.slice(1).forEach(({
+      x, y,
+    }) => c.lineTo(x, y))
+    c.stroke()
 
     c.restore()
   }

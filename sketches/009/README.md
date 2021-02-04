@@ -4,6 +4,7 @@ youTubeLink: https://youtu.be/cd72laW58rg
 
 designNoiseSeeds: ['lah', 'lll', 'yjd', 'edr', 'yqn']
 cutNoiseSeeds: ['uav', 'efp', 'cka', 'xja']
+accentColor: '#283DFF'
 
 pieces: 225
 ---
@@ -11,3 +12,5 @@ pieces: 225
 # 009
 
 ![canvas](result/009_lah-lll-yjd-edr-yqn_uav-efp-cka-xja.png?raw=true)
+
+The start and end of each stroke blurs into its surroundings because the circles that make up the thick strokes are drawn with a low opacity. The small hints of where the colours blend into each other make this puzzle a treat to solve.

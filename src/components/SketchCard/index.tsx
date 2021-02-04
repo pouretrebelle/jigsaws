@@ -89,6 +89,10 @@ const StyledImage = styled.figure`
 
 const StyledDetails = styled.div`
   grid-area: details;
+
+  p {
+    margin-bottom: 0.75em;
+  }
 `
 
 const StyledActions = styled.nav`
@@ -138,11 +142,12 @@ const getRgb = (color: string): string => chroma(color).rgb().join(', ')
 export const SketchCard = ({
   id,
   html,
+  short,
   youTubeLink,
   appLink,
   accentColor,
 }: SketchContent) => (
-  <StyledGrid $short $accentColor={getRgb(accentColor || 'fuchsia')}>
+  <StyledGrid $short={short} $accentColor={getRgb(accentColor || 'fuchsia')}>
     <StyledTitle>{id}</StyledTitle>
 
     <StyledVideo>

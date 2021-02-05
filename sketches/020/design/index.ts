@@ -4,14 +4,14 @@ import Vector2 from 'utils/Vector2'
 
 import Stroke from './Stroke'
 import {
-  SPINES_PER_LAYER,
+  STROKES_PER_LAYER,
   FLOW_FIDELITY,
-  SPINE_LENGTH,
-  SPINE_OPACITY,
+  STROKE_LENGTH,
+  STROKE_OPACITY,
   DISTANCE_BETWEEN_RIBS,
   HUES,
   LAYER_COUNT,
-  SPINE_SEPARATION_FIDELITY,
+  STROKE_SEPARATION_FIDELITY,
 } from './constants'
 import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
@@ -73,8 +73,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 10, Math.PI + i * SPINE_SEPARATION_FIDELITY),
-      getRandomLength(Math.PI + i * SPINE_SEPARATION_FIDELITY, Math.PI + layerI * 10)
+      getRandomLength(Math.PI + layerI * 10, Math.PI + i * STROKE_SEPARATION_FIDELITY),
+      getRandomLength(Math.PI + i * STROKE_SEPARATION_FIDELITY, Math.PI + layerI * 10)
     )
 
   c.save()
@@ -90,17 +90,17 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     layerCanvas.width = c.canvas.width
     layerCanvas.height = c.canvas.height
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
-    layerC.globalAlpha = SPINE_OPACITY
+    layerC.globalAlpha = STROKE_OPACITY
 
     const strokes: Stroke[] = []
-    for (let i = 0; i < SPINES_PER_LAYER; i++) {
+    for (let i = 0; i < STROKES_PER_LAYER; i++) {
       const stroke = new Stroke({
         i,
         pos: getRandomPos(i, layerI),
         color,
       })
 
-      for (let t = 0; t < SPINE_LENGTH; t += DISTANCE_BETWEEN_RIBS) {
+      for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_RIBS) {
         stroke.update(getFlowAngle(stroke))
       }
       strokes.push(stroke)

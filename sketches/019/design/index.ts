@@ -8,7 +8,7 @@ import {
   FLOW_FIDELITY,
   LENGTH_VARIATION,
   MAX_LENGTH,
-  MIN_LENGTH,
+  STROKE_OPACITY,
   DISTANCE_PER_FRAME,
   HUES,
   LAYER_COUNT,
@@ -80,13 +80,18 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   c.save()
 
+  const tempCanvas = document.createElement('canvas')
+  tempCanvas.width = c.canvas.width
+  tempCanvas.height = c.canvas.height
+  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
+  tempC.setTransform(c.getTransform())
+
   layers.forEach(({ color, composite, opacity }, layerI) => {
     const layerCanvas = document.createElement('canvas')
     layerCanvas.width = c.canvas.width
     layerCanvas.height = c.canvas.height
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
     layerC.setTransform(c.getTransform())
-    layerC.globalAlpha = 0.5
 
     const strokes: Stroke[] = []
     for (let i = 0; i < STROKE_ATTEMPTS; i++) {
@@ -110,7 +115,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       strokes.push(stroke)
     }
 
-    strokes.forEach((stroke) => stroke.draw(layerC, strokes))
+    strokes.forEach((stroke) => {
+      stroke.draw(tempC, strokes)
+      layerC.globalAlpha = STROKE_OPACITY
+      layerC.drawImage(tempCanvas, 0, 0, width, height)
+      tempC.clearRect(0, 0, width, height)
+    })
 
     c.globalAlpha = opacity
     c.globalCompositeOperation = composite

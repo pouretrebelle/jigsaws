@@ -32,14 +32,12 @@ class Stroke {
   points: Point[]
   vel: Vector2
   length: number = 0
-  active: boolean
   initialAngle: number
 
   constructor({ i, pos, color }: StrokeConstructor) {
     this.i = i
     this.STROKE_THICKNESS = STROKE_THICKNESS
     this.color = color
-    this.active = true
     this.initialAngle = 0
 
     this.pos = pos
@@ -66,32 +64,6 @@ class Stroke {
     this.length += DISTANCE_PER_FRAME
   }
 
-  canDraw(strokes: Stroke[]) {
-    if (!this.active) return false
-
-    // should loop over all of this.points as well to see if the increased thickness hits any other strokes?
-    const tooClose = strokes.some((stroke) => {
-      if (stroke.i === this.i) return false
-
-      return stroke.points.some((point) => {
-        this.pos.copyTo(temp)
-        temp.x -= point.x
-        temp.y -= point.y
-        return (
-          temp.magnitude() <
-          AVOIDANCE_THRESHOLD + (this.STROKE_THICKNESS + stroke.STROKE_THICKNESS) / 2
-        )
-      })
-    })
-
-    if (tooClose) {
-      this.active = false
-      return false
-    }
-
-    return true
-  }
-
   draw(c: CanvasRenderingContext2D, strokes: Stroke[]) {
     c.save()
 
@@ -114,7 +86,7 @@ class Stroke {
         })
       })
 
-      const strokeThickness = closestDifference / 2 - AVOIDANCE_THRESHOLD / 2
+      const strokeThickness = closestDifference / 2// - AVOIDANCE_THRESHOLD / 2
 
       temp.reset(0, strokeThickness)
       temp.rotate(angle)

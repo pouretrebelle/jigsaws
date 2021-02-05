@@ -86,6 +86,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     layerCanvas.height = c.canvas.height
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
     layerC.setTransform(c.getTransform())
+    layerC.globalAlpha = 0.5
 
     const strokes: Stroke[] = []
     for (let i = 0; i < STROKE_ATTEMPTS; i++) {
@@ -104,14 +105,9 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       })
 
       for (let t = 0; t < strokeLength; t += DISTANCE_PER_FRAME) {
-        if (stroke.canDraw(strokes)) {
-          stroke.update(getFlowAngle(stroke))
-        }
+        stroke.update(getFlowAngle(stroke))
       }
-
-      if (stroke.length > MIN_LENGTH) {
-        strokes.push(stroke)
-      }
+      strokes.push(stroke)
     }
 
     strokes.forEach((stroke) => stroke.draw(layerC, strokes))

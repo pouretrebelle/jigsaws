@@ -10,7 +10,11 @@ export const arrayValuesFromSimplex = <T>(
   simplex: SimplexNoise,
   count: number
 ): T[] => {
-  const all = [...array]
+  const loops = Math.ceil(count / array.length)
+  let all: T[] = []
+  for (let i = 0; i < loops; i++) {
+    all.push(...array)
+  }
   const chosen: T[] = []
 
   let num = count

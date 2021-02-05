@@ -9,6 +9,7 @@ export const SPINE_WEIGHT = 4
 export const AVOIDANCE_THRESHOLD = 0
 export const STROKE_THICKNESS = 2
 export const STROKE_THICKNESS_INCREMENT = 0.5
+export const STROKE_OPACITY = 0.2
 
 export const BACKGROUND = 'hsl(190, 40%, 40%)'
 export const HUES = [10, 170, 180, 190, 325, 335]

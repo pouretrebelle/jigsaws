@@ -3,7 +3,6 @@ import Vector2 from 'utils/Vector2'
 import {
   DISTANCE_BETWEEN_RIBS,
   RIB_WEIGHT,
-  SPINE_WEIGHT,
   RIB_WIDTH,
 } from './constants'
 
@@ -62,7 +61,6 @@ class Stroke {
 
     c.strokeStyle = this.color
     c.lineWidth = RIB_WEIGHT
-    c.lineCap = 'round'
 
     this.points.forEach(({ x, y, angle }, i) => {
       temp.reset(0, RIB_WIDTH / 2)
@@ -73,14 +71,6 @@ class Stroke {
       c.lineTo(x - temp.x, y - temp.y)
       c.stroke()
     })
-
-    c.lineWidth = SPINE_WEIGHT
-    c.beginPath()
-    c.moveTo(this.points[0].x, this.points[0].y)
-    this.points.forEach(({
-      x, y,
-    }) => c.lineTo(x, y))
-    c.stroke()
 
     c.restore()
   }

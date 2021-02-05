@@ -4,21 +4,20 @@ import Vector2 from 'utils/Vector2'
 
 import Stroke from './Stroke'
 import {
-  STROKE_ATTEMPTS,
+  SPINES_PER_LAYER,
   FLOW_FIDELITY,
-  LENGTH_VARIATION,
-  MAX_LENGTH,
-  STROKE_OPACITY,
-  DISTANCE_PER_FRAME,
+  SPINE_LENGTH,
+  SPINE_OPACITY,
+  DISTANCE_BETWEEN_RIBS,
   HUES,
   LAYER_COUNT,
+  SPINE_SEPARATION_FIDELITY,
 } from './constants'
 import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
 export enum Seeds {
   Flow,
   Position,
-  Length,
   Color,
 }
 
@@ -70,56 +69,50 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   }
 
   const getRandomLength = (a: number, b: number) =>
-    map(simplex[Seeds.Position].noise2D(a, b), -0.5, 0.5, 0, width)
+    map(simplex[Seeds.Position].noise2D(a, b), -0.7, 0.7, 0, width)
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 5, Math.PI + i * 0.01),
-      getRandomLength(Math.PI + i * 0.01, Math.PI + layerI * 5)
+      getRandomLength(Math.PI + layerI * 10, Math.PI + i * SPINE_SEPARATION_FIDELITY),
+      getRandomLength(Math.PI + i * SPINE_SEPARATION_FIDELITY, Math.PI + layerI * 10)
     )
 
   c.save()
+  const transform = c.getTransform()
 
   const tempCanvas = document.createElement('canvas')
   tempCanvas.width = c.canvas.width
   tempCanvas.height = c.canvas.height
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
-  tempC.setTransform(c.getTransform())
 
   layers.forEach(({ color, composite, opacity }, layerI) => {
     const layerCanvas = document.createElement('canvas')
     layerCanvas.width = c.canvas.width
     layerCanvas.height = c.canvas.height
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
-    layerC.setTransform(c.getTransform())
+    layerC.globalAlpha = SPINE_OPACITY
 
     const strokes: Stroke[] = []
-    for (let i = 0; i < STROKE_ATTEMPTS; i++) {
-      const strokeLength = map(
-        simplex[Seeds.Length].noise2D(i * 5, Math.PI * 2),
-        -1,
-        1,
-        MAX_LENGTH,
-        MAX_LENGTH - LENGTH_VARIATION
-      )
-
+    for (let i = 0; i < SPINES_PER_LAYER; i++) {
       const stroke = new Stroke({
         i,
         pos: getRandomPos(i, layerI),
         color,
       })
 
-      for (let t = 0; t < strokeLength; t += DISTANCE_PER_FRAME) {
+      for (let t = 0; t < SPINE_LENGTH; t += DISTANCE_BETWEEN_RIBS) {
         stroke.update(getFlowAngle(stroke))
       }
       strokes.push(stroke)
     }
 
     strokes.forEach((stroke) => {
+      tempC.save()
+      tempC.setTransform(transform)
       stroke.draw(tempC, strokes)
-      layerC.globalAlpha = STROKE_OPACITY
-      layerC.drawImage(tempCanvas, 0, 0, width, height)
-      tempC.clearRect(0, 0, width, height)
+      tempC.restore()
+      layerC.drawImage(tempCanvas, 0, 0)
+      tempC.clearRect(0, 0, tempCanvas.width, tempCanvas.height)
     })
 
     c.globalAlpha = opacity

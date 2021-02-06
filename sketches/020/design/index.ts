@@ -5,6 +5,8 @@ import Vector2 from 'utils/Vector2'
 import Stroke from './Stroke'
 import {
   STROKES_PER_LAYER,
+  STROKE_MIN_SIZE,
+  STROKE_MAX_SIZE,
   FLOW_FIDELITY,
   STROKE_LENGTH,
   STROKE_OPACITY,
@@ -19,6 +21,7 @@ export enum Seeds {
   Flow,
   Position,
   Color,
+  Size,
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
@@ -29,6 +32,15 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   )
   const background = `hsl(${layerHues.shift()}, 40%, 45%)`
   const layers = layerHues.map((hue, hueI) => {
+    const size = Math.round(
+      map(
+        randomFromNoise(simplex[Seeds.Size].noise2D(Math.PI, hueI * 5 - Math.PI)),
+        0,
+        1,
+        STROKE_MIN_SIZE,
+        STROKE_MAX_SIZE,
+      )
+    )
     let l = Math.round(
       map(
         randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI * 5)),
@@ -41,6 +53,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     if (l > 35) l += 20 // avoid the 10% around the background l
     return {
       color: `hsl(${hue}, 100%, ${l}%)`,
+      size,
       composite: l < 50 ? 'screen' : 'multiply',
       opacity: 1,
     }
@@ -85,7 +98,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   tempCanvas.height = c.canvas.height
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
 
-  layers.forEach(({ color, composite, opacity }, layerI) => {
+  layers.forEach(({ color, size, composite, opacity }, layerI) => {
     const layerCanvas = document.createElement('canvas')
     layerCanvas.width = c.canvas.width
     layerCanvas.height = c.canvas.height
@@ -98,6 +111,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         i,
         pos: getRandomPos(i, layerI),
         color,
+        size,
       })
 
       for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_RIBS) {

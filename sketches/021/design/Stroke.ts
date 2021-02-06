@@ -60,18 +60,17 @@ class Stroke {
 
   draw(c: CanvasRenderingContext2D, strokes: Stroke[]) {
     c.save()
-
-    c.strokeStyle = this.color
-    c.lineWidth = RIB_WEIGHT
+    c.fillStyle = this.color
 
     this.points.slice(1).forEach(({ x, y, angle }, i) => {
-      temp.reset(0, this.size / 2)
+      temp.reset(0, 1)
       temp.rotate(angle as number)
 
       c.beginPath()
-      c.moveTo(x + temp.x, y + temp.y)
-      c.lineTo(x - temp.x, y - temp.y)
-      c.stroke()
+      c.moveTo(x + temp.x * this.size / 2, y + temp.y * this.size / 2)
+      c.lineTo(x - temp.x * this.size / 2, y - temp.y * this.size / 2)
+      c.lineTo(x + temp.y * RIB_WEIGHT, y - temp.x * RIB_WEIGHT)
+      c.fill()
     })
 
     c.restore()

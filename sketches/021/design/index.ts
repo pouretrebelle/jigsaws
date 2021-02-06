@@ -91,18 +91,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
 
   c.save()
-  const transform = c.getTransform()
-
-  const tempCanvas = document.createElement('canvas')
-  tempCanvas.width = c.canvas.width
-  tempCanvas.height = c.canvas.height
-  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
-
   layers.forEach(({ color, size, composite, opacity }, layerI) => {
     const layerCanvas = document.createElement('canvas')
     layerCanvas.width = c.canvas.width
     layerCanvas.height = c.canvas.height
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
+    layerC.setTransform(c.getTransform())
     layerC.globalAlpha = STROKE_OPACITY
 
     const strokes: Stroke[] = []
@@ -121,12 +115,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     }
 
     strokes.forEach((stroke) => {
-      tempC.save()
-      tempC.setTransform(transform)
-      stroke.draw(tempC, strokes)
-      tempC.restore()
-      layerC.drawImage(tempCanvas, 0, 0)
-      tempC.clearRect(0, 0, tempCanvas.width, tempCanvas.height)
+      stroke.draw(layerC, strokes)
     })
 
     c.globalAlpha = opacity

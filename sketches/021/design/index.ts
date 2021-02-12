@@ -14,6 +14,7 @@ import {
   HUES,
   LAYER_COUNT,
   STROKE_SEPARATION_FIDELITY,
+  LAYER_SHIFT,
 } from './constants'
 import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
@@ -64,7 +65,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   c.lineCap = 'round'
   c.lineWidth = 1
 
-  const getFlowAngle = (stroke: Stroke): number => {
+  const getFlowAngle = (stroke: Stroke, layerI: number): number => {
     const noiseX = map(stroke.pos.x, 0, width, 0, FLOW_FIDELITY, true)
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
@@ -72,7 +73,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       simplex[Seeds.Flow].noise3D(
         noiseX,
         noiseY,
-        noiseStart * 0.02
+        noiseStart * 0.02 + layerI * LAYER_SHIFT
       ),
       -1,
       1,
@@ -109,7 +110,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       })
 
       for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_RIBS) {
-        stroke.update(getFlowAngle(stroke))
+        stroke.update(getFlowAngle(stroke, layerI))
       }
       strokes.push(stroke)
     }

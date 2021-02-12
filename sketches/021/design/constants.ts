@@ -1,14 +1,14 @@
-export const STROKES_PER_LAYER = 30
-export const STROKE_LENGTH = 200
-export const STROKE_MIN_SIZE = 5
-export const STROKE_MAX_SIZE = 30
-export const FLOW_FIDELITY = 0.4
-export const STROKE_SEPARATION_FIDELITY = 0.02
-export const DISTANCE_BETWEEN_RIBS = 5
-export const RIB_WEIGHT = 5
+export const STROKES_PER_LAYER = 300
+export const STROKE_LENGTH = 40
+export const STROKE_MIN_SIZE = 8
+export const STROKE_MAX_SIZE = 50
+export const FLOW_FIDELITY = 0.8
+export const STROKE_SEPARATION_FIDELITY = 0.015
+export const DISTANCE_BETWEEN_RIBS = 12
+export const RIB_WEIGHT = 12
 export const STROKE_OPACITY = 0.5
 
-export const BACKGROUND = 'hsl(225, 40%, 45%)'
+export const BACKGROUND = 'hsl(180, 40%, 45%)'
 export const HUES = [
   15,
   20,
@@ -19,4 +19,5 @@ export const HUES = [
   320,
   335,
 ]
-export const LAYER_COUNT = 8
+export const LAYER_COUNT = 4
+export const LAYER_SHIFT = 0.02

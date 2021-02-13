@@ -1,0 +1,61 @@
+version: 2.1
+jobs:
+  setup:
+    docker:
+      - image: circleci/node:14.15
+    steps:
+      - checkout
+      - run:
+          name: Update NPM
+          command: 'sudo npm install -g npm@6.14.10'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install Packages
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+  lint:
+    docker:
+      - image: circleci/node:14.15
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Lint
+          command: npm run lint
+      - store_artifacts:
+          path: lint-results.xml
+          prefix: tests
+      - store_test_results:
+          path: lint-results.xml
+  type-check:
+    docker:
+      - image: circleci/node:14.15
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Type check
+          command: npm run type-check
+      - store_artifacts:
+          path: type-check-results.xml
+          prefix: tests
+      - store_test_results:
+          path: type-check-results.xml
+
+workflows:
+  version: 2.1
+  test:
+    jobs:
+      - setup
+      - lint:
+          requires:
+            - setup
+      - type-check:
+          requires:
+            - setup

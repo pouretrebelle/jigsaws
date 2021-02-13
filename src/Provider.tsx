@@ -13,16 +13,25 @@ const augmentDispatch = (dispatch: React.Dispatch<Action>, state: State) => (
   input: Thunk | Action
 ) => (input instanceof Function ? input(dispatch, state) : dispatch(input))
 
+type SetSketchId = (sketchId: string) => void
+
 interface Props {
   sketchId: string
   sketchIds: string[]
+  setSketchId: SetSketchId
 }
 
-type Context = [State, AugmentedDispatch]
+type Context = [State, AugmentedDispatch, SetSketchId]
 export const SketchContext = createContext(([{}] as unknown) as Context)
 
-const Provider: React.FC<Props> = ({ children, sketchId, sketchIds }) => {
+const Provider: React.FC<Props> = ({
+  children,
+  sketchId,
+  sketchIds,
+  setSketchId,
+}) => {
   const [state, dispatch] = useReducer(combinedReducers, initialState)
+
   const value = [
     {
       ...state,
@@ -30,6 +39,7 @@ const Provider: React.FC<Props> = ({ children, sketchId, sketchIds }) => {
       sketchIds,
     },
     augmentDispatch(dispatch, state),
+    setSketchId,
   ] as Context
 
   return (

@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { getSketchIds } from 'lib/data/getSketchIds'
 import { getSketchContent } from 'lib/data/getSketchContent'
 import { SketchContent } from 'types'
+import { Header } from 'components/Header'
 import { SketchCard } from 'components/SketchCard'
 
 const NOW = new Date()
@@ -17,7 +18,7 @@ const HomePage = ({ sketches }: Props) => (
     <Head>
       <title>Abstract Puzzles</title>
     </Head>
-    <h1>Abstract Puzzles</h1>
+    <Header />
 
     {sketches.map((content) => (
       <SketchCard key={content.id} {...content} />

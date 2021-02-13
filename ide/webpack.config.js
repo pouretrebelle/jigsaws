@@ -19,6 +19,9 @@ module.exports = (env, argv) => ({
       SKETCH_IDS: JSON.stringify(sketches),
     }),
   ],
+  devServer: {
+    port: 4001,
+  },
   module: {
     rules: [
       {

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "ide": "cross-env NODE_ENV=development webpack serve --config=ide/webpack.config.js --mode=development",
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",

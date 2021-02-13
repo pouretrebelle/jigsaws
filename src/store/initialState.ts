@@ -1,6 +1,9 @@
 import { getFromStorage } from "lib/storage"
+import { Env } from "types"
 
 const initialState = {
+  env: Env.Dev,
+
   sketchId: '001',
   sketchIds: ['001'],
 

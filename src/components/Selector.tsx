@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
 import { SketchContext } from 'Provider'
@@ -21,11 +20,13 @@ const Select = styled.select`
 `
 
 const Selector = () => {
-  const [{ sketch, sketchId, sketchIds }, dispatch] = useContext(SketchContext)
-  const router = useRouter()
+  const [{ sketch, sketchId, sketchIds }, dispatch, setSketchId] = useContext(
+    SketchContext
+  )
 
   useEffect(() => {
     dispatch(loadSketch(sketchId))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sketchId])
 
   return (
@@ -34,7 +35,7 @@ const Selector = () => {
         Sketch
         <Select
           value={sketch?.id || sketchId}
-          onChange={(e) => router.push(`/app/${e.target.value}`)}
+          onChange={(e) => setSketchId(e.target.value)}
         >
           {sketchIds.map((id) => (
             <option key={id} value={id}>

@@ -1,5 +1,6 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 
 import { getSketchIds } from 'lib/data/getSketchIds'
 
@@ -11,16 +12,23 @@ interface Props {
   sketchIds: string[]
 }
 
-const App = (props: Props) => (
-  <>
-    <Head>
-      <title>{props.sketchId} (Generative Jigsaws)</title>
-    </Head>
-    <Provider {...props}>
-      <Demo />
-    </Provider>
-  </>
-)
+const App = (props: Props) => {
+  const router = useRouter()
+
+  return (
+    <>
+      <Head>
+        <title>{props.sketchId} (Generative Jigsaws)</title>
+      </Head>
+      <Provider
+        {...props}
+        setSketchId={(id) => router.push(`/app/${id}`)}
+      >
+        <Demo />
+      </Provider>
+    </>
+  )
+}
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const sketchIds = getSketchIds()

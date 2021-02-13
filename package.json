@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src/**"
+    "lint": "eslint src/**",
+    "type-check": "tsc --noEmit"
   },
   "engines": {
     "node": "14.15.x"

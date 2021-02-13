@@ -13,7 +13,8 @@ A development environment for [abstractpuzzl.es](http://abstractpuzzl.es/) jigsa
 ## :raised_hands: Development
 
 - `npm install` installs all the site's dependencies
-- `npm start` runs dev mode on [localhost:8080](http://localhost:8080)
+- `npm run dev` runs the Next.js app on [localhost:4000](http://localhost:4000)
+- `npm run ide` runs the IDE on [localhost:4001](http://localhost:4001)
 
 ## :construction_worker: Being good
 

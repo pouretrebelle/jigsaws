@@ -4,6 +4,7 @@ import Provider from 'Provider'
 import Demo from 'components/Demo'
 import GlobalStyle from 'styles/base'
 import { getFromStorage } from 'lib/storage'
+import { Env } from 'types'
 
 declare const SKETCH_IDS: string[]
 
@@ -19,6 +20,7 @@ const DevApp = () => {
         sketchIds={SKETCH_IDS}
         sketchId={sketchId}
         setSketchId={(id) => setSketchId(id)}
+        env={Env.Ide}
       >
         <Demo />
       </Provider>

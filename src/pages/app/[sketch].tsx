@@ -6,6 +6,7 @@ import { getSketchIds } from 'lib/data/getSketchIds'
 
 import Provider from 'Provider'
 import Demo from 'components/Demo'
+import { Env } from 'types'
 
 interface Props {
   sketchId: string
@@ -23,6 +24,7 @@ const App = (props: Props) => {
       <Provider
         {...props}
         setSketchId={(id) => router.push(`/app/${id}`)}
+        env={process.env.NODE_ENV === 'development' ? Env.Dev : Env.Prod}
       >
         <Demo />
       </Provider>

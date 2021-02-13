@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react'
-import { State, Action, Thunk, AugmentedDispatch } from 'types'
+import { State, Action, Thunk, AugmentedDispatch, Env } from 'types'
 import * as reducers from 'store/reducers'
 import initialState from 'store/initialState'
 
@@ -16,6 +16,7 @@ const augmentDispatch = (dispatch: React.Dispatch<Action>, state: State) => (
 type SetSketchId = (sketchId: string) => void
 
 interface Props {
+  env: Env
   sketchId: string
   sketchIds: string[]
   setSketchId: SetSketchId
@@ -26,6 +27,7 @@ export const SketchContext = createContext(([{}] as unknown) as Context)
 
 const Provider: React.FC<Props> = ({
   children,
+  env,
   sketchId,
   sketchIds,
   setSketchId,
@@ -35,6 +37,7 @@ const Provider: React.FC<Props> = ({
   const value = [
     {
       ...state,
+      env,
       sketchId,
       sketchIds,
     },

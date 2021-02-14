@@ -7,23 +7,25 @@ import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
 import { Header } from 'components/Header'
 import { SketchCard } from 'components/SketchCard'
+import { SketchPreview } from 'components/SketchPreview'
 
 const NOW = new Date()
 
 interface Props {
-  sketches: SketchContent[]
+  latestSketch: SketchContent
+  previewSketches: SketchContent[]
 }
 
-const HomePage = ({ sketches }: Props) => (
-  <PageWrapper accentColorRgb={sketches[0].accentColorRgb}>
+const HomePage = ({ latestSketch, previewSketches }: Props) => (
+  <PageWrapper accentColorRgb={latestSketch.accentColorRgb}>
     <Head>
       <title>Abstract Puzzles</title>
     </Head>
     <Header />
 
-    {sketches.map((content) => (
-      <SketchCard key={content.id} {...content} />
-    ))}
+    <SketchCard {...latestSketch} />
+
+    <SketchPreview sketches={previewSketches} />
   </PageWrapper>
 )
 
@@ -36,7 +38,8 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      sketches,
+      latestSketch: sketches.shift(),
+      previewSketches: sketches.slice(0, 4),
     },
   }
 }

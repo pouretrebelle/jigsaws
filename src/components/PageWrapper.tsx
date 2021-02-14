@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import chroma from 'chroma-js'
 
 const StyledWrapper = styled.div`
   font-size: clamp(16px, 32px, 1.5vw);
@@ -9,14 +8,14 @@ const StyledWrapper = styled.div`
 `
 
 interface Props {
-  accentColor?: string
+  accentColorRgb?: string
 }
 
-const getRgb = (color: string): string => chroma(color).rgb().join(', ')
-
-export const PageWrapper: React.FC<Props> = ({ accentColor, children }) => (
+export const PageWrapper: React.FC<Props> = ({ accentColorRgb, children }) => (
   <StyledWrapper
-    style={{ '--color-accent': getRgb(accentColor || 'fuchsia') } as object}
+    style={
+      accentColorRgb ? ({ '--color-accent': accentColorRgb } as object) : {}
+    }
   >
     {children}
   </StyledWrapper>

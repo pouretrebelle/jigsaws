@@ -1,8 +1,9 @@
-
 import fs from 'fs'
 import matter from 'gray-matter'
-
 import { processMarkdown } from 'lib/markdown/processMarkdown'
+import chroma from 'chroma-js'
+
+const getRgb = (color: string): string => chroma(color).rgb().join(', ')
 
 export const getSketchContent = (sketchId: string) => {
   const file = fs.readFileSync(`sketches/${sketchId}/README.md`, 'utf8');
@@ -13,6 +14,7 @@ export const getSketchContent = (sketchId: string) => {
     html: processMarkdown(content),
     short: content.length < 500,
     ...data,
+    accentColorRgb: data.accentColor && getRgb(data.accentColor),
     datePublished: +data.datePublished,
     appLink: `/app/${sketchId}`,
     pageLink: `/${sketchId}`,

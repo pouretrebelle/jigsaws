@@ -15,7 +15,7 @@ interface Props {
 }
 
 const HomePage = ({ sketches }: Props) => (
-  <PageWrapper accentColor={sketches[0].accentColor}>
+  <PageWrapper accentColorRgb={sketches[0].accentColorRgb}>
     <Head>
       <title>Abstract Puzzles</title>
     </Head>

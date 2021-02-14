@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { getSketchIds } from 'lib/data/getSketchIds'
 import { getSketchContent } from 'lib/data/getSketchContent'
 import { SketchContent } from 'types'
+import { PageWrapper } from 'components/PageWrapper'
 import { Header } from 'components/Header'
 import { SketchCard } from 'components/SketchCard'
 
@@ -11,17 +12,15 @@ interface Props {
   sketch: SketchContent
 }
 
-const HomePage = ({
-  sketch,
-}: Props) => (
-  <>
+const HomePage = ({ sketch }: Props) => (
+  <PageWrapper accentColor={sketch.accentColor}>
     <Head>
       <title>Abstract Puzzles</title>
     </Head>
     <Header />
 
     <SketchCard key={sketch.id} {...sketch} />
-  </>
+  </PageWrapper>
 )
 
 export const getStaticPaths: GetStaticPaths = async () => {

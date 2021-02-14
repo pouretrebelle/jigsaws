@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { getSketchIds } from 'lib/data/getSketchIds'
 import { getSketchContent } from 'lib/data/getSketchContent'
 import { SketchContent } from 'types'
+import { PageWrapper } from 'components/PageWrapper'
 import { Header } from 'components/Header'
 import { SketchCard } from 'components/SketchCard'
 
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const HomePage = ({ sketches }: Props) => (
-  <>
+  <PageWrapper accentColor={sketches[0].accentColor}>
     <Head>
       <title>Abstract Puzzles</title>
     </Head>
@@ -23,7 +24,7 @@ const HomePage = ({ sketches }: Props) => (
     {sketches.map((content) => (
       <SketchCard key={content.id} {...content} />
     ))}
-  </>
+  </PageWrapper>
 )
 
 export const getStaticProps: GetStaticProps = async () => {

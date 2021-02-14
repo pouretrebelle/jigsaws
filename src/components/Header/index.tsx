@@ -6,11 +6,7 @@ const StyledHeader = styled.header`
   grid-template-columns: 1fr;
   grid-gap: 1em 2em;
   align-items: center;
-  font-size: clamp(16px, 32px, 1.5vw);
-  padding: 0 2em;
-  max-width: calc(200px + 70%);
   margin: 3em auto;
-  --color-accent: 255, 0, 255;
 
   @media (min-width: 500px) {
     grid-template-columns: 5fr 4fr;
@@ -57,6 +53,7 @@ const StyledH1 = styled.h1`
   }
   @media (min-width: 900px) {
     font-size: calc(4.6vw + 12px);
+    margin-right: -1em;
   }
 `
 

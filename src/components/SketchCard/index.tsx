@@ -7,18 +7,13 @@ import { SketchContent } from 'types'
 
 import { Player } from './Player'
 
-const StyledGrid = styled.article<{ $short?: boolean; $accentColor: string }>`
+const StyledGrid = styled.article<{ $short?: boolean }>`
   display: grid;
   grid-template-columns: 2fr 2fr 2fr 3fr;
   grid-template-rows: auto auto auto 1fr;
   grid-template-areas: 'title title video video' 'image image video video' 'image image details details' 'empty actions details details';
   grid-gap: 2em;
-
-  padding: 0 2em;
-  max-width: calc(200px + 70%);
-  margin: 4em auto;
-  font-size: clamp(16px, 32px, 1.5vw);
-  --color-accent: ${({ $accentColor }) => $accentColor};
+  margin: 4em 0;
 
   @media (max-width: 900px) {
     grid-template-rows: 1fr auto auto;
@@ -140,17 +135,16 @@ const StyledButton = styled.a`
   }
 `
 
-const getRgb = (color: string): string => chroma(color).rgb().join(', ')
-
 export const SketchCard = ({
   id,
   html,
   short,
   youTubeLink,
   appLink,
-  accentColor,
 }: SketchContent) => (
-  <StyledGrid $short={short} $accentColor={getRgb(accentColor || 'fuchsia')}>
+  <StyledGrid
+    $short={short}
+  >
     <StyledTitle>{id}</StyledTitle>
 
     <StyledVideo>

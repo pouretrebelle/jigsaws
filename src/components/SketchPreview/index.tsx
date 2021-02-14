@@ -30,6 +30,7 @@ const StyledImage = styled.figure`
   position: relative;
   width: 100%;
   padding-bottom: 100%;
+  background: black;
 `
 
 interface Props {
@@ -40,11 +41,7 @@ export const SketchPreview = ({ sketches }: Props) => (
   <StyledGrid>
     {sketches.map(({ id, pageLink, accentColorRgb }) => (
       <Link key={id} href={pageLink} passHref>
-        <StyledLink
-          style={
-            { '--color-accent': accentColorRgb } as object
-          }
-        >
+        <StyledLink style={{ '--color-accent': accentColorRgb } as object}>
           <StyledImage>
             <Image
               src={`/sketches/${id}_solve_end.jpg`}

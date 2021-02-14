@@ -23,7 +23,7 @@ const StyledTitle = styled.h2`
   text-align: right;
   font-size: 2em;
   line-height: 0.9;
-  margin-top: 0.25em;
+  margin-bottom: 0.25em;
 `
 
 const StyledImage = styled.figure`
@@ -42,6 +42,7 @@ export const SketchPreview = ({ sketches }: Props) => (
     {sketches.map(({ id, pageLink, accentColorRgb }) => (
       <Link key={id} href={pageLink} passHref>
         <StyledLink style={{ '--color-accent': accentColorRgb } as object}>
+          <StyledTitle>{id}</StyledTitle>
           <StyledImage>
             <Image
               src={`/sketches/${id}_solve_end.jpg`}
@@ -49,7 +50,6 @@ export const SketchPreview = ({ sketches }: Props) => (
               objectFit="cover"
             />
           </StyledImage>
-          <StyledTitle>{id}</StyledTitle>
         </StyledLink>
       </Link>
     ))}

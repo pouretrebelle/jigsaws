@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import Head from 'next/head'
 
 import { Header } from 'components/Header'
+import { Footer } from 'components/Footer'
 
 const StyledWrapper = styled.div`
   font-size: clamp(16px, 32px, 1.5vw);
@@ -31,5 +32,7 @@ export const PageWrapper: React.FC<Props> = ({
     <Header />
 
     {children}
+
+    <Footer />
   </StyledWrapper>
 )

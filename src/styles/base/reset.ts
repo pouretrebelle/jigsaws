@@ -17,6 +17,7 @@ const reset = css`
   select,
   header,
   footer,
+  figure,
   nav,
   fieldset,
   label,
@@ -60,7 +61,8 @@ const reset = css`
     list-style: none;
   }
 
-  img {
+  img,
+  svg {
     vertical-align: middle;
   }
 `

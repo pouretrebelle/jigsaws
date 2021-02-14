@@ -71,6 +71,11 @@ const GlobalStyle = createGlobalStyle`
   a {
     color: inherit;
   }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
+  }
 `
 
 export default GlobalStyle

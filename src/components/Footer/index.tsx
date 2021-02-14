@@ -8,7 +8,7 @@ const StyledFooter = styled.footer`
   flex-wrap: wrap;
   align-items: center;
   gap: 1em 3em;
-  margin: 4em 0 0;
+  margin: 3em 0 0;
   padding-bottom: 1em;
   border-bottom: 0.2em solid rgb(var(--color-accent));
 

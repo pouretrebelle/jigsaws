@@ -6,7 +6,7 @@ const StyledHeader = styled.header`
   grid-template-columns: 1fr;
   grid-gap: 1em 2em;
   align-items: center;
-  margin: 3em auto;
+  margin: 2em auto;
 
   @media (min-width: 900px) {
     grid-template-columns: 4fr 5fr;

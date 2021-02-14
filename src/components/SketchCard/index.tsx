@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components'
 import Link from 'next/link'
 import Image from 'next/image'
-import chroma from 'chroma-js'
 
 import { SketchContent } from 'types'
 
@@ -13,7 +12,7 @@ const StyledGrid = styled.article<{ $short?: boolean }>`
   grid-template-rows: auto auto auto 1fr;
   grid-template-areas: 'title title video video' 'image image video video' 'image image details details' 'empty actions details details';
   grid-gap: 2em;
-  margin: 4em 0;
+  margin: 3em 0;
 
   @media (max-width: 900px) {
     grid-template-rows: 1fr auto auto;

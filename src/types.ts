@@ -122,6 +122,7 @@ export interface SketchContent {
   short: boolean
   youTubeLink: string
   appLink: string
+  pageLink: string
   designNoiseSeeds: string[]
   cutNoiseSeeds: string[]
   accentColor?: string

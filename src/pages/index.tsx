@@ -30,14 +30,6 @@ export const getStaticProps: GetStaticProps = async () => {
   const sketchIds = getSketchIds()
   const sketches = sketchIds
     .map(getSketchContent)
-    .map(({ id, html, short, data: { datePublished, ...data } }) => ({
-      id,
-      html,
-      short,
-      appLink: `/app/${id}`,
-      datePublished: +datePublished, // needs to be number to be parsable
-      ...data,
-    }))
     .filter(({ datePublished }) => datePublished - +NOW < 0)
     .sort(({ datePublished: aDate }, { datePublished: bDate }) => bDate - aDate)
 

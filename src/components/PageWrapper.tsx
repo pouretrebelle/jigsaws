@@ -1,4 +1,7 @@
 import styled from 'styled-components'
+import Head from 'next/head'
+
+import { Header } from 'components/Header'
 
 const StyledWrapper = styled.div`
   font-size: clamp(16px, 32px, 1.5vw);
@@ -9,14 +12,24 @@ const StyledWrapper = styled.div`
 
 interface Props {
   accentColorRgb?: string
+  title?: string
 }
 
-export const PageWrapper: React.FC<Props> = ({ accentColorRgb, children }) => (
+export const PageWrapper: React.FC<Props> = ({
+  accentColorRgb,
+  title,
+  children,
+}) => (
   <StyledWrapper
     style={
       accentColorRgb ? ({ '--color-accent': accentColorRgb } as object) : {}
     }
   >
+    <Head>
+      <title>{title && `${title} | `}Abstract Puzzles</title>
+    </Head>
+    <Header />
+
     {children}
   </StyledWrapper>
 )

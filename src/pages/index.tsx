@@ -1,11 +1,9 @@
 import type { GetStaticProps } from 'next'
-import Head from 'next/head'
 
 import { getSketchIds } from 'lib/data/getSketchIds'
 import { getSketchContent } from 'lib/data/getSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
-import { Header } from 'components/Header'
 import { SketchCard } from 'components/SketchCard'
 import { SketchPreview } from 'components/SketchPreview'
 
@@ -18,13 +16,7 @@ interface Props {
 
 const HomePage = ({ latestSketch, previewSketches }: Props) => (
   <PageWrapper accentColorRgb={latestSketch.accentColorRgb}>
-    <Head>
-      <title>Abstract Puzzles</title>
-    </Head>
-    <Header />
-
     <SketchCard {...latestSketch} />
-
     <SketchPreview sketches={previewSketches} />
   </PageWrapper>
 )

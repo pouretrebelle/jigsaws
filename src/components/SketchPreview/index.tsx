@@ -12,6 +12,7 @@ const StyledGrid = styled.section`
 
   @media (min-width: 500px) {
     grid-template-columns: repeat(4, 1fr);
+    text-align: right;
   }
 `
 
@@ -20,7 +21,6 @@ const StyledLink = styled.a`
 `
 
 const StyledTitle = styled.h2`
-  text-align: right;
   font-size: 2em;
   line-height: 0.9;
   margin-bottom: 0.25em;

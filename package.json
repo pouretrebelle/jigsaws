@@ -43,6 +43,7 @@
     "next": "10.0.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-player": "^2.8.2",
     "rehype-stringify": "^8.0.0",
     "remark-parse": "^9.0.0",
     "remark-rehype": "^8.0.0",

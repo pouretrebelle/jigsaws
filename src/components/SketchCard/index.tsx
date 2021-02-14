@@ -16,7 +16,7 @@ const StyledGrid = styled.article<{ $short?: boolean; $accentColor: string }>`
 
   padding: 0 2em;
   max-width: calc(200px + 70%);
-  margin: 3em auto;
+  margin: 4em auto;
   font-size: clamp(16px, 32px, 1.5vw);
   --color-accent: ${({ $accentColor }) => $accentColor};
 
@@ -35,7 +35,8 @@ const StyledGrid = styled.article<{ $short?: boolean; $accentColor: string }>`
   ${({ $short }) =>
     $short &&
     css`
-      grid-template-areas: 'title title video video' 'image image video video' 'image image actions details' 'empty empty actions details';
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas: 'title title video video' 'image image video video' 'image image actions details';
     `}
 
   > * > *:first-child {

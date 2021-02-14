@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import Link from 'next/link'
 import { GithubIcon, InstagramIcon, TwitterIcon, YouTubeIcon } from './Icon'
 
 const StyledHeader = styled.header`
@@ -55,6 +56,10 @@ const StyledH1 = styled.h1`
     font-size: calc(4.6vw + 12px);
     margin-right: -1em;
   }
+
+  a {
+    text-decoration: none;
+  }
 `
 
 const StyledDescription = styled.aside`
@@ -88,7 +93,7 @@ export const Header = () => (
         <GithubIcon />
       </StyledSocialLink>
     </StyledSocials>
-    <StyledH1>Abstract Puzzles</StyledH1>
+    <StyledH1><Link href="/"><a>Abstract Puzzles</a></Link></StyledH1>
     <StyledDescription>
       <p>A generative art jigsaw project by Charlotte&nbsp;Dann</p>
       <p>One new puzzle every week</p>

@@ -4,6 +4,7 @@ youTubeLink: https://youtu.be/f7OsC3Ck0sA
 
 designNoiseSeeds: ['bub', 'ahr', 'pba']
 cutNoiseSeeds: ['zgf', 'kbo', 'rwn', 'sxo']
+accentColor: '#E02FE0'
 
 pieces: 225
 ---

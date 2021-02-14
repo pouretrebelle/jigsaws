@@ -1,9 +1,11 @@
 import styled, { css } from 'styled-components'
 import Link from 'next/link'
 import Image from 'next/image'
+import chroma from 'chroma-js'
 
 import { SketchContent } from 'types'
-import chroma from 'chroma-js'
+
+import { Player } from './Player'
 
 const StyledGrid = styled.article<{ $short?: boolean; $accentColor: string }>`
   display: grid;
@@ -151,11 +153,7 @@ export const SketchCard = ({
     <StyledTitle>{id}</StyledTitle>
 
     <StyledVideo>
-      <Image
-        src={`/sketches/${id}_solve_start.jpg`}
-        layout="fill"
-        objectFit="cover"
-      />
+      <Player id={id} youTubeLink={youTubeLink} />
     </StyledVideo>
 
     <StyledImage>

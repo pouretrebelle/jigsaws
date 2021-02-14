@@ -57,13 +57,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const sketchIds = getSketchIds()
   const sketches = sketchIds
     .map(getSketchContent)
-    .filter(({ datePublished }) => datePublished - +NOW < 0)
     .sort(({ datePublished: aDate }, { datePublished: bDate }) => bDate - aDate)
-
   const sketch = sketches.find(({ id }) => id === sketchId)
+
   const previewSketches = getSurroundingIds(
     sketchId,
-    sketches.map(({ id }) => id)
+    sketches
+      .filter(({ datePublished }) => datePublished - +NOW < 0)
+      .map(({ id }) => id)
   ).map((thisId) => sketches.find(({ id }) => id === thisId))
 
   return {

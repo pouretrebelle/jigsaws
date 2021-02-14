@@ -14,7 +14,7 @@ export const getSketchContent = (sketchId: string) => {
     html: processMarkdown(content),
     short: content.length < 500,
     ...data,
-    accentColorRgb: data.accentColor && getRgb(data.accentColor),
+    accentColorRgb: getRgb(data.accentColor || 'fuchsia'),
     datePublished: +data.datePublished,
     appLink: `/app/${sketchId}`,
     pageLink: `/${sketchId}`,

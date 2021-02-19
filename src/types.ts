@@ -127,5 +127,6 @@ export interface SketchContent {
   cutNoiseSeeds: string[]
   accentColor?: string
   accentColorRgb?: string
+  datePublished: number
   pieces: number
 }

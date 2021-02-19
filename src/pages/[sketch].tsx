@@ -1,7 +1,7 @@
 import type { GetStaticPaths, GetStaticProps } from 'next'
 
 import { getSketchIds } from 'lib/data/getSketchIds'
-import { getSketchContent } from 'lib/data/getSketchContent'
+import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchCard } from 'components/SketchCard'
@@ -54,10 +54,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const sketchId = (params && params.sketch) as string
-  const sketchIds = getSketchIds()
-  const sketches = sketchIds
-    .map(getSketchContent)
-    .sort(({ datePublished: aDate }, { datePublished: bDate }) => bDate - aDate)
+  const sketches = getAllSketchContent()
   const sketch = sketches.find(({ id }) => id === sketchId)
 
   const previewSketches = getSurroundingIds(

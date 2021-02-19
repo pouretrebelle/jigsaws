@@ -18,7 +18,7 @@ const GlobalStyle = createGlobalStyle`
     height: 100vh;
   }
 
-  #root {
+  #__next, #root {
     height: 100%;
   }
 

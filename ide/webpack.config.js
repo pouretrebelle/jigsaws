@@ -9,30 +9,42 @@ const sketches = readdirSync('sketches', { withFileTypes: true })
 
 module.exports = (env, argv) => ({
   devtool: 'eval-source-map',
-  entry: './src/index.tsx',
-  node: {
-    fs: 'empty',
-  },
-  output: {
-    path: path.join(__dirname, '../docs/'),
-    filename: '[name].js',
-    publicPath: '/',
-  },
+  entry: './ide/App.tsx',
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/layouts/main.pug',
+      template: './ide/layout.pug',
       inject: 'body',
     }),
     new webpack.DefinePlugin({
       SKETCH_IDS: JSON.stringify(sketches),
     }),
   ],
+  devServer: {
+    port: 4001,
+  },
+  node: {
+    fs: 'empty'
+  },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: ['ts-loader'],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              configFile: './ide/.babelrc',
+            }
+          },
+          {
+            loader: 'ts-loader',
+            options: {
+              compilerOptions: {
+                noEmit: false
+              }
+            }
+          }]
       },
       {
         test: /\.pug?$/,

@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "next/babel",
+      {
+        "preset-env": {
+          "useBuiltIns": false
+        },
+        "class-properties": { "loose": true }
+      }
+    ]
+  ],
+  "plugins": [["styled-components", { "ssr": true, "displayName": true }]]
+}

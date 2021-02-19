@@ -1,14 +1,11 @@
-const getFromStorage = (
-  key: string,
-  defaultValue: any,
-  parseAsJson?: boolean
-): any => {
-  const value = localStorage[key]
-  return value ? (parseAsJson ? JSON.parse(value) : value) : defaultValue
-}
+import { getFromStorage } from "lib/storage"
+import { Env } from "types"
 
 const initialState = {
-  initialSketch: getFromStorage('sketch', SKETCH_IDS[0]),
+  env: Env.Dev,
+
+  sketchId: '001',
+  sketchIds: ['001'],
 
   noiseStart: 0,
 

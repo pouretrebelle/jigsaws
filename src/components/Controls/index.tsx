@@ -9,6 +9,7 @@ import {
   updateNoiseStart,
 } from 'store/actions'
 import { Layer, ExportPart, ActionType } from 'types'
+import { IdeOnly } from 'components/IdeOnly'
 
 import Input from './Input'
 import ExportButton from './ExportButton'
@@ -78,29 +79,31 @@ const Controls = () => {
             ))}
           </>
         )}
-        <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.Design))}
-          loading={state.pending.includes(ActionType.ExportDesign)}
-        >
-          Export design
-        </ExportButton>
+        <IdeOnly>
+          <ExportButton
+            onClick={() => dispatch(exportSketch(ExportPart.Design))}
+            loading={state.pending.includes(ActionType.ExportDesign)}
+          >
+            Export design
+          </ExportButton>
 
-        <RangeSlider
-          label="Preview animation frames"
-          min={0}
-          max={1}
-          step={0.004}
-          value={noiseStart}
-          onChange={(e) => {
-            dispatch(updateNoiseStart(Number(e.target.value)))
-          }}
-        />
-        <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.DesignAnimation))}
-          loading={state.pending.includes(ActionType.ExportDesignAnimation)}
-        >
-          Export animation
-        </ExportButton>
+          <RangeSlider
+            label="Preview animation frames"
+            min={0}
+            max={1}
+            step={0.004}
+            value={noiseStart}
+            onChange={(e) => {
+              dispatch(updateNoiseStart(Number(e.target.value)))
+            }}
+          />
+          <ExportButton
+            onClick={() => dispatch(exportSketch(ExportPart.DesignAnimation))}
+            loading={state.pending.includes(ActionType.ExportDesignAnimation)}
+          >
+            Export animation
+          </ExportButton>
+        </IdeOnly>
       </Section>
 
       <Section>
@@ -128,18 +131,20 @@ const Controls = () => {
             ))}
           </>
         )}
-        <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.Cut))}
-          loading={state.pending.includes(ActionType.ExportCut)}
-        >
-          Export cut
-        </ExportButton>
-        <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.cutPieces))}
-          loading={state.pending.includes(ActionType.ExportCutPieces)}
-        >
-          Export cut pieces
-        </ExportButton>
+        <IdeOnly>
+          <ExportButton
+            onClick={() => dispatch(exportSketch(ExportPart.Cut))}
+            loading={state.pending.includes(ActionType.ExportCut)}
+          >
+            Export cut
+          </ExportButton>
+          <ExportButton
+            onClick={() => dispatch(exportSketch(ExportPart.cutPieces))}
+            loading={state.pending.includes(ActionType.ExportCutPieces)}
+          >
+            Export cut pieces
+          </ExportButton>
+        </IdeOnly>
       </Section>
 
       <Section>

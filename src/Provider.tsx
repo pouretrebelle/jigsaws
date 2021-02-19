@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react'
-import { State, Action, Thunk, AugmentedDispatch } from 'types'
+import { State, Action, Thunk, AugmentedDispatch, Env } from 'types'
 import * as reducers from 'store/reducers'
 import initialState from 'store/initialState'
 
@@ -13,12 +13,37 @@ const augmentDispatch = (dispatch: React.Dispatch<Action>, state: State) => (
   input: Thunk | Action
 ) => (input instanceof Function ? input(dispatch, state) : dispatch(input))
 
-type Context = [State, AugmentedDispatch]
+type SetSketchId = (sketchId: string) => void
+
+interface Props {
+  env: Env
+  sketchId: string
+  sketchIds: string[]
+  setSketchId: SetSketchId
+}
+
+type Context = [State, AugmentedDispatch, SetSketchId]
 export const SketchContext = createContext(([{}] as unknown) as Context)
 
-const Provider: React.FC = ({ children }) => {
+const Provider: React.FC<Props> = ({
+  children,
+  env,
+  sketchId,
+  sketchIds,
+  setSketchId,
+}) => {
   const [state, dispatch] = useReducer(combinedReducers, initialState)
-  const value = [state, augmentDispatch(dispatch, state)] as Context
+
+  const value = [
+    {
+      ...state,
+      env,
+      sketchId,
+      sketchIds,
+    },
+    augmentDispatch(dispatch, state),
+    setSketchId,
+  ] as Context
 
   return (
     <SketchContext.Provider value={value}>{children}</SketchContext.Provider>

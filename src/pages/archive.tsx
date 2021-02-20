@@ -1,12 +1,9 @@
 import type { GetStaticProps } from 'next'
 
-import { getSketchIds } from 'lib/data/getSketchIds'
-import { getSketchContent } from 'lib/data/getSketchContent'
+import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchPreview } from 'components/SketchPreview'
-
-const NOW = new Date()
 
 interface Props {
   sketches: SketchContent[]
@@ -19,15 +16,9 @@ const ArchivePage = ({ sketches }: Props) => (
 )
 
 export const getStaticProps: GetStaticProps = async () => {
-  const sketchIds = getSketchIds()
-  const sketches = sketchIds
-    .map(getSketchContent)
-    .filter(({ datePublished }) => datePublished - +NOW < 0)
-    .sort(({ datePublished: aDate }, { datePublished: bDate }) => bDate - aDate)
-
   return {
     props: {
-      sketches,
+      sketches: getAllSketchContent(),
     },
   }
 }

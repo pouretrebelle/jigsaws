@@ -20,19 +20,33 @@ export const PageWrapper: React.FC<Props> = ({
   accentColorRgb,
   title,
   children,
-}) => (
-  <StyledWrapper
-    style={
-      accentColorRgb ? ({ '--color-accent': accentColorRgb } as object) : {}
-    }
-  >
-    <Head>
-      <title>{title && `${title} | `}Abstract Puzzles</title>
-    </Head>
-    <Header />
+}) => {
+  const faviconUrl = `/api/favicon.svg?color=rgb(${(
+    accentColorRgb || ''
+  ).replace(/ /g, '')})`
 
-    {children}
+  return (
+    <StyledWrapper
+      style={
+        accentColorRgb ? ({ '--color-accent': accentColorRgb } as object) : {}
+      }
+    >
+      <Head>
+        <title>{title && `${title} | `}Abstract Puzzles</title>
 
-    <Footer />
-  </StyledWrapper>
-)
+        <link rel="icon" href={faviconUrl} />
+        <link rel="apple-touch-icon" href={faviconUrl} />
+        <link
+          rel="mask-icon"
+          href={faviconUrl}
+          color={`rgb(${accentColorRgb})`}
+        />
+      </Head>
+      <Header />
+
+      {children}
+
+      <Footer />
+    </StyledWrapper>
+  )
+}

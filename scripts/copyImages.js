@@ -28,6 +28,13 @@ const walk = (
 }
 
 const copyImages = () => {
+  if (!fs.existsSync('public')) {
+    fs.mkdirSync('public');
+    if (!fs.existsSync('public/sketches')) {
+      fs.mkdirSync('public/sketches');
+    }
+  }
+
   walk('sketches', async (err, files) => {
     if (err) return console.error(err)
 
@@ -35,7 +42,7 @@ const copyImages = () => {
 
     imageFiles.forEach(file => {
       const fileName = file.split('\\').pop()
-      fs.copyFileSync(file, `public/sketches/${fileName}`)
+      fs.copyFileSync(file, path.resolve('public/sketches', fileName))
     })
 
     console.info(`Copied ${imageFiles.length} images to public/sketches`)

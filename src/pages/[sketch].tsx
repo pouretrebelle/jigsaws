@@ -1,6 +1,5 @@
 import type { GetStaticPaths, GetStaticProps } from 'next'
 
-import { getSketchIds } from 'lib/data/getSketchIds'
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
@@ -41,7 +40,8 @@ const SketchPage = ({ sketch, previewSketches }: Props) => (
 )
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const sketchIds = getSketchIds()
+  const sketchIds = getAllSketchContent().map(({ id }) => id)
+
   const paths = sketchIds.map((sketch) => ({
     params: { sketch },
   }))

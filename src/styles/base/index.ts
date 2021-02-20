@@ -14,7 +14,6 @@ const GlobalStyle = createGlobalStyle`
     background: ${COLOR.BACKGROUND};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden;
     height: 100vh;
   }
 
@@ -71,6 +70,11 @@ const GlobalStyle = createGlobalStyle`
 
   a {
     color: inherit;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgb(var(--color-accent));
   }
 `
 

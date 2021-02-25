@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 import YouTubePlayer from 'react-player/youtube'
-import Image from 'next/image'
+
 import { SketchContent } from 'types'
-import { useState } from 'react'
+import { CloudinaryImage } from 'components/CloudinaryImage'
 
 const StyledYouTubeWrapper = styled.figure`
   width: 100%;
@@ -65,10 +66,12 @@ export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
   const [isPlaying, setIsPlaying] = useState(true)
 
   const image = (
-    <Image
-      src={`/sketches/${id}_solve_start.jpg`}
-      layout="fill"
-      objectFit="cover"
+    <CloudinaryImage
+      imagePath={`${id}_solve_start.jpg`}
+      aspectRatio={0.5625}
+      options={{
+        c: 'fill',
+      }}
     />
   )
 

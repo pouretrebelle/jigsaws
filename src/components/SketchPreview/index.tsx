@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import Link from 'next/link'
-import Image from 'next/image'
 
 import { SketchContent } from 'types'
+import { CloudinaryImage } from 'components/CloudinaryImage'
 
 const StyledGrid = styled.section`
   display: grid;
@@ -26,13 +26,6 @@ const StyledTitle = styled.h2`
   margin-bottom: 0.25em;
 `
 
-const StyledImage = styled.figure`
-  position: relative;
-  width: 100%;
-  padding-bottom: 100%;
-  background: black;
-`
-
 interface Props {
   sketches: SketchContent[]
 }
@@ -43,13 +36,13 @@ export const SketchPreview = ({ sketches }: Props) => (
       <Link key={id} href={pageLink} passHref>
         <StyledLink style={{ '--color-accent': accentColorRgb } as object}>
           <StyledTitle>{id}</StyledTitle>
-          <StyledImage>
-            <Image
-              src={`/sketches/${id}_solve_end.jpg`}
-              layout="fill"
-              objectFit="cover"
-            />
-          </StyledImage>
+          <CloudinaryImage
+            imagePath={`${id}_solve_end.jpg`}
+            aspectRatio={1}
+            options={{
+              c: 'fill',
+            }}
+          />
         </StyledLink>
       </Link>
     ))}

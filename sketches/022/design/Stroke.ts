@@ -1,7 +1,8 @@
 import Vector2 from 'utils/Vector2'
+import Bristle from './Bristle'
 
 import {
-  BRISTLE_WEIGHT,
+  BRISTLE_OPACITY,
   DISTANCE_BETWEEN_POINTS,
 } from './constants'
 
@@ -10,6 +11,7 @@ interface StrokeConstructor {
   pos: Vector2
   color: string
   size: number
+  bristles: Bristle[]
 }
 
 interface Point {
@@ -24,16 +26,18 @@ class Stroke {
   i: number
   color: string
   size: number
+  bristles: Bristle[]
   pos: Vector2
   points: Point[]
   vel: Vector2
   length: number = 0
   initialAngle: number
 
-  constructor({ i, pos, color, size }: StrokeConstructor) {
+  constructor({ i, pos, color, size, bristles }: StrokeConstructor) {
     this.i = i
     this.color = color
     this.size = size
+    this.bristles = bristles
     this.initialAngle = 0
 
     this.pos = pos
@@ -58,22 +62,23 @@ class Stroke {
     this.length += DISTANCE_BETWEEN_POINTS
   }
 
-  draw({ layerC: c, tempC, width, height, bristlePositions }: { layerC: CanvasRenderingContext2D, tempC: CanvasRenderingContext2D, width: number, height: number, bristlePositions: Vector2[] }) {
+  draw({ layerC: c, tempC, width, height }: { layerC: CanvasRenderingContext2D, tempC: CanvasRenderingContext2D, width: number, height: number }) {
     c.save()
     c.fillStyle = this.color
 
     tempC.save()
     tempC.fillStyle = this.color
+    tempC.globalAlpha = BRISTLE_OPACITY
 
-    tempC.translate(this.size / 2, this.size / 2)
-    bristlePositions.forEach(bristlePos => {
+    tempC.translate(this.size, this.size)
+    this.bristles.forEach(bristle => {
       tempC.beginPath()
-      tempC.arc(bristlePos.x * this.size, bristlePos.y * this.size, BRISTLE_WEIGHT, 0, Math.PI * 2)
+      tempC.arc(bristle.pos.x * this.size, bristle.pos.y * this.size, bristle.weight/2, 0, Math.PI * 2)
       tempC.fill()
     })
 
-    this.points.slice(1).forEach(({ x, y, angle }, i) => {
-      c.drawImage(tempC.canvas, x - this.size / 2, y - this.size / 2, width, height);
+    this.points.forEach(({ x, y }, i) => {
+      c.drawImage(tempC.canvas, x - this.size, y - this.size, width, height);
     })
 
     tempC.restore()

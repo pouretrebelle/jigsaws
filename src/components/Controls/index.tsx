@@ -79,14 +79,14 @@ const Controls = () => {
             ))}
           </>
         )}
-        <IdeOnly>
-          <ExportButton
-            onClick={() => dispatch(exportSketch(ExportPart.Design))}
-            loading={state.pending.includes(ActionType.ExportDesign)}
-          >
-            Export design
-          </ExportButton>
+        <ExportButton
+          onClick={() => dispatch(exportSketch(ExportPart.Design))}
+          loading={state.pending.includes(ActionType.ExportDesign)}
+        >
+          Export design
+        </ExportButton>
 
+        <IdeOnly>
           <RangeSlider
             label="Preview animation frames"
             min={0}
@@ -131,13 +131,13 @@ const Controls = () => {
             ))}
           </>
         )}
+        <ExportButton
+          onClick={() => dispatch(exportSketch(ExportPart.Cut))}
+          loading={state.pending.includes(ActionType.ExportCut)}
+        >
+          Export cut
+        </ExportButton>
         <IdeOnly>
-          <ExportButton
-            onClick={() => dispatch(exportSketch(ExportPart.Cut))}
-            loading={state.pending.includes(ActionType.ExportCut)}
-          >
-            Export cut
-          </ExportButton>
           <ExportButton
             onClick={() => dispatch(exportSketch(ExportPart.cutPieces))}
             loading={state.pending.includes(ActionType.ExportCutPieces)}

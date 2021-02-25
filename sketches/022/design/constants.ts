@@ -1,5 +1,6 @@
 export const STROKES_PER_LAYER = 10
-export const STROKE_LENGTH = 100
+export const STROKE_MIN_LENGTH = 50
+export const STROKE_MAX_LENGTH = 200
 export const STROKE_MIN_SIZE = 5
 export const STROKE_MAX_SIZE = 30
 export const FLOW_FIDELITY = 0.3

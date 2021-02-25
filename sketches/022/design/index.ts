@@ -9,7 +9,8 @@ import {
   STROKE_MIN_SIZE,
   STROKE_MAX_SIZE,
   FLOW_FIDELITY,
-  STROKE_LENGTH,
+  STROKE_MIN_LENGTH,
+  STROKE_MAX_LENGTH,
   STROKE_OPACITY,
   DISTANCE_BETWEEN_POINTS,
   HUES,
@@ -25,6 +26,7 @@ export enum Seeds {
   Position,
   Color,
   Size,
+  Length,
   Bristle,
 }
 
@@ -125,8 +127,18 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         size,
         bristles: makeBristles(layerI, i, Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, BRISTLES_PER_STROKE)))
       })
+      const length = map(
+        randomFromNoise(simplex[Seeds.Length].noise2D(
+          layerI,
+          i,
+        )),
+        0,
+        1,
+        STROKE_MIN_LENGTH,
+        STROKE_MAX_LENGTH,
+      )
 
-      for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_POINTS) {
+      for (let t = 0; t < length; t += DISTANCE_BETWEEN_POINTS) {
         stroke.update(getFlowAngle(stroke, layerI))
       }
       strokes.push(stroke)

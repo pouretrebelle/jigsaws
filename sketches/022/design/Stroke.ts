@@ -1,8 +1,8 @@
 import Vector2 from 'utils/Vector2'
 
 import {
-  DISTANCE_BETWEEN_RIBS,
-  RIB_WEIGHT,
+  BRISTLE_WEIGHT,
+  DISTANCE_BETWEEN_POINTS,
 } from './constants'
 
 interface StrokeConstructor {
@@ -46,7 +46,7 @@ class Stroke {
       this.initialAngle = angle
     }
 
-    this.vel.reset(DISTANCE_BETWEEN_RIBS, 0).rotate(angle)
+    this.vel.reset(DISTANCE_BETWEEN_POINTS, 0).rotate(angle)
     this.pos.plusEq(this.vel)
 
     this.points.push({
@@ -55,24 +55,28 @@ class Stroke {
       angle: this.vel.angle(),
     })
 
-    this.length += DISTANCE_BETWEEN_RIBS
+    this.length += DISTANCE_BETWEEN_POINTS
   }
 
-  draw(c: CanvasRenderingContext2D, strokes: Stroke[]) {
+  draw({ layerC: c, tempC, width, height, bristlePositions }: { layerC: CanvasRenderingContext2D, tempC: CanvasRenderingContext2D, width: number, height: number, bristlePositions: Vector2[] }) {
     c.save()
     c.fillStyle = this.color
 
-    this.points.slice(1).forEach(({ x, y, angle }, i) => {
-      temp.reset(0, 1)
-      temp.rotate(angle as number)
+    tempC.save()
+    tempC.fillStyle = this.color
 
-      c.beginPath()
-      c.moveTo(x + temp.x * this.size / 2, y + temp.y * this.size / 2)
-      c.lineTo(x - temp.x * this.size / 2, y - temp.y * this.size / 2)
-      c.lineTo(x + temp.y * RIB_WEIGHT, y - temp.x * RIB_WEIGHT)
-      c.fill()
+    tempC.translate(this.size / 2, this.size / 2)
+    bristlePositions.forEach(bristlePos => {
+      tempC.beginPath()
+      tempC.arc(bristlePos.x * this.size, bristlePos.y * this.size, BRISTLE_WEIGHT, 0, Math.PI * 2)
+      tempC.fill()
     })
 
+    this.points.slice(1).forEach(({ x, y, angle }, i) => {
+      c.drawImage(tempC.canvas, x - this.size / 2, y - this.size / 2, width, height);
+    })
+
+    tempC.restore()
     c.restore()
   }
 }

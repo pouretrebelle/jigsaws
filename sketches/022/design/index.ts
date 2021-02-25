@@ -3,6 +3,7 @@ import { map, randomFromNoise } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 
 import Stroke from './Stroke'
+import Bristle from './Bristle'
 import {
   STROKES_PER_LAYER,
   STROKE_MIN_SIZE,
@@ -24,6 +25,7 @@ export enum Seeds {
   Position,
   Color,
   Size,
+  Bristle,
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
@@ -45,7 +47,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
     let l = Math.round(
       map(
-        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI+17.82, Math.PI + hueI * 5)),
+        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI + 17.82, Math.PI + hueI * 5)),
         0,
         1,
         20,
@@ -88,14 +90,13 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 10, Math.PI + i * STROKE_SEPARATION_FIDELITY),
-      getRandomLength(Math.PI + i * STROKE_SEPARATION_FIDELITY, Math.PI + layerI * 10)
+      getRandomLength(Math.PI + layerI * 50, Math.PI + i * STROKE_SEPARATION_FIDELITY),
+      getRandomLength(Math.PI + i * STROKE_SEPARATION_FIDELITY, Math.PI + layerI * 50)
     )
 
-  const getBristlePositions = (layerI: number, strokeI: number): Vector2[] => Array.from(Array(BRISTLES_PER_STROKE)).map((_, i) => new Vector2(
-    randomFromNoise(simplex[Seeds.Position].noise3D(layerI - 42.33, strokeI + Math.PI, i + Math.PI)) - 0.5,
-    randomFromNoise(simplex[Seeds.Position].noise3D(layerI + 17.4, i + Math.PI, strokeI + Math.PI)) - 0.5,
-  )).filter(v => v.magnitude() <= 0.5)
+  const makeBristles = (layerI: number, strokeI: number, count: number): Bristle[] => Array.from(Array(count)).map((_, i) => new Bristle({
+    i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle]
+  })).filter(v => v.pos.magnitude() <= 0.5)
 
 
   c.save()
@@ -122,6 +123,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         pos: getRandomPos(i, layerI),
         color,
         size,
+        bristles: makeBristles(layerI, i, Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, BRISTLES_PER_STROKE)))
       })
 
       for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_POINTS) {
@@ -130,14 +132,16 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       strokes.push(stroke)
     }
 
-    strokes.forEach((stroke, strokeI) => {
-      stroke.draw({ layerC, tempC, width, height, bristlePositions: getBristlePositions(layerI, strokeI) })
+    strokes.forEach((stroke) => {
+      stroke.draw({
+        layerC, tempC, width, height
+      })
+
+      c.globalAlpha = opacity
+      c.globalCompositeOperation = composite
+      c.drawImage(layerCanvas, 0, 0, width, height)
     })
 
-    c.globalAlpha = opacity
-    c.globalCompositeOperation = composite
-    c.drawImage(layerCanvas, 0, 0, width, height)
   })
-
   c.restore()
 }

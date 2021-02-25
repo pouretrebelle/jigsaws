@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components'
 import Link from 'next/link'
-import Image from 'next/image'
 
 import { SketchContent } from 'types'
+import { CloudinaryImage } from 'components/CloudinaryImage'
 
 import { Player } from './Player'
 
@@ -141,9 +141,7 @@ export const SketchCard = ({
   youTubeLink,
   appLink,
 }: SketchContent) => (
-  <StyledGrid
-    $short={short}
-  >
+  <StyledGrid $short={short}>
     <StyledTitle>{id}</StyledTitle>
 
     <StyledVideo>
@@ -151,10 +149,12 @@ export const SketchCard = ({
     </StyledVideo>
 
     <StyledImage>
-      <Image
-        src={`/sketches/${id}_solve_end.jpg`}
-        layout="fill"
-        objectFit="cover"
+      <CloudinaryImage
+        imagePath={`${id}_solve_end.jpg`}
+        aspectRatio={1}
+        options={{
+          c: 'fill',
+        }}
       />
     </StyledImage>
 

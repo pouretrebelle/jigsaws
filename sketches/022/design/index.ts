@@ -10,11 +10,12 @@ import {
   FLOW_FIDELITY,
   STROKE_LENGTH,
   STROKE_OPACITY,
-  DISTANCE_BETWEEN_RIBS,
+  DISTANCE_BETWEEN_POINTS,
   HUES,
   LAYER_COUNT,
   STROKE_SEPARATION_FIDELITY,
   LAYER_SHIFT,
+  BRISTLES_PER_STROKE,
 } from './constants'
 import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
@@ -31,7 +32,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     simplex[Seeds.Color],
     LAYER_COUNT + 1
   )
-  const background = `hsl(${layerHues.shift()}, 40%, 45%)`
+  const background = `hsl(${layerHues.shift()}, 70%, 40%)`
   const layers = layerHues.map((hue, hueI) => {
     const size = Math.round(
       map(
@@ -44,7 +45,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     )
     let l = Math.round(
       map(
-        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI * 5)),
+        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI+17.82, Math.PI + hueI * 5)),
         0,
         1,
         20,
@@ -91,7 +92,21 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       getRandomLength(Math.PI + i * STROKE_SEPARATION_FIDELITY, Math.PI + layerI * 10)
     )
 
+  const getBristlePositions = (layerI: number, strokeI: number): Vector2[] => Array.from(Array(BRISTLES_PER_STROKE)).map((_, i) => new Vector2(
+    randomFromNoise(simplex[Seeds.Position].noise3D(layerI - 42.33, strokeI + Math.PI, i + Math.PI)) - 0.5,
+    randomFromNoise(simplex[Seeds.Position].noise3D(layerI + 17.4, i + Math.PI, strokeI + Math.PI)) - 0.5,
+  )).filter(v => v.magnitude() <= 0.5)
+
+
   c.save()
+
+  const tempCanvas = document.createElement('canvas')
+  tempCanvas.width = c.canvas.width
+  tempCanvas.height = c.canvas.height
+  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
+  tempC.setTransform(c.getTransform())
+  tempC.globalAlpha = STROKE_OPACITY
+
   layers.forEach(({ color, size, composite, opacity }, layerI) => {
     const layerCanvas = document.createElement('canvas')
     layerCanvas.width = c.canvas.width
@@ -109,14 +124,14 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         size,
       })
 
-      for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_RIBS) {
+      for (let t = 0; t < STROKE_LENGTH; t += DISTANCE_BETWEEN_POINTS) {
         stroke.update(getFlowAngle(stroke, layerI))
       }
       strokes.push(stroke)
     }
 
-    strokes.forEach((stroke) => {
-      stroke.draw(layerC, strokes)
+    strokes.forEach((stroke, strokeI) => {
+      stroke.draw({ layerC, tempC, width, height, bristlePositions: getBristlePositions(layerI, strokeI) })
     })
 
     c.globalAlpha = opacity

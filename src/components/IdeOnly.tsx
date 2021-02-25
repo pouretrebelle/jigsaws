@@ -10,3 +10,11 @@ export const IdeOnly: React.FC = ({ children }) => {
 
   return <>{children}</>
 }
+
+export const ExceptIde: React.FC = ({ children }) => {
+  const [{ env }] = useContext(SketchContext)
+
+  if (env === Env.Ide) return null
+
+  return <>{children}</>
+}

@@ -7,6 +7,9 @@ import { SketchCard } from 'components/SketchCard'
 
 import { Player } from './Player'
 
+const BP_MOBILE = '500px'
+const BP_DESKTOP = '900px'
+
 const StyledGrid = styled.article`
   display: grid;
   grid-template-columns: 2fr 2fr 2fr 3fr;
@@ -15,13 +18,13 @@ const StyledGrid = styled.article`
   grid-gap: 2em;
   margin: 3em 0;
 
-  @media (max-width: 900px) {
+  @media (max-width: ${BP_DESKTOP}) {
     grid-template-columns: 1fr 2fr;
     grid-template-rows: auto 1fr;
     grid-template-areas: 'title image' 'actions image' 'empty details';
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: ${BP_MOBILE}) {
     margin: 2em 0;
     grid-gap: 1.5em;
     grid-template-columns: 1fr;
@@ -50,7 +53,7 @@ const StyledTitle = styled.h2`
   font-weight: 700;
   line-height: 0.8;
 
-  @media (min-width: 500px) {
+  @media (min-width: ${BP_MOBILE}) {
     text-align: right;
   }
 `
@@ -65,7 +68,7 @@ const StyledVideo = styled.figure`
   padding-bottom: 56.35%;
   background: #000;
 
-  @media (max-width: 900px) {
+  @media (max-width: ${BP_DESKTOP}) {
     display: none;
   }
 `
@@ -97,7 +100,7 @@ const StyledActions = styled.nav`
   margin: -0.5em 0 0;
   font-size: 0.75em;
 
-  @media (min-width: 500px) {
+  @media (min-width: ${BP_MOBILE}) {
     grid-template-columns: 1fr;
     margin: 0;
   }
@@ -135,7 +138,7 @@ const StyledButton = styled.a<{
   ${({ $wideOnMobile }) =>
     $wideOnMobile &&
     `
-    @media (max-width: 500px) {
+    @media (max-width: ${BP_MOBILE}) {
       grid-column: span 2;
     }
   `}
@@ -143,7 +146,7 @@ const StyledButton = styled.a<{
   ${({ $hideOnDesktop }) =>
     $hideOnDesktop &&
     `
-    @media (min-width: 900px) {
+    @media (min-width: ${BP_DESKTOP}) {
       display: none;
     }
   `}

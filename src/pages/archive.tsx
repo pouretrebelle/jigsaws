@@ -3,7 +3,7 @@ import type { GetStaticProps } from 'next'
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
-import { SketchPreview } from 'components/SketchPreview'
+import { SketchCard } from 'components/SketchCard'
 
 interface Props {
   sketches: SketchContent[]
@@ -11,7 +11,7 @@ interface Props {
 
 const ArchivePage = ({ sketches }: Props) => (
   <PageWrapper accentColorRgb={sketches[0].accentColorRgb} title="Archive">
-    <SketchPreview sketches={sketches} />
+    <SketchCard sketches={sketches} />
   </PageWrapper>
 )
 

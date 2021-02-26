@@ -4,8 +4,8 @@ import { getSketchIds } from 'lib/data/getSketchIds'
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
+import { SketchPage } from 'components/SketchPage'
 import { SketchCard } from 'components/SketchCard'
-import { SketchPreview } from 'components/SketchPreview'
 
 
 interface Props {
@@ -15,8 +15,8 @@ interface Props {
 
 const HomePage = ({ latestSketch, previewSketches }: Props) => (
   <PageWrapper accentColorRgb={latestSketch.accentColorRgb}>
-    <SketchCard {...latestSketch} />
-    <SketchPreview sketches={previewSketches} />
+    <SketchPage {...latestSketch} />
+    <SketchCard sketches={previewSketches} />
   </PageWrapper>
 )
 

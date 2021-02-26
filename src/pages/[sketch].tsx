@@ -3,8 +3,8 @@ import type { GetStaticPaths, GetStaticProps } from 'next'
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
+import { SketchPage as SketchPageComponent } from 'components/SketchPage'
 import { SketchCard } from 'components/SketchCard'
-import { SketchPreview } from 'components/SketchPreview'
 
 const NOW = new Date()
 
@@ -34,8 +34,8 @@ interface Props {
 
 const SketchPage = ({ sketch, previewSketches }: Props) => (
   <PageWrapper accentColorRgb={sketch.accentColorRgb} title={sketch.id}>
-    <SketchCard {...sketch} />
-    <SketchPreview sketches={previewSketches} />
+    <SketchPageComponent {...sketch} />
+    <SketchCard sketches={previewSketches} />
   </PageWrapper>
 )
 

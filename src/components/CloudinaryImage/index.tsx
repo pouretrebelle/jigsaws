@@ -52,26 +52,24 @@ export const CloudinaryImage: React.FC<Props> = ({
   const [imageWidth, setImageWidth] = useState(0)
   const [hasLoaded, setHasLoaded] = useState(false)
 
-  useEffect(() => {
+  const calculateWidth = () => {
     const pixelRatio = window.devicePixelRatio || 1
-    const resizeObserver = new window.ResizeObserver((entries) => {
-      const newWidth = entries[0].contentBoxSize[0].inlineSize * pixelRatio
+    const newWidth = imageWrapperElement?.current?.clientWidth
 
-      // don't resize if it's smaller than the current
-      if (newWidth < imageWidth) return
+    // don't resize if it's smaller than the current
+    if (!newWidth || newWidth * pixelRatio < imageWidth) return
 
-      // round up to the nearest 50
-      setImageWidth(Math.ceil(newWidth / 50) * 50)
-    })
+    // round up to the nearest 50
+    setImageWidth(Math.ceil((newWidth * pixelRatio) / 50) * 50)
+  }
 
-    const wrapperRef = imageWrapperElement.current
-    if (wrapperRef) {
-      resizeObserver.observe(wrapperRef)
-    }
+  useEffect(() => {
+    calculateWidth()
+
+    window.addEventListener('resize', calculateWidth)
+
     return () => {
-      if (wrapperRef) {
-        resizeObserver.unobserve(wrapperRef)
-      }
+      window.removeEventListener('resize', calculateWidth)
     }
   }, [])
 

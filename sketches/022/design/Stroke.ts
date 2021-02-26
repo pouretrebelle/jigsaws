@@ -9,7 +9,6 @@ import {
 interface StrokeConstructor {
   i: number
   pos: Vector2
-  color: string
   size: number
   bristles: Bristle[]
 }
@@ -20,11 +19,8 @@ interface Point {
   angle?: number
 }
 
-const temp = new Vector2()
-
 class Stroke {
   i: number
-  color: string
   size: number
   bristles: Bristle[]
   pos: Vector2
@@ -33,9 +29,8 @@ class Stroke {
   length: number = 0
   initialAngle: number
 
-  constructor({ i, pos, color, size, bristles }: StrokeConstructor) {
+  constructor({ i, pos, size, bristles }: StrokeConstructor) {
     this.i = i
-    this.color = color
     this.size = size
     this.bristles = bristles
     this.initialAngle = 0
@@ -64,14 +59,13 @@ class Stroke {
 
   draw({ layerC: c, tempC, width, height }: { layerC: CanvasRenderingContext2D, tempC: CanvasRenderingContext2D, width: number, height: number }) {
     c.save()
-    c.fillStyle = this.color
 
     tempC.save()
-    tempC.fillStyle = this.color
     tempC.globalAlpha = BRISTLE_OPACITY
 
     tempC.translate(this.size, this.size)
     this.bristles.forEach(bristle => {
+      tempC.fillStyle = bristle.color
       tempC.beginPath()
       tempC.arc(bristle.pos.x * this.size, bristle.pos.y * this.size, bristle.weight/2, 0, Math.PI * 2)
       tempC.fill()
@@ -82,6 +76,7 @@ class Stroke {
     })
 
     tempC.restore()
+    tempC.clearRect(0, 0, width, height)
     c.restore()
   }
 }

@@ -56,11 +56,12 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
         55
       )
     )
-    if (l > 35) l += 20 // avoid the 10% around the background l
+    if (hue > 100 && hue < 190 && l > 40) l -= 10 // pull down aggressive greens
+    if (l > 40) l += 20 // avoid the 10% around the background l
     return {
-      color: `hsl(${hue}, 100%, ${l}%)`,
+      hue,
+      lightness: l,
       size,
-      composite: l < 50 ? 'screen' : 'multiply',
       opacity: 1,
     }
   })
@@ -92,14 +93,9 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 50, Math.PI + i * STROKE_SEPARATION_FIDELITY),
-      getRandomLength(Math.PI + i * STROKE_SEPARATION_FIDELITY, Math.PI + layerI * 50)
+      getRandomLength(layerI, layerI * 4 + i * STROKE_SEPARATION_FIDELITY),
+      getRandomLength(layerI * 4 + i * STROKE_SEPARATION_FIDELITY, layerI)
     )
-
-  const makeBristles = (layerI: number, strokeI: number, count: number): Bristle[] => Array.from(Array(count)).map((_, i) => new Bristle({
-    i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle]
-  })).filter(v => v.pos.magnitude() <= 0.5)
-
 
   c.save()
 
@@ -110,7 +106,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   tempC.setTransform(c.getTransform())
   tempC.globalAlpha = STROKE_OPACITY
 
-  layers.forEach(({ color, size, composite, opacity }, layerI) => {
+  layers.forEach(({ hue, lightness, size, opacity }, layerI) => {
     const layerCanvas = document.createElement('canvas')
     layerCanvas.width = c.canvas.width
     layerCanvas.height = c.canvas.height
@@ -119,18 +115,21 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     layerC.globalAlpha = STROKE_OPACITY
 
     const strokes: Stroke[] = []
-    for (let i = 0; i < STROKES_PER_LAYER; i++) {
+    for (let strokeI = 0; strokeI < STROKES_PER_LAYER; strokeI++) {
+      const bristles = Array.from(Array(Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, BRISTLES_PER_STROKE)))).map((_, i) => new Bristle({
+        i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle], hue, lightness
+      })).filter(v => v.pos.magnitude() <= 0.5)
+
       const stroke = new Stroke({
-        i,
-        pos: getRandomPos(i, layerI),
-        color,
+        i: strokeI,
+        pos: getRandomPos(strokeI, layerI),
         size,
-        bristles: makeBristles(layerI, i, Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, BRISTLES_PER_STROKE)))
+        bristles
       })
       const length = map(
         randomFromNoise(simplex[Seeds.Length].noise2D(
           layerI,
-          i,
+          strokeI,
         )),
         0,
         1,
@@ -150,10 +149,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       })
 
       c.globalAlpha = opacity
-      c.globalCompositeOperation = composite
       c.drawImage(layerCanvas, 0, 0, width, height)
     })
-
   })
   c.restore()
 }

@@ -103,7 +103,10 @@ const StyledActions = styled.nav`
   }
 `
 
-const StyledButton = styled.a`
+const StyledButton = styled.a<{
+  $hideOnDesktop?: boolean
+  $wideOnMobile?: boolean
+}>`
   position: relative;
   width: 100%;
   cursor: pointer;
@@ -128,6 +131,22 @@ const StyledButton = styled.a`
   &:active {
     box-shadow: 0 0 0 0 rgba(var(--color-accent), 0.3);
   }
+
+  ${({ $wideOnMobile }) =>
+    $wideOnMobile &&
+    `
+    @media (max-width: 500px) {
+      grid-column: span 2;
+    }
+  `}
+
+  ${({ $hideOnDesktop }) =>
+    $hideOnDesktop &&
+    `
+    @media (min-width: 900px) {
+      display: none;
+    }
+  `}
 `
 
 const StyledPreviews = styled.aside`
@@ -167,14 +186,16 @@ export const SketchPage = ({
 
     <StyledActions>
       <Link href={appLink} passHref>
-        <StyledButton>Open in explorer</StyledButton>
+        <StyledButton $wideOnMobile>Open in explorer</StyledButton>
       </Link>
       <StyledButton
         href={`https://github.com/pouretrebelle/jigsaws/tree/master/sketches/${id}`}
       >
         Check out code
       </StyledButton>
-      <StyledButton href={youTubeLink}>Watch solve</StyledButton>
+      <StyledButton $hideOnDesktop href={youTubeLink}>
+        Watch solve
+      </StyledButton>
     </StyledActions>
 
     <StyledDetails>

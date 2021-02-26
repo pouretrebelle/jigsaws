@@ -6,7 +6,7 @@ import { CloudinaryImage } from 'components/CloudinaryImage'
 
 import { Player } from './Player'
 
-const StyledGrid = styled.article<{ $short?: boolean }>`
+const StyledGrid = styled.article`
   display: grid;
   grid-template-columns: 2fr 2fr 2fr 3fr;
   grid-template-rows: auto auto auto 1fr;
@@ -25,13 +25,6 @@ const StyledGrid = styled.article<{ $short?: boolean }>`
     grid-template-rows: 1fr auto auto;
     grid-template-areas: 'title' 'image' 'actions' 'details';
   }
-
-  ${({ $short }) =>
-    $short &&
-    css`
-      grid-template-rows: auto auto 1fr;
-      grid-template-areas: 'title title video video' 'image image video video' 'image image actions details';
-    `}
 
   > * > *:first-child {
     margin-top: 0;
@@ -137,11 +130,10 @@ const StyledButton = styled.a`
 export const SketchPage = ({
   id,
   html,
-  short,
   youTubeLink,
   appLink,
 }: SketchContent) => (
-  <StyledGrid $short={short}>
+  <StyledGrid>
     <StyledTitle>{id}</StyledTitle>
 
     <StyledVideo>

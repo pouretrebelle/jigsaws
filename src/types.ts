@@ -119,7 +119,6 @@ export interface Design {
 export interface SketchContent {
   id: string
   html: string
-  short: boolean
   youTubeLink: string
   appLink: string
   pageLink: string

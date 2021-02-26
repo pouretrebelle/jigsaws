@@ -15,7 +15,6 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
     return {
       id: sketchId,
       html: processMarkdown(content),
-      short: content.length < 500,
       accentColor,
       accentColorRgb: getRgb(accentColor),
       datePublished: +datePublished,

@@ -10,6 +10,7 @@ const StyledYouTubeWrapper = styled.figure`
   height: 100%;
   position: absolute;
   margin: 0;
+  top: 0;
 `
 
 const StyledButton = styled.button`

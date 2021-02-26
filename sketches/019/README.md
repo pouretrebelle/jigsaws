@@ -1,9 +1,10 @@
 ---
 datePublished: 2021-03-05
-youTubeLink: 
+youTubeLink: https://youtu.be/9rukmgwjOm4
 
 designNoiseSeeds: ['les', 'ata', 'zpn']
 cutNoiseSeeds: ['gfq', 'ioy', 'jgv', 'gkb']
+accentColor: '#181fd1'
 
 pieces: 256
 ---

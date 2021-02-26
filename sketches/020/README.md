@@ -1,9 +1,10 @@
 ---
 datePublished: 2021-03-12
-youTubeLink: 
+youTubeLink: https://youtu.be/S0czGSrtrds
 
 designNoiseSeeds: ['iyo', 'lks', 'mrj', 'hpg']
 cutNoiseSeeds: ['ivl', 'rtu', 'yvc', 'ppm']
+accentColor: '#d5e371'
 
 pieces: 196
 ---

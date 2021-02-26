@@ -1,9 +1,10 @@
 ---
 datePublished: 2021-03-19
-youTubeLink: 
+youTubeLink: https://youtu.be/4Z3E9d1NaYg
 
 designNoiseSeeds: ['sdh', 'vts', 'mbs', 'nzu']
 cutNoiseSeeds: ['wab', 'zdg', 'khr', 'cje']
+accentColor: '#e42048'
 
 pieces: 256
 ---

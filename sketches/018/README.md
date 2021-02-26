@@ -1,9 +1,10 @@
 ---
 datePublished: 2021-02-26
-youTubeLink: 
+youTubeLink: https://youtu.be/W1uWQ5C5dcc
 
 designNoiseSeeds: ['ico', 'omr', 'mlv', 'vwi']
 cutNoiseSeeds: ['fdn', 'bay', 'xlt', 'ire']
+accentColor: '#dd4583'
 
 pieces: 256
 ---

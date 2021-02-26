@@ -10,4 +10,4 @@ pieces: 256
 
 # 018
 
-![canvas](result/018_ico-omr-mlv-vwi_fdn-bay-xlt-ire.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/018_ico-omr-mlv-vwi_fdn-bay-xlt-ire?raw=true)

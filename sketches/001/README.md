@@ -11,7 +11,7 @@ pieces: 196
 
 # 001
 
-![canvas](result/001_rtb-wzn-tii-xnq-qgo-enq_rsj-gbc-ptu-hnw.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/001_rtb-wzn-tii-xnq-qgo-enq_rsj-gbc-ptu-hnw?raw=true)
 
 For my first series of jigsaws I wanted to use a classic jigsaw pattern so I could explore what makes traditional jigsaws so engaging - what levels of complexity in colour, shape, and texture hit the sweet spot between a puzzle being boring because it's too easy and frustrating because it's too hard?
 

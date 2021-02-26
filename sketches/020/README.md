@@ -10,4 +10,4 @@ pieces: 196
 
 # 020
 
-![canvas](result/020_iyo-lks-mrj-hpg_ivl-rtu-yvc-ppm.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/020_iyo-lks-mrj-hpg_ivl-rtu-yvc-ppm?raw=true)

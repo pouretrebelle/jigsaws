@@ -11,6 +11,6 @@ pieces: 225
 
 # 006
 
-![canvas](result/006_kdo-zya-xnv-uum-ejs_gtx-xat-eoh-que.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/006_kdo-zya-xnv-uum-ejs_gtx-xat-eoh-que?raw=true)
 
 Evolving from the previous two puzzles, this design adds one more degree of orientational complexity by using triangular worms pointing in two directions.

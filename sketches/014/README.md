@@ -11,6 +11,6 @@ pieces: 225
 
 # 014
 
-![canvas](result/014_bub-ahr-pba_zgf-kbo-rwn-sxo.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/014_bub-ahr-pba_zgf-kbo-rwn-sxo?raw=true)
 
 In this design the longest strokes are transparent, leaving thick empty trails in a  design otherwise crowded with curves.

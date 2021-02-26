@@ -11,7 +11,7 @@ pieces: 225
 
 # 005
 
-![canvas](result/005_acr-arl-ayd-qxv-zya_tol-zop-ovo-qfo.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/005_acr-arl-ayd-qxv-zya_tol-zop-ovo-qfo?raw=true)
 
 Evolving from 004, this design uses square instead of circular worms. Each piece has lines at right angles with varying thicknesses and offsets.
 

@@ -1,3 +1,5 @@
+import { COLOR } from 'styles/tokens'
+
 interface Req {
   query: { color?: string }
 }
@@ -12,7 +14,7 @@ const handler = (req: Req, res: Res) => {
     query: { color },
   } = req
 
-  const faviconColor = color ? color.replace(/ /g, '') : '#fe68ff'
+  const faviconColor = color ? color.replace(/ /g, '') : COLOR.ACCENT
 
   res.setHeader('content-type', 'image/svg+xml')
   res.status(200).send(`

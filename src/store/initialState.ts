@@ -1,7 +1,7 @@
 import { getFromStorage } from "lib/storage"
 import { Env } from "types"
 
-const initialState = {
+export const getInitialState = () => ({
   env: Env.Dev,
 
   sketchId: '001',
@@ -17,6 +17,4 @@ const initialState = {
 
   pending: [],
   error: undefined,
-}
-
-export default initialState
+})

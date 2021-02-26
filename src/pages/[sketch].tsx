@@ -4,7 +4,7 @@ import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchPage as SketchPageComponent } from 'components/SketchPage'
-import { SketchCard } from 'components/SketchCard'
+import { useEffect } from 'react'
 
 const NOW = new Date()
 
@@ -24,11 +24,22 @@ interface Props {
   previewSketches: SketchContent[]
 }
 
-const SketchPage = ({ sketch, previewSketches }: Props) => (
-  <PageWrapper accentColorRgb={sketch.accentColorRgb} title={sketch.id}>
-    <SketchPageComponent {...sketch} previewSketches={previewSketches} />
-  </PageWrapper>
-)
+const SketchPage = ({ sketch, previewSketches }: Props) => {
+  // Set storage to sketch's seeds so the app opens with these values
+  useEffect(() => {
+    localStorage.setItem('cutNoiseSeeds', JSON.stringify(sketch.cutNoiseSeeds))
+    localStorage.setItem(
+      'designNoiseSeeds',
+      JSON.stringify(sketch.designNoiseSeeds)
+    )
+  }, [sketch.id])
+
+  return (
+    <PageWrapper accentColorRgb={sketch.accentColorRgb} title={sketch.id}>
+      <SketchPageComponent {...sketch} previewSketches={previewSketches} />
+    </PageWrapper>
+  )
+}
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const sketchIds = getAllSketchContent().map(({ id }) => id)

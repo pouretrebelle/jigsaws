@@ -1,7 +1,7 @@
 import React, { createContext, useReducer } from 'react'
 import { State, Action, Thunk, AugmentedDispatch, Env } from 'types'
 import * as reducers from 'store/reducers'
-import initialState from 'store/initialState'
+import { getInitialState } from 'store/initialState'
 
 const combinedReducers: React.Reducer<State, Action> = (state, action) =>
   Object.values(reducers).reduce(
@@ -32,7 +32,7 @@ const Provider: React.FC<Props> = ({
   sketchIds,
   setSketchId,
 }) => {
-  const [state, dispatch] = useReducer(combinedReducers, initialState)
+  const [state, dispatch] = useReducer(combinedReducers, getInitialState())
 
   const value = [
     {

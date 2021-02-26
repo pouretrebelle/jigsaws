@@ -11,6 +11,6 @@ pieces: 324
 
 # 013
 
-![canvas](result/013_eui-xjv-ter_grw-guj-xfx-yqv.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/013_eui-xjv-ter_grw-guj-xfx-yqv?raw=true)
 
 This design renders the strokes from flow fields as a series of dots. The colours of the dots correspond to the orientation of the stroke, the total length of the stroke, and how far through the stroke the dot is. This is a terrifically difficult puzzle to solve because there's very little continuity of the strokes between the pieces, and the colours aren't significantly distinguished across the design.

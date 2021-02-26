@@ -11,6 +11,6 @@ pieces: 225
 
 # 012
 
-![canvas](result/012_jyi-bfc-qle_qng-nzp-sgs-hvn.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/012_jyi-bfc-qle_qng-nzp-sgs-hvn?raw=true)
 
 Alongside the flow fields technique of the previous two designs, this design uses circle packing to fill in the spaces between the strokes.

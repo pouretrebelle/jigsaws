@@ -11,7 +11,7 @@ pieces: 169
 
 # 015
 
-![canvas](result/015_gld-bjl-lvq_ubp-vxr-svd-ncj.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/015_gld-bjl-lvq_ubp-vxr-svd-ncj?raw=true)
 
 Layers of strokes are composited over one another with slightly altered flow fields.
 

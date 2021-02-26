@@ -10,4 +10,4 @@ pieces: 256
 
 # 021
 
-![canvas](result/021_sdh-vts-mbs-nzu_wab-zdg-khr-cje.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/021_sdh-vts-mbs-nzu_wab-zdg-khr-cje?raw=true)

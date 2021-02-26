@@ -11,6 +11,6 @@ pieces: 400
 
 # 003
 
-![canvas](result/003_nqp-luy-ntg-ghj_aum-wln-bqg-sac.png?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/003_nqp-luy-ntg-ghj_aum-wln-bqg-sac?raw=true)
 
 This design uses one main accent colour to offset each of the worms. The worms oscillate horizontally in alternating directions, limiting the spiky texture to two orientations.

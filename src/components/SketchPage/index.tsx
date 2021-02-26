@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { SketchContent } from 'types'
 import { CloudinaryImage } from 'components/CloudinaryImage'
+import { SketchCard } from 'components/SketchCard'
 
 import { Player } from './Player'
 
@@ -15,15 +16,17 @@ const StyledGrid = styled.article`
   margin: 3em 0;
 
   @media (max-width: 900px) {
-    grid-template-rows: 1fr auto auto;
-    grid-template-areas: 'title title image image' 'video video image image' 'details details details actions';
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 'title image' 'actions image' 'empty details';
   }
+
   @media (max-width: 500px) {
     margin: 2em 0;
     grid-gap: 1.5em;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto auto;
-    grid-template-areas: 'title' 'image' 'actions' 'details';
+    grid-template-areas: 'title' 'image' 'actions' 'details' 'previews';
   }
 
   > * > *:first-child {
@@ -62,7 +65,7 @@ const StyledVideo = styled.figure`
   padding-bottom: 56.35%;
   background: #000;
 
-  @media (max-width: 500px) {
+  @media (max-width: 900px) {
     display: none;
   }
 `
@@ -127,12 +130,24 @@ const StyledButton = styled.a`
   }
 `
 
+const StyledPreviews = styled.aside`
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 2em 0 0;
+`
+
+interface Props extends SketchContent {
+  previewSketches: SketchContent[]
+}
+
 export const SketchPage = ({
   id,
   html,
   youTubeLink,
   appLink,
-}: SketchContent) => (
+  previewSketches,
+}: Props) => (
   <StyledGrid>
     <StyledTitle>{id}</StyledTitle>
 
@@ -162,6 +177,14 @@ export const SketchPage = ({
       <StyledButton href={youTubeLink}>Watch solve</StyledButton>
     </StyledActions>
 
-    <StyledDetails dangerouslySetInnerHTML={{ __html: html }} />
+    <StyledDetails>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+
+      <StyledPreviews>
+        {previewSketches.map((sketch) => (
+          <SketchCard key={sketch.id} {...sketch} />
+        ))}
+      </StyledPreviews>
+    </StyledDetails>
   </StyledGrid>
 )

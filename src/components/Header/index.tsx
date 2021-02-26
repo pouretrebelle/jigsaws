@@ -4,7 +4,7 @@ import Link from 'next/link'
 const StyledHeader = styled.header`
   margin: 2em auto;
 
-  @media (min-width: 900px) {
+  @media (min-width: 500px) {
     text-align: center;
     margin-bottom: 3em;
   }
@@ -16,7 +16,7 @@ const StyledH1 = styled.h1`
   font-size: 17vw;
   margin-bottom: 0.25em;
 
-  @media (min-width: 900px) {
+  @media (min-width: 500px) {
     font-size: calc(4.6vw + 12px);
     margin-right: -1em;
   }

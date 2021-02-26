@@ -13,18 +13,10 @@ const getSurroundingIds = (id: string, ids: string[]): string[] => {
 
   if (idIndex < 0 || ids.length <= 5) return []
 
-  if (idIndex === 0) return ids.slice(1, 5)
-  if (idIndex === 1) return [ids[0], ...ids.slice(2, 5)]
-  if (idIndex === ids.length - 1) return ids.slice(-5, -1)
-  if (idIndex === ids.length - 2)
-    return [...ids.slice(-5, -2), ids[ids.length - 1]]
+  if (idIndex === 0) return ids.slice(1, 3)
+  if (idIndex === ids.length - 1) return ids.slice(-3, -1)
 
-  return [
-    ids[idIndex - 2],
-    ids[idIndex - 1],
-    ids[idIndex + 1],
-    ids[idIndex + 2],
-  ]
+  return [ids[idIndex - 1], ids[idIndex + 1]]
 }
 
 interface Props {
@@ -34,8 +26,7 @@ interface Props {
 
 const SketchPage = ({ sketch, previewSketches }: Props) => (
   <PageWrapper accentColorRgb={sketch.accentColorRgb} title={sketch.id}>
-    <SketchPageComponent {...sketch} />
-    <SketchCard sketches={previewSketches} />
+    <SketchPageComponent {...sketch} previewSketches={previewSketches} />
   </PageWrapper>
 )
 

@@ -61,9 +61,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const previewSketches = getSurroundingIds(
     sketchId,
-    sketches
-      .filter(({ datePublished }) => datePublished - +NOW < 0)
-      .map(({ id }) => id)
+    sketches.map(({ id }) => id)
   ).map((thisId) => sketches.find(({ id }) => id === thisId))
 
   return {

@@ -2,11 +2,10 @@ import type { GetStaticProps, GetStaticPaths } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
-import { getSketchIds } from 'lib/data/getSketchIds'
-
+import { Env } from 'types'
+import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import Provider from 'Provider'
 import Demo from 'components/Demo'
-import { Env } from 'types'
 
 interface Props {
   sketchId: string
@@ -33,7 +32,7 @@ const App = (props: Props) => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const sketchIds = getSketchIds()
+  const sketchIds = getAllSketchContent().map((sketch) => sketch.id)
   const paths = sketchIds.map((sketch) => ({
     params: { sketch },
   }))
@@ -45,7 +44,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const sketchIds = getSketchIds()
+  const sketchIds = getAllSketchContent().map((sketch) => sketch.id)
 
   return {
     props: {

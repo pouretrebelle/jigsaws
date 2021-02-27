@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
+import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchCard } from 'components/SketchCard'
 
@@ -22,7 +23,8 @@ interface Props {
 }
 
 const ArchivePage = ({ sketches }: Props) => (
-  <PageWrapper title="Archive">
+  <PageWrapper>
+    <SEO title="Archive" imagePath={sketches[0].imagePath.solveEnd} />
     <StyledGrid>
       {sketches.map((sketch) => (
         <SketchCard key={sketch.id} {...sketch} />

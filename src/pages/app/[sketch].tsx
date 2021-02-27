@@ -18,6 +18,7 @@ const App: React.FC<Props> = ({ sketch, ...props }) => (
     <Favicon accentColorRgb={sketch.accentColorRgb} />
     <SEO
       title={`${sketch.id} Explorer`}
+      description={sketch.excerpt}
       imagePath={sketch.imagePath.canvas}
       smallImage
     />

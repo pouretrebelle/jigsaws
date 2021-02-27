@@ -39,6 +39,7 @@ const SketchPage = ({ sketch, previewSketches }: Props) => {
     <PageWrapper accentColorRgb={sketch.accentColorRgb}>
       <SEO
         title={sketch.id}
+        description={sketch.excerpt}
         imagePath={sketch.imagePath.solveEnd}
         smallImage
       />

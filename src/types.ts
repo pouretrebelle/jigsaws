@@ -127,4 +127,9 @@ export interface SketchContent {
   accentColorRgb?: string
   datePublished: number
   pieces: number
+  imagePath: {
+    solveStart: string
+    solveEnd: string
+    canvas: string
+  }
 }

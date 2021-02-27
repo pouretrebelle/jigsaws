@@ -24,6 +24,11 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
       youTubeLink,
       appLink: `/app/${sketchId}`,
       pageLink: `/${sketchId}`,
+      imagePath: {
+        solveStart: `${sketchId}_solve_start`,
+        solveEnd: `${sketchId}_solve_end`,
+        canvas: `${sketchId}_${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}`,
+      }
     }
   }
   catch (err) {

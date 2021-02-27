@@ -1,24 +1,10 @@
 import unified from 'unified'
-import remove from 'unist-util-remove'
 import markdown from 'remark-parse'
-import remark2rehype from 'remark-rehype'
-import stringify from 'rehype-stringify'
 import toString from 'remark-stringify'
 import strip from 'strip-markdown'
 
-const stripElements: unified.Plugin<any[], { test: object }> = options => tree => {
-  remove(tree, { cascade: true }, options.test)
-}
-
-export const processMarkdown = (string: string) => {
-  const processor = unified()
-    .use(markdown)
-    .use(remark2rehype)
-    .use(stripElements, { test: [{ tagName: 'h1' }, { tagName: 'img' }] })
-    .use(stringify)
-
-  return processor.processSync(string).toString()
-}
+// Finds 3 digit numbers on their own and link them to the site root
+export const wrapSketchLinks = (string: string) => string.replace(/([\s.,;?!])([0-9]{3})([\s.,;?!])/g, (_, before, id, after) => `${before}[${id}](/${id})${after}`)
 
 export const getExcerpt = (string: string) => {
   const processor = unified()

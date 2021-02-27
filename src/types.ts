@@ -117,7 +117,7 @@ export interface Design {
 
 export interface SketchContent {
   id: string
-  html: string
+  markdownDescription: string
   excerpt: string
   youTubeLink: string
   appLink: string

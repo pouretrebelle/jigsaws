@@ -21,7 +21,7 @@ interface Props {
 type Context = [State, AugmentedDispatch]
 export const SketchContext = createContext(([{}] as unknown) as Context)
 
-const Provider: React.FC<Props> = ({ children, sketchId, sketchIds }) => {
+export const SketchProvider: React.FC<Props> = ({ children, sketchId, sketchIds }) => {
   const [state, dispatch] = useReducer(combinedReducers, getInitialState())
 
   const value = [
@@ -37,5 +37,3 @@ const Provider: React.FC<Props> = ({ children, sketchId, sketchIds }) => {
     <SketchContext.Provider value={value}>{children}</SketchContext.Provider>
   )
 }
-
-export default Provider

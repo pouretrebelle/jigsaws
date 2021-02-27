@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
-import Provider from 'store/Provider'
+import { SketchProvider } from 'store/Provider'
 import Demo from 'components/Demo'
 
 interface Props {
@@ -19,9 +19,9 @@ const App = (props: Props) => {
       <Head>
         <title>{props.sketchId} (Generative Jigsaws)</title>
       </Head>
-      <Provider {...props}>
+      <SketchProvider {...props}>
         <Demo />
-      </Provider>
+      </SketchProvider>
     </>
   )
 }

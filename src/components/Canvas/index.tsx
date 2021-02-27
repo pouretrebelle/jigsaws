@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import styled from 'styled-components'
 
-import { SketchContext } from 'Provider'
+import { SketchContext } from 'store/Provider'
 import { useWindowSize } from 'lib/hooks'
 import { drawBackground, drawDesign, drawCut, drawGuides } from 'lib/draw'
 import { ActionType } from 'types'

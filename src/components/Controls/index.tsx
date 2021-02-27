@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 
-import { SketchContext } from 'Provider'
+import { SketchContext } from 'store/Provider'
 import {
   toggleVisibility,
   updateSeed,

@@ -2,6 +2,7 @@ import type { GetStaticPaths, GetStaticProps } from 'next'
 
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
+import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchPage as SketchPageComponent } from 'components/SketchPage'
 import { useEffect } from 'react'
@@ -35,7 +36,12 @@ const SketchPage = ({ sketch, previewSketches }: Props) => {
   }, [sketch.id])
 
   return (
-    <PageWrapper accentColorRgb={sketch.accentColorRgb} title={sketch.id}>
+    <PageWrapper accentColorRgb={sketch.accentColorRgb}>
+      <SEO
+        title={sketch.id}
+        imagePath={sketch.imagePath.solveEnd}
+        smallImage
+      />
       <SketchPageComponent {...sketch} previewSketches={previewSketches} />
     </PageWrapper>
   )

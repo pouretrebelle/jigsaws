@@ -2,6 +2,7 @@ import type { GetStaticProps } from 'next'
 
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { SketchContent } from 'types'
+import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchCard } from 'components/SketchCard'
 
@@ -11,6 +12,7 @@ interface Props {
 
 const HomePage = ({ latestSketch }: Props) => (
   <PageWrapper>
+    <SEO imagePath={latestSketch.imagePath.solveEnd} />
     <SketchCard {...latestSketch} />
   </PageWrapper>
 )

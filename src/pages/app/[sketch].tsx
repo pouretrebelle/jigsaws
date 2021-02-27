@@ -2,7 +2,6 @@ import type { GetStaticProps, GetStaticPaths } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
-import { Env } from 'types'
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import Provider from 'Provider'
 import Demo from 'components/Demo'
@@ -20,11 +19,7 @@ const App = (props: Props) => {
       <Head>
         <title>{props.sketchId} (Generative Jigsaws)</title>
       </Head>
-      <Provider
-        {...props}
-        setSketchId={(id) => router.push(`/app/${id}`)}
-        env={process.env.NODE_ENV === 'development' ? Env.Dev : Env.Prod}
-      >
+      <Provider {...props} setSketchId={(id) => router.push(`/app/${id}`)}>
         <Demo />
       </Provider>
     </>

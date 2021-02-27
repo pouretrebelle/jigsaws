@@ -19,7 +19,7 @@ const App = (props: Props) => {
       <Head>
         <title>{props.sketchId} (Generative Jigsaws)</title>
       </Head>
-      <Provider {...props} setSketchId={(id) => router.push(`/app/${id}`)}>
+      <Provider {...props}>
         <Demo />
       </Provider>
     </>

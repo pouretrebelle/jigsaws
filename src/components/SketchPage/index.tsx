@@ -6,6 +6,7 @@ import { CloudinaryImage } from 'components/CloudinaryImage'
 import { SketchCard } from 'components/SketchCard'
 
 import { Player } from './Player'
+import ReactMarkdown from 'react-markdown'
 
 const BP_MOBILE = '500px'
 const BP_DESKTOP = '900px'
@@ -88,6 +89,10 @@ const StyledDetails = styled.div`
 
   p {
     margin-bottom: 0.75em;
+
+    &:empty {
+      display: none;
+    }
   }
 `
 
@@ -159,16 +164,43 @@ const StyledPreviews = styled.aside`
   margin: 2em 0 0;
 `
 
+const StyledLink = styled.a<{ $internal: boolean }>`
+  ${({ $internal }) =>
+    $internal &&
+    `
+    display: inline-block;
+    position: relative;
+    padding: 0 0.3em;
+    text-decoration: none;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 0.1em;
+      background: rgba(var(--color-accent), 0.2);
+    }
+  `}
+`
+
+const LinkWrapper: React.FC<{ href: string }> = ({ children, href }) => (
+  <Link href={href} passHref>
+    <StyledLink $internal={href.startsWith('/')}>{children}</StyledLink>
+  </Link>
+)
+
 interface Props extends SketchContent {
   previewSketches: SketchContent[]
 }
 
 export const SketchPage = ({
   id,
-  html,
   youTubeLink,
   appLink,
   imagePath,
+  markdownDescription,
   previewSketches,
 }: Props) => (
   <StyledGrid>
@@ -203,7 +235,14 @@ export const SketchPage = ({
     </StyledActions>
 
     <StyledDetails>
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <ReactMarkdown
+        // eslint-disable-next-line react/no-children-prop
+        children={markdownDescription}
+        disallowedTypes={['heading', 'image']}
+        renderers={{
+          link: LinkWrapper,
+        }}
+      />
 
       <StyledPreviews>
         {previewSketches.map((sketch) => (

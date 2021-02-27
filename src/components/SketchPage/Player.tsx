@@ -1,4 +1,4 @@
-import { useState, useContext, useLayoutEffect } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import YouTubePlayer from 'react-player/youtube'
 
@@ -68,7 +68,7 @@ export const Player: React.FC<Props> = ({ youTubeLink, imagePath, id }) => {
   const [showVideo, setShowVideo] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setShowVideo(false)
     setIsPlaying(false)
   }, [id])

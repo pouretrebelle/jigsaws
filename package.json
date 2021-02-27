@@ -44,6 +44,7 @@
     "next-plausible": "^1.5.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-markdown": "^5.0.3",
     "react-player": "^2.8.2",
     "rehype-stringify": "^8.0.0",
     "remark-parse": "^9.0.0",

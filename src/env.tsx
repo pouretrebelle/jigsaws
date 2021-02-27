@@ -1,7 +1,19 @@
-import { createContext } from "react"
-import { Env } from "types"
+import { createContext } from 'react'
+import { Env } from 'types'
 
-export const EnvContext = createContext<Env>(Env.Prod)
-export const EnvProvider: React.FC<{ env: Env }> = ({ env, children }) => (
-  <EnvContext.Provider value={env}>{children}</EnvContext.Provider>
+interface State {
+  env: Env
+  setAppSketchId: (sketchId: string) => void
+}
+
+export const EnvContext = createContext(({} as unknown) as State)
+
+export const EnvProvider: React.FC<State> = ({
+  env,
+  setAppSketchId,
+  children,
+}) => (
+  <EnvContext.Provider value={{ env, setAppSketchId }}>
+    {children}
+  </EnvContext.Provider>
 )

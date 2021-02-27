@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
-import Provider, { EnvProvider } from 'store/Provider'
+import Provider from 'store/Provider'
+import { EnvProvider } from 'env'
 import Demo from 'components/Demo'
 import GlobalStyle from 'styles/base'
 import { getFromStorage } from 'lib/storage'
@@ -16,12 +17,8 @@ const DevApp = () => {
   return (
     <React.StrictMode>
       <GlobalStyle />
-      <Provider
-        sketchIds={SKETCH_IDS}
-        sketchId={sketchId}
-        setSketchId={(id) => setSketchId(id)}
-      >
-        <EnvProvider env={Env.Ide}>
+      <Provider sketchIds={SKETCH_IDS} sketchId={sketchId}>
+        <EnvProvider env={Env.Ide} setAppSketchId={(id) => setSketchId(id)}>
           <Demo />
         </EnvProvider>
       </Provider>

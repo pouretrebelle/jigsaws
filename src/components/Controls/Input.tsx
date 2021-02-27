@@ -5,7 +5,6 @@ import { Layer } from 'types'
 import { updateSeed } from 'store/actions'
 import { SketchContext } from 'store/Provider'
 
-
 const StyledWrapper = styled.label`
   display: flex;
   position: relative;
@@ -57,9 +56,17 @@ interface Props {
   value: string
   layer: Layer
   index: number
+  onChange?: () => void
 }
 
-const Input: React.FC<Props> = ({ label, value, layer, index, ...props }) => {
+const Input: React.FC<Props> = ({
+  label,
+  value,
+  layer,
+  index,
+  onChange,
+  ...props
+}) => {
   const [, dispatch] = useContext(SketchContext)
 
   return (
@@ -70,11 +77,19 @@ const Input: React.FC<Props> = ({ label, value, layer, index, ...props }) => {
         minLength={1}
         maxLength={5}
         value={value}
-        onChange={(e) => dispatch(updateSeed(layer, index, e.target.value))}
+        onChange={(e) => {
+          dispatch(updateSeed(layer, index, e.target.value))
+          if (onChange) onChange()
+        }}
       />
 
       <RefreshWrapper>
-        <RefreshButton onClick={() => dispatch(updateSeed(layer, index))} />
+        <RefreshButton
+          onClick={() => {
+            dispatch(updateSeed(layer, index))
+            if (onChange) onChange()
+          }}
+        />
       </RefreshWrapper>
     </StyledWrapper>
   )

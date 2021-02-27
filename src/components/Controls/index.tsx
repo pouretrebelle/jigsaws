@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 
 import { SketchContext } from 'store/Provider'
+import { EnvContext } from 'env'
 import {
   toggleVisibility,
   updateSeed,
@@ -40,6 +41,7 @@ const Controls = () => {
     cutVisible,
     cutNoiseSeeds,
   } = state
+  const { trackEvent } = useContext(EnvContext)
 
   if (!sketch) return null
 
@@ -65,7 +67,13 @@ const Controls = () => {
             <H3>
               Noise seed{designNoiseSeeds.length > 1 && 's'}{' '}
               <RefreshButton
-                onClick={() => dispatch(updateSeed(Layer.Design))}
+                onClick={() => {
+                  dispatch(updateSeed(Layer.Design))
+                  trackEvent('Update design seed', {
+                    id: sketch?.id,
+                    all: true,
+                  })
+                }}
               />
             </H3>
             {settings.designNoiseSeeds.map((label, i) => (
@@ -75,12 +83,18 @@ const Controls = () => {
                 index={i}
                 label={label}
                 value={designNoiseSeeds[i]}
+                onChange={() =>
+                  trackEvent('Update design seed', { id: sketch?.id, label })
+                }
               />
             ))}
           </>
         )}
         <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.Design))}
+          onClick={() => {
+            dispatch(exportSketch(ExportPart.Design))
+            trackEvent('Export design', { id: sketch?.id })
+          }}
           loading={state.pending.includes(ActionType.ExportDesign)}
         >
           Export design
@@ -95,6 +109,7 @@ const Controls = () => {
             value={noiseStart}
             onChange={(e) => {
               dispatch(updateNoiseStart(Number(e.target.value)))
+              trackEvent('Export animation', { id: sketch?.id })
             }}
           />
           <ExportButton
@@ -118,7 +133,12 @@ const Controls = () => {
           <>
             <H3>
               Noise seed{cutNoiseSeeds.length > 1 && 's'}{' '}
-              <RefreshButton onClick={() => dispatch(updateSeed(Layer.Cut))} />
+              <RefreshButton
+                onClick={() => {
+                  dispatch(updateSeed(Layer.Cut))
+                  trackEvent('Update cut seed', { id: sketch?.id, all: true })
+                }}
+              />
             </H3>
             {settings.cutNoiseSeeds.map((label, i) => (
               <Input
@@ -127,19 +147,28 @@ const Controls = () => {
                 index={i}
                 label={label}
                 value={cutNoiseSeeds[i]}
+                onChange={() =>
+                  trackEvent('Update cut seed', { id: sketch?.id, label })
+                }
               />
             ))}
           </>
         )}
         <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.Cut))}
+          onClick={() => {
+            dispatch(exportSketch(ExportPart.Cut))
+            trackEvent('Export cut', { id: sketch?.id, pieces: false })
+          }}
           loading={state.pending.includes(ActionType.ExportCut)}
         >
           Export cut
         </ExportButton>
         <IdeOnly>
           <ExportButton
-            onClick={() => dispatch(exportSketch(ExportPart.cutPieces))}
+            onClick={() => {
+              dispatch(exportSketch(ExportPart.cutPieces))
+              trackEvent('Export cut', { id: sketch?.id, pieces: true })
+            }}
             loading={state.pending.includes(ActionType.ExportCutPieces)}
           >
             Export cut pieces
@@ -149,7 +178,10 @@ const Controls = () => {
 
       <Section>
         <ExportButton
-          onClick={() => dispatch(exportSketch(ExportPart.Canvas))}
+          onClick={() => {
+            dispatch(exportSketch(ExportPart.Canvas))
+            trackEvent('Export canvas', { id: sketch?.id })
+          }}
           loading={state.pending.includes(ActionType.ExportCanvas)}
         >
           Export canvas

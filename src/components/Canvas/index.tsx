@@ -1,11 +1,7 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useContext,
-} from 'react'
+import React, { useRef, useEffect, useState, useContext } from 'react'
 import styled from 'styled-components'
 
+import { EnvContext } from 'env'
 import { SketchContext } from 'store/Provider'
 import { useWindowSize } from 'lib/hooks'
 import { drawBackground, drawDesign, drawCut, drawGuides } from 'lib/draw'
@@ -40,6 +36,7 @@ const StyledCanvas = styled.canvas`
 `
 
 const Canvas: React.FC = () => {
+  const { trackEvent } = useContext(EnvContext)
   const [state] = useContext(SketchContext)
   const {
     sketch,
@@ -182,7 +179,10 @@ const Canvas: React.FC = () => {
 
       <StyledCanvas
         ref={canvasElement}
-        onClick={() => setShouldZoom(!shouldZoom)}
+        onClick={() => {
+          setShouldZoom(!shouldZoom)
+          trackEvent(`Zoom ${shouldZoom ? 'out' : 'in'}`, { id: sketch?.id })
+        }}
         style={{
           width: canvasWidth,
           height: canvasHeight,
@@ -190,6 +190,7 @@ const Canvas: React.FC = () => {
           transform: isZooming
             ? `translate(-${hoverOffset.x}px, -${hoverOffset.y}px)`
             : undefined,
+          backgroundColor: sketch?.settings?.backgroundColor || 'transparent',
         }}
       />
     </StyledCanvasWrapper>

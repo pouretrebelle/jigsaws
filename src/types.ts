@@ -7,7 +7,6 @@ export enum Env {
 }
 
 export interface State {
-  env: Env
   sketchIds: string[]
   sketchId: string
   sketch?: Sketch

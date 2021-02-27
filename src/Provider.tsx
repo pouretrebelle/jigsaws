@@ -16,7 +16,6 @@ const augmentDispatch = (dispatch: React.Dispatch<Action>, state: State) => (
 type SetSketchId = (sketchId: string) => void
 
 interface Props {
-  env: Env
   sketchId: string
   sketchIds: string[]
   setSketchId: SetSketchId
@@ -27,7 +26,6 @@ export const SketchContext = createContext(([{}] as unknown) as Context)
 
 const Provider: React.FC<Props> = ({
   children,
-  env,
   sketchId,
   sketchIds,
   setSketchId,
@@ -37,7 +35,6 @@ const Provider: React.FC<Props> = ({
   const value = [
     {
       ...state,
-      env,
       sketchId,
       sketchIds,
     },

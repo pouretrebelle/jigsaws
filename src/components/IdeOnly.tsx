@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
 
-import { SketchContext } from 'Provider'
+import { EnvContext } from 'env'
 import { Env } from 'types'
 
 export const IdeOnly: React.FC = ({ children }) => {
-  const [{ env }] = useContext(SketchContext)
+  const env = useContext(EnvContext)
 
   if (env !== Env.Ide) return null
 
@@ -12,7 +12,7 @@ export const IdeOnly: React.FC = ({ children }) => {
 }
 
 export const ExceptIde: React.FC = ({ children }) => {
-  const [{ env }] = useContext(SketchContext)
+  const env = useContext(EnvContext)
 
   if (env === Env.Ide) return null
 

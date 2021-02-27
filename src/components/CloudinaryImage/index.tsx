@@ -4,7 +4,7 @@ import styled from 'styled-components'
 export const CLOUDINARY_URL =
   'https://res.cloudinary.com/abstract-puzzles/image/upload'
 
-const buildCloudinaryImageUrl = (
+export const buildCloudinaryImageUrl = (
   path: string,
   options: Record<string, string | number>
 ) => {

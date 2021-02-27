@@ -1,6 +1,6 @@
 import fs from 'fs'
 import matter from 'gray-matter'
-import { processMarkdown } from 'lib/markdown/processMarkdown'
+import { getExcerpt, processMarkdown } from 'lib/markdown/processMarkdown'
 import chroma from 'chroma-js'
 import { SketchContent } from 'types'
 import { COLOR } from 'styles/tokens'
@@ -15,6 +15,7 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
     return {
       id: sketchId,
       html: processMarkdown(content),
+      excerpt: getExcerpt(content),
       accentColor,
       accentColorRgb: getRgb(accentColor),
       datePublished: +datePublished,

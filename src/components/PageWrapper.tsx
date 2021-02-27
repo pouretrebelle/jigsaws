@@ -21,9 +21,8 @@ export const PageWrapper: React.FC<Props> = ({
   title,
   children,
 }) => {
-  const faviconUrl = `/api/favicon.svg?color=rgb(${(
-    accentColorRgb || ''
-  ).replace(/ /g, '')})`
+  let faviconUrl = '/api/favicon.svg'
+  if (accentColorRgb) faviconUrl += `?color=rgb(${accentColorRgb.replace(/ /g, '')})`
 
   return (
     <StyledWrapper

@@ -22,7 +22,7 @@ interface Props {
 }
 
 const ArchivePage = ({ sketches }: Props) => (
-  <PageWrapper accentColorRgb={sketches[0].accentColorRgb} title="Archive">
+  <PageWrapper title="Archive">
     <StyledGrid>
       {sketches.map((sketch) => (
         <SketchCard key={sketch.id} {...sketch} />

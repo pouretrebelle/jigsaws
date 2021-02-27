@@ -10,7 +10,7 @@ interface Props {
 }
 
 const HomePage = ({ latestSketch }: Props) => (
-  <PageWrapper accentColorRgb={latestSketch.accentColorRgb}>
+  <PageWrapper>
     <SketchCard {...latestSketch} />
   </PageWrapper>
 )

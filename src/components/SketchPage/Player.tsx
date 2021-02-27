@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import YouTubePlayer from 'react-player/youtube'
 
@@ -66,7 +66,12 @@ type Props = Pick<SketchContent, 'youTubeLink' | 'id'>
 export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
   const { trackEvent } = useContext(EnvContext)
   const [showVideo, setShowVideo] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(true)
+  const [isPlaying, setIsPlaying] = useState(false)
+
+  useLayoutEffect(() => {
+    setShowVideo(false)
+    setIsPlaying(false)
+  }, [id])
 
   const image = (
     <CloudinaryImage
@@ -91,6 +96,7 @@ export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
         <StyledButton
           onClick={() => {
             setShowVideo(true)
+            setIsPlaying(true)
             trackEvent('Play video', { id })
           }}
           aria-label="Play video"

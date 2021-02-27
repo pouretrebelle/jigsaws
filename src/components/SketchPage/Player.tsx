@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import styled from 'styled-components'
 import YouTubePlayer from 'react-player/youtube'
 
 import { SketchContent } from 'types'
 import { CloudinaryImage } from 'components/CloudinaryImage'
+import { EnvContext } from 'env'
 
 const StyledYouTubeWrapper = styled.figure`
   width: 100%;
@@ -63,6 +64,7 @@ const YouTubePlayerConfig = {
 type Props = Pick<SketchContent, 'youTubeLink' | 'id'>
 
 export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
+  const { trackEvent } = useContext(EnvContext)
   const [showVideo, setShowVideo] = useState(false)
   const [isPlaying, setIsPlaying] = useState(true)
 
@@ -87,7 +89,10 @@ export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
       {image}
       {!showVideo && (
         <StyledButton
-          onClick={() => setShowVideo(true)}
+          onClick={() => {
+            setShowVideo(true)
+            trackEvent('Play video', { id })
+          }}
           aria-label="Play video"
         >
           <StyledButtonIcon

@@ -24,7 +24,7 @@ const Select = styled.select`
 
 const Selector = () => {
   const [{ sketch, sketchId, sketchIds }, dispatch] = useContext(SketchContext)
-  const { setAppSketchId } = useContext(EnvContext)
+  const { setAppSketchId, trackEvent } = useContext(EnvContext)
 
   useEffect(() => {
     dispatch(loadSketch(sketchId))
@@ -36,7 +36,14 @@ const Selector = () => {
       <H1>
         <ExceptIde>
           <Link href={`/${sketch?.id}`} passHref>
-            <a title="Back to site">
+            <a
+              title="Back to site"
+              onClick={(e) => {
+                trackEvent('Go from app to sketch page', {
+                  id: sketch?.id,
+                })
+              }}
+            >
               <svg
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +65,13 @@ const Selector = () => {
         Sketch
         <Select
           value={sketch?.id || sketchId}
-          onChange={(e) => setAppSketchId(e.target.value)}
+          onChange={(e) => {
+            setAppSketchId(e.target.value)
+            trackEvent('Change sketch', {
+              from: sketch?.id,
+              to: e.target.value,
+            })
+          }}
         >
           {sketchIds.map((id) => (
             <option key={id} value={id}>

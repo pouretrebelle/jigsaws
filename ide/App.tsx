@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
-import Provider, { EnvProvider } from 'Provider'
+import Provider, { EnvProvider } from 'store/Provider'
 import Demo from 'components/Demo'
 import GlobalStyle from 'styles/base'
 import { getFromStorage } from 'lib/storage'

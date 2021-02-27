@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { SketchContext } from 'Provider'
+import { SketchContext } from 'store/Provider'
 import { loadSketch } from 'store/actions'
 import { ExceptIde } from './IdeOnly'
 

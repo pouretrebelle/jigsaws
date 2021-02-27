@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import RefreshButton from './RefreshButton'
 import { Layer } from 'types'
 import { updateSeed } from 'store/actions'
-import { SketchContext } from 'Provider'
+import { SketchContext } from 'store/Provider'
 
 
 const StyledWrapper = styled.label`

@@ -2,7 +2,7 @@
 datePublished: 2020-11-14
 youTubeLink: https://youtu.be/9VVzHqVXWm8
 
-designNoiseSeeds: ['qog', 'djz', 'nlo', 'ymb', 'kpn']
+designNoiseSeeds: ['qog', 'djz', 'cno', 'ymb', 'kpn']
 cutNoiseSeeds: ['qps', 'jrl', 'yww', 'wji']
 accentColor: '#682AFF'
 

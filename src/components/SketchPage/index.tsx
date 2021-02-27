@@ -168,18 +168,19 @@ export const SketchPage = ({
   html,
   youTubeLink,
   appLink,
+  imagePath,
   previewSketches,
 }: Props) => (
   <StyledGrid>
     <StyledTitle>{id}</StyledTitle>
 
     <StyledVideo>
-      <Player id={id} youTubeLink={youTubeLink} />
+      <Player id={id} youTubeLink={youTubeLink} imagePath={imagePath} />
     </StyledVideo>
 
     <StyledImage>
       <CloudinaryImage
-        imagePath={`${id}_solve_end.jpg`}
+        imagePath={imagePath.solveEnd}
         aspectRatio={1}
         options={{
           c: 'fill',

@@ -18,12 +18,17 @@ const StyledTitle = styled.h2`
   }
 `
 
-export const SketchCard = ({ id, pageLink, accentColorRgb }: SketchContent) => (
+export const SketchCard = ({
+  id,
+  pageLink,
+  accentColorRgb,
+  imagePath,
+}: SketchContent) => (
   <Link href={pageLink} passHref>
     <StyledLink style={{ '--color-accent': accentColorRgb } as object}>
       <StyledTitle>{id}</StyledTitle>
       <CloudinaryImage
-        imagePath={`${id}_solve_end.jpg`}
+        imagePath={imagePath.solveEnd}
         aspectRatio={1}
         options={{
           c: 'fill',

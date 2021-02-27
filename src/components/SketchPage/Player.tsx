@@ -61,9 +61,9 @@ const YouTubePlayerConfig = {
   },
 }
 
-type Props = Pick<SketchContent, 'youTubeLink' | 'id'>
+type Props = Pick<SketchContent, 'youTubeLink' | 'id' | 'imagePath'>
 
-export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
+export const Player: React.FC<Props> = ({ youTubeLink, imagePath, id }) => {
   const { trackEvent } = useContext(EnvContext)
   const [showVideo, setShowVideo] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -75,7 +75,7 @@ export const Player: React.FC<Props> = ({ youTubeLink, id }) => {
 
   const image = (
     <CloudinaryImage
-      imagePath={`${id}_solve_start.jpg`}
+      imagePath={imagePath.solveStart}
       aspectRatio={0.5625}
       options={{
         c: 'fill',

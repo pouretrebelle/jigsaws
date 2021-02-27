@@ -28,8 +28,11 @@ export const EnvProvider: React.FC<Props> = ({
     env,
     setAppSketchId,
     trackEvent: (eventName, props) => {
-      if (env !== Env.Prod) console.info('%cTrack event', 'color: blue', eventName, props)
-      if (trackEvent) trackEvent(eventName, props)
+      if (process.env.NEXT_PUBLIC_PLAUSIBLE_TRACKING === 'true') {
+        if (trackEvent) trackEvent(eventName, props)
+      } else {
+        console.info('%cTrack event', 'color: blue', eventName, props)
+      }
     },
   }
 

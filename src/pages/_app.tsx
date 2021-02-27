@@ -11,7 +11,10 @@ const App = ({ Component, pageProps }: AppProps) => {
   const plausible = usePlausible()
 
   return (
-    <PlausibleProvider domain="abstractpuzzl.es">
+    <PlausibleProvider
+      domain="abstractpuzzl.es"
+      enabled={process.env.NEXT_PUBLIC_PLAUSIBLE_TRACKING === 'true'}
+    >
       <EnvProvider
         env={process.env.NODE_ENV === 'development' ? Env.Dev : Env.Prod}
         setAppSketchId={(id) => router.push(`/app/${id}`)}

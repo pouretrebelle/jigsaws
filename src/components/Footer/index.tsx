@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import Link from 'next/link'
-import { GithubIcon, InstagramIcon, TwitterIcon, YouTubeIcon } from './Icon'
+
+import { GithubIcon, InstagramIcon, TwitterIcon, YouTubeIcon } from 'components/Icon'
 
 const StyledFooter = styled.footer`
   display: flex;

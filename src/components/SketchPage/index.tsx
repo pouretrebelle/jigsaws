@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { SketchContent } from 'types'
 import { CloudinaryImage } from 'components/CloudinaryImage'
 import { SketchCard } from 'components/SketchCard'
+import { Button } from 'components/Button'
 
 import { Player } from './Player'
 import ReactMarkdown from 'react-markdown'
@@ -111,35 +112,10 @@ const StyledActions = styled.nav`
   }
 `
 
-const StyledButton = styled.a<{
+const StyledButton = styled(Button)<{
   $hideOnDesktop?: boolean
   $wideOnMobile?: boolean
 }>`
-  position: relative;
-  width: 100%;
-  cursor: pointer;
-  background: transparent;
-  padding: 0.75em;
-  border: 0;
-  border: 0.2em solid rgb(var(--color-accent));
-  border-radius: 0.2em;
-  text-transform: uppercase;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  outline: 0;
-  transition: box-shadow 0.1s linear;
-
-  &:hover {
-    box-shadow: 0 0 0 0.4em rgba(var(--color-accent), 0.05);
-  }
-  &:focus {
-    box-shadow: 0 0 0 0.4em rgba(var(--color-accent), 0.1);
-  }
-  &:active {
-    box-shadow: 0 0 0 0 rgba(var(--color-accent), 0.3);
-  }
-
   ${({ $wideOnMobile }) =>
     $wideOnMobile &&
     `
@@ -152,7 +128,7 @@ const StyledButton = styled.a<{
     $hideOnDesktop &&
     `
     @media (min-width: ${BP_DESKTOP}) {
-      display: none;
+      display: none !important;
     }
   `}
 `

@@ -130,6 +130,7 @@ export interface SketchContent {
   pieces: number
   imagePath: {
     solveStart: string
+    solveMiddle: string
     solveEnd: string
     canvas: string
   }

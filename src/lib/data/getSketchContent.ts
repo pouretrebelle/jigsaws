@@ -27,6 +27,7 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
       pageLink: `/${sketchId}`,
       imagePath: {
         solveStart: `${sketchId}_solve_start.jpg`,
+        solveMiddle: `${sketchId}_solve_middle.jpg`,
         solveEnd: `${sketchId}_solve_end.jpg`,
         canvas: `${sketchId}_${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}.png`,
       }

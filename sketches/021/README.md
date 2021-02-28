@@ -4,7 +4,7 @@ youTubeLink: https://youtu.be/4Z3E9d1NaYg
 
 designNoiseSeeds: ['sdh', 'vts', 'mbs', 'nzu']
 cutNoiseSeeds: ['wab', 'zdg', 'khr', 'cje']
-accentColor: '#e42048'
+accentColor: '#FB1C98'
 
 pieces: 256
 ---

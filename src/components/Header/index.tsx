@@ -2,11 +2,10 @@ import styled from 'styled-components'
 import Link from 'next/link'
 
 const StyledHeader = styled.header`
-  margin: 2em auto;
+  margin: 2em auto 1em;
 
   @media (min-width: 500px) {
-    text-align: center;
-    margin-bottom: 3em;
+    text-align: right;
   }
 `
 
@@ -18,20 +17,11 @@ const StyledH1 = styled.h1`
 
   @media (min-width: 500px) {
     font-size: calc(4.6vw + 12px);
-    margin-right: -1em;
+    margin-right: -0.1ch;
   }
 
   a {
     text-decoration: none;
-  }
-`
-
-const StyledDescription = styled.aside`
-  font-size: 1.5em;
-
-  p {
-    margin: 0 0 0.25em;
-    line-height: 1.2;
   }
 `
 
@@ -42,9 +32,5 @@ export const Header = () => (
         <a>Abstract Puzzles</a>
       </Link>
     </StyledH1>
-    <StyledDescription>
-      <p>A generative art jigsaw project by Charlotte&nbsp;Dann</p>
-      <p>One new puzzle every week</p>
-    </StyledDescription>
   </StyledHeader>
 )

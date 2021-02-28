@@ -89,8 +89,6 @@ class Stroke {
   }
 
   draw(c: CanvasRenderingContext2D) {
-    c.save()
-
     if (this.length > MAX_LENGTH - LENGTH_VARIATION) return
 
     const lengthLerp = map(
@@ -112,8 +110,6 @@ class Stroke {
       c.lineTo(x, y)
     })
     c.stroke()
-
-    c.restore()
   }
 }
 

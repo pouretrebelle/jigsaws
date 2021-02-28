@@ -5,6 +5,10 @@ import reset from './reset'
 const GlobalStyle = createGlobalStyle`
   ${reset}
 
+  :root {
+    --color-accent: 254, 104, 255; // COLOR.ACCENT RGB
+  }
+
   html {
     width: 100%;
   }
@@ -70,6 +74,8 @@ const GlobalStyle = createGlobalStyle`
 
   a {
     color: inherit;
+    text-decoration-color: rgb(var(--color-accent));
+    text-underline-offset: 0.05em;
   }
 
   a:focus-visible,

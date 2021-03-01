@@ -1,11 +1,11 @@
 import type { GetStaticPaths, GetStaticProps } from 'next'
 
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
+import { useSetLocalStorageSeeds } from 'lib/hooks/useSetLocalStorageSeeds'
 import { SketchContent } from 'types'
 import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { SketchPage as SketchPageComponent } from 'components/SketchPage'
-import { useEffect } from 'react'
 
 const NOW = new Date()
 
@@ -27,13 +27,7 @@ interface Props {
 
 const SketchPage = ({ sketch, previewSketches }: Props) => {
   // Set storage to sketch's seeds so the app opens with these values
-  useEffect(() => {
-    localStorage.setItem('cutNoiseSeeds', JSON.stringify(sketch.cutNoiseSeeds))
-    localStorage.setItem(
-      'designNoiseSeeds',
-      JSON.stringify(sketch.designNoiseSeeds)
-    )
-  }, [sketch.id])
+  useSetLocalStorageSeeds(sketch)
 
   return (
     <PageWrapper accentColorRgb={sketch.accentColorRgb}>

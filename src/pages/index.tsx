@@ -35,7 +35,7 @@ const HomePage = ({ latestSketch }: Props) => {
 
   return (
     <PageWrapper accentColorRgb={latestSketch.accentColorRgb}>
-      <SEO imagePath={latestSketch.imagePath.solveEnd} />
+      <SEO imagePath={latestSketch.imagePath.solveMiddle} />
 
       <StyledDescription>
         <p>

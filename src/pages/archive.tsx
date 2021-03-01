@@ -24,7 +24,7 @@ interface Props {
 
 const ArchivePage = ({ sketches }: Props) => (
   <PageWrapper>
-    <SEO title="Archive" imagePath={sketches[0].imagePath.solveEnd} />
+    <SEO title="Archive" imagePath={sketches[0].imagePath.solveMiddle} />
     <StyledGrid>
       {sketches.map((sketch) => (
         <SketchCard key={sketch.id} {...sketch} />

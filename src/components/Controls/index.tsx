@@ -17,10 +17,6 @@ import RefreshButton from './RefreshButton'
 import ToggleButton from './ToggleButton'
 import RangeSlider from './RangeSlider'
 
-const Meta = styled.p`
-  font-size: 0.625rem;
-`
-
 const Section = styled.section`
   margin: 1.5rem 0 0;
 `
@@ -48,11 +44,6 @@ const Controls = () => {
 
   return (
     <>
-      <Meta>width: {settings.width}mm</Meta>
-      <Meta>height: {settings.height}mm</Meta>
-      <Meta>bleed: {settings.bleed}mm</Meta>
-      <Meta>pieces: {settings.rows * settings.columns}</Meta>
-
       <Section>
         <h2>
           Design

@@ -19,7 +19,7 @@ import ToggleButton from './ToggleButton'
 import RangeSlider from './RangeSlider'
 
 const Section = styled.section`
-  margin: 1.5rem 0 0;
+  margin: 0 0 1.5rem;
   ${trim}
 `
 
@@ -46,6 +46,18 @@ const Controls = () => {
 
   return (
     <>
+      <Section>
+        <ExportButton
+          onClick={() => {
+            dispatch(exportSketch(ExportPart.Canvas))
+            trackEvent('Export canvas', { id: sketch?.id })
+          }}
+          loading={state.pending.includes(ActionType.ExportCanvas)}
+          ext="png"
+        >
+          Export canvas
+        </ExportButton>
+      </Section>
       <Section>
         <h2>
           Design
@@ -170,19 +182,6 @@ const Controls = () => {
             Export cut pieces
           </ExportButton>
         </OnlyEnv>
-      </Section>
-
-      <Section>
-        <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.Canvas))
-            trackEvent('Export canvas', { id: sketch?.id })
-          }}
-          loading={state.pending.includes(ActionType.ExportCanvas)}
-          ext="png"
-        >
-          Export canvas
-        </ExportButton>
       </Section>
     </>
   )

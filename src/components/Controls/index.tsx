@@ -88,6 +88,7 @@ const Controls = () => {
             trackEvent('Export design', { id: sketch?.id })
           }}
           loading={state.pending.includes(ActionType.ExportDesign)}
+          ext="png"
         >
           Export design
         </ExportButton>
@@ -107,6 +108,7 @@ const Controls = () => {
           <ExportButton
             onClick={() => dispatch(exportSketch(ExportPart.DesignAnimation))}
             loading={state.pending.includes(ActionType.ExportDesignAnimation)}
+            ext="webm"
           >
             Export animation
           </ExportButton>
@@ -152,6 +154,7 @@ const Controls = () => {
             trackEvent('Export cut', { id: sketch?.id, pieces: false })
           }}
           loading={state.pending.includes(ActionType.ExportCut)}
+          ext="svg"
         >
           Export cut
         </ExportButton>
@@ -162,6 +165,7 @@ const Controls = () => {
               trackEvent('Export cut', { id: sketch?.id, pieces: true })
             }}
             loading={state.pending.includes(ActionType.ExportCutPieces)}
+            ext="svg"
           >
             Export cut pieces
           </ExportButton>
@@ -175,6 +179,7 @@ const Controls = () => {
             trackEvent('Export canvas', { id: sketch?.id })
           }}
           loading={state.pending.includes(ActionType.ExportCanvas)}
+          ext="png"
         >
           Export canvas
         </ExportButton>

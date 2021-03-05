@@ -78,6 +78,11 @@ const GlobalStyle = createGlobalStyle`
     text-underline-offset: 0.05em;
   }
 
+  a:focus,
+  button:focus {
+    outline: 0;
+  }
+
   a:focus-visible,
   button:focus-visible {
     outline: 2px solid rgb(var(--color-accent));

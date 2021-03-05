@@ -10,12 +10,9 @@ const StyledWrapper = styled.label`
   position: relative;
   font-size: 0.75rem;
   margin: 0.25rem 0;
-  border: 1px solid #ccc;
   border-radius: 3px;
-
-  &:focus-within {
-    border: 1px solid #aaa;
-  }
+  overflow: hidden;
+  box-shadow: 0 1px 3px inset #ccc;
 
   * {
     box-sizing: border-box;
@@ -26,8 +23,8 @@ const StyledLabel = styled.span`
   flex: 1 0 50%;
   display: inline-block;
   padding: 0.25rem 0.5rem;
-  background: #f1f1f1;
-  border-right: 1px solid #ccc;
+  background: #eee;
+  box-shadow: 0 -1px 3px inset #ddd;
 `
 
 const StyledInput = styled.input`
@@ -36,6 +33,10 @@ const StyledInput = styled.input`
   padding: 0.25rem 2rem 0.25rem 0.5rem;
   background: transparent;
   font-size: inherit;
+
+  &:focus {
+    outline: 0;
+  }
 `
 
 const RefreshWrapper = styled.div`

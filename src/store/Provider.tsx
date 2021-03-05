@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react'
-import { State, Action, Thunk, AugmentedDispatch, Env } from 'types'
+import { State, Action, Thunk, AugmentedDispatch } from 'types'
 import * as reducers from 'store/reducers'
 import { getInitialState } from 'store/initialState'
 

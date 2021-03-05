@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 
 import { SketchContext } from 'store/Provider'
-import { EnvContext } from 'env'
+import { Env, EnvContext, OnlyEnv } from 'env'
 import {
   toggleVisibility,
   updateSeed,
@@ -10,7 +10,6 @@ import {
   updateNoiseStart,
 } from 'store/actions'
 import { Layer, ExportPart, ActionType } from 'types'
-import { IdeOnly } from 'components/IdeOnly'
 
 import Input from './Input'
 import ExportButton from './ExportButton'
@@ -100,7 +99,7 @@ const Controls = () => {
           Export design
         </ExportButton>
 
-        <IdeOnly>
+        <OnlyEnv env={Env.Ide}>
           <RangeSlider
             label="Preview animation frames"
             min={0}
@@ -118,7 +117,7 @@ const Controls = () => {
           >
             Export animation
           </ExportButton>
-        </IdeOnly>
+        </OnlyEnv>
       </Section>
 
       <Section>
@@ -163,7 +162,7 @@ const Controls = () => {
         >
           Export cut
         </ExportButton>
-        <IdeOnly>
+        <OnlyEnv env={Env.Ide}>
           <ExportButton
             onClick={() => {
               dispatch(exportSketch(ExportPart.cutPieces))
@@ -173,7 +172,7 @@ const Controls = () => {
           >
             Export cut pieces
           </ExportButton>
-        </IdeOnly>
+        </OnlyEnv>
       </Section>
 
       <Section>

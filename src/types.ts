@@ -1,11 +1,5 @@
 import SimplexNoise from 'simplex-noise'
 
-export enum Env {
-  Ide = 'ide',
-  Dev = 'development',
-  Prod = 'production'
-}
-
 export interface State {
   sketchIds: string[]
   sketchId: string

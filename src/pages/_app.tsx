@@ -3,8 +3,7 @@ import { useRouter } from 'next/router'
 import PlausibleProvider, { usePlausible } from 'next-plausible'
 
 import GlobalStyle from 'styles/base'
-import { EnvProvider } from 'env'
-import { Env } from 'types'
+import { Env, EnvProvider } from 'env'
 
 const App = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()

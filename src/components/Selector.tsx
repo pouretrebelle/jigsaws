@@ -2,10 +2,9 @@ import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { EnvContext } from 'env'
+import { Env, EnvContext, ExceptEnv } from 'env'
 import { SketchContext } from 'store/Provider'
 import { loadSketch } from 'store/actions'
-import { ExceptIde } from './IdeOnly'
 
 const H1 = styled.h1`
   margin: 0 0 0.5rem;
@@ -34,7 +33,7 @@ const Selector = () => {
   return (
     <>
       <H1>
-        <ExceptIde>
+        <ExceptEnv env={Env.Ide}>
           <Link href={`/${sketch?.id}`} passHref>
             <a title="Back to site">
               <svg
@@ -54,7 +53,7 @@ const Selector = () => {
               </svg>
             </a>
           </Link>
-        </ExceptIde>
+        </ExceptEnv>
         Sketch
         <Select
           value={sketch?.id || sketchId}

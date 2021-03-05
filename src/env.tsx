@@ -1,5 +1,10 @@
-import { createContext } from 'react'
-import { Env } from 'types'
+import { createContext, useContext } from 'react'
+
+export enum Env {
+  Ide = 'ide',
+  Dev = 'development',
+  Prod = 'production',
+}
 
 type SetAppSketchId = (sketchId: string) => void
 type TrackEvent = (eventName: string, props?: object) => void
@@ -37,4 +42,27 @@ export const EnvProvider: React.FC<Props> = ({
   }
 
   return <EnvContext.Provider value={value}>{children}</EnvContext.Provider>
+}
+
+interface FilterProps {
+  env: Env
+}
+
+export const OnlyEnv: React.FC<FilterProps> = ({ children, env: onlyEnv }) => {
+  const { env } = useContext(EnvContext)
+
+  if (env !== onlyEnv) return null
+
+  return <>{children}</>
+}
+
+export const ExceptEnv: React.FC<FilterProps> = ({
+  children,
+  env: exceptEnv,
+}) => {
+  const { env } = useContext(EnvContext)
+
+  if (env === exceptEnv) return null
+
+  return <>{children}</>
 }

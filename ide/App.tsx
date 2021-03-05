@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import { SketchProvider } from 'store/Provider'
-import { EnvProvider } from 'env'
+import { Env, EnvProvider } from 'env'
 import Demo from 'components/Demo'
 import GlobalStyle from 'styles/base'
 import { getFromStorage } from 'lib/storage'
-import { Env } from 'types'
 
 declare const SKETCH_IDS: string[]
 

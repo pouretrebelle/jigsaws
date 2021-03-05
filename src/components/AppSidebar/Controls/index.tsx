@@ -64,11 +64,12 @@ const Controls = () => {
       </Section>
       <Section>
         <h2>
-          Design
           <ToggleButton
             active={designVisible}
             onClick={() => dispatch(toggleVisibility(Layer.Design))}
+            title="Toggle design"
           />
+          Design
         </h2>
         {designNoiseSeeds.length > 0 && (
           <>
@@ -133,11 +134,12 @@ const Controls = () => {
 
       <Section>
         <h2>
-          Cut
           <ToggleButton
             active={cutVisible}
             onClick={() => dispatch(toggleVisibility(Layer.Cut))}
+            title="Toggle cut"
           />
+          Cut
         </h2>
         {cutNoiseSeeds.length > 0 && (
           <>

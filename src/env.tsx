@@ -29,6 +29,9 @@ export const EnvProvider: React.FC<Props> = ({
   trackEvent,
   children,
 }) => {
+  console.log({
+    NEXT_PUBLIC_PLAUSIBLE_TRACKING: process.env.NEXT_PUBLIC_PLAUSIBLE_TRACKING,
+  })
   const value: State = {
     env,
     setAppSketchId,

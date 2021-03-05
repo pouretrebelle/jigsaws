@@ -40,9 +40,9 @@ const HomePage = ({ latestSketch }: Props) => {
       <StyledDescription>
         <p>
           Abstract Puzzles is a generative art jigsaw project by{' '}
-          <a href="https://charlottedann.com">Charlotte Dann</a>.Each puzzle is
+          <a href="https://charlottedann.com">Charlotte Dann</a>. Each puzzle is
           designed in the browser, both how the pieces are cut out and the
-          design on its face.Every week I make a new design and create a
+          design on its face. Every week I make a new design and create a
           laser-cut copy to solve — generative art is always more fun when it’s
           tactile.
         </p>

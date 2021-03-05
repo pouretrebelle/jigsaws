@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 
 import { SketchContext } from 'store/Provider'
-import { Env, EnvContext, OnlyEnv } from 'env'
+import { Env, EnvContext, ExceptEnv, OnlyEnv } from 'env'
 import {
   toggleVisibility,
   updateSeed,
@@ -17,6 +17,7 @@ import ExportButton from './ExportButton'
 import RefreshButton from './RefreshButton'
 import ToggleButton from './ToggleButton'
 import RangeSlider from './RangeSlider'
+import { BuyPrintsButton } from '../BuyPrintsButton'
 
 const Section = styled.section`
   margin: 0 0 1.5rem;
@@ -47,6 +48,9 @@ const Controls = () => {
   return (
     <>
       <Section>
+        <ExceptEnv env={Env.Ide}>
+          <BuyPrintsButton />
+        </ExceptEnv>
         <ExportButton
           onClick={() => {
             dispatch(exportSketch(ExportPart.Canvas))

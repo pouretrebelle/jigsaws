@@ -1,9 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { Env, ExceptEnv } from 'env'
+
 import Selector from './Selector'
 import Controls from './Controls'
 import Canvas from './Canvas'
+import { AppLinks } from './AppLinks'
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -30,9 +33,20 @@ const StyledSidebar = styled.aside`
   }
 `
 
-const Demo = () => (
-  <StyledWrapper>
+interface Props {
+  accentColorRgb?: string
+}
+
+const Demo: React.FC<Props> = ({ accentColorRgb }) => (
+  <StyledWrapper
+    style={
+      accentColorRgb ? ({ '--color-accent': accentColorRgb } as object) : {}
+    }
+  >
     <StyledSidebar>
+      <ExceptEnv env={Env.Ide}>
+        <AppLinks />
+      </ExceptEnv>
       <Selector />
       <Controls />
     </StyledSidebar>

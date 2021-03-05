@@ -10,6 +10,7 @@ import {
   updateNoiseStart,
 } from 'store/actions'
 import { Layer, ExportPart, ActionType } from 'types'
+import { trim } from 'styles/helpers'
 
 import Input from './Input'
 import ExportButton from './ExportButton'
@@ -19,6 +20,7 @@ import RangeSlider from './RangeSlider'
 
 const Section = styled.section`
   margin: 1.5rem 0 0;
+  ${trim}
 `
 
 const H3 = styled.h3`

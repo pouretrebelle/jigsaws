@@ -6,6 +6,7 @@ interface Props {
 }
 
 const StyledRefreshButton = styled.button`
+  position: relative;
   outline: none;
   color: #777;
   transition: transform 0.2s ease;
@@ -13,6 +14,10 @@ const StyledRefreshButton = styled.button`
   &:hover {
     color: #555;
     transform: rotate(45deg);
+  }
+
+  &:active {
+    top: 0.5px;
   }
 `
 

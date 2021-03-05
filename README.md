@@ -1,6 +1,6 @@
-# Jigsaw Design IDE
+# Abstract Puzzles
 
-A development environment for [abstractpuzzl.es](http://abstractpuzzl.es/) jigsaw design
+Showcase and development environment for generative art jigsaw puzzles.
 
 ![Screenshot of interface](/screenshot.png?raw=true)
 

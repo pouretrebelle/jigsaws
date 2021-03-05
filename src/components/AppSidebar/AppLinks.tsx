@@ -3,8 +3,7 @@ import styled from 'styled-components'
 import Link from 'next/link'
 
 import { SketchContext } from 'store/Provider'
-
-import { GithubIcon } from './Icon'
+import { GithubIcon } from 'components/Icon'
 
 const StyledAppLinks = styled.aside`
   font-size: 1.5rem;

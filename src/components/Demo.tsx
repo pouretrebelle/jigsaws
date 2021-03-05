@@ -1,12 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Env, ExceptEnv } from 'env'
+import { trim } from 'styles/helpers'
 
-import Selector from './Selector'
-import Controls from './Controls'
 import Canvas from './Canvas'
-import { AppLinks } from './AppLinks'
+import { AppSidebar } from './AppSidebar'
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -24,6 +22,7 @@ const StyledSidebar = styled.aside`
   min-height: 200px;
   max-height: calc(100vh - 100vw);
   overflow: auto;
+  ${trim}
 
   @media (min-width: 700px) {
     width: 200px;
@@ -44,11 +43,7 @@ const Demo: React.FC<Props> = ({ accentColorRgb }) => (
     }
   >
     <StyledSidebar>
-      <ExceptEnv env={Env.Ide}>
-        <AppLinks />
-      </ExceptEnv>
-      <Selector />
-      <Controls />
+      <AppSidebar />
     </StyledSidebar>
     <Canvas />
   </StyledWrapper>

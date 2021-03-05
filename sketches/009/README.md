@@ -13,4 +13,6 @@ pieces: 225
 
 ![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/009_lah-lll-yjd-edr-yqn_uav-efp-cka-xja?raw=true)
 
-The start and end of each stroke blurs into its surroundings because the circles that make up the thick strokes are drawn with a low opacity. The small hints of where the colours blend into each other make this puzzle a treat to solve.
+In this design the start and end of each stroke blur into their surroundings because the circles that make up the thick strokes are drawn with a low opacity.
+
+The small hints of where the colours blend into each other made this puzzle a treat to solve, compared to the samey hard line edges in 007 and 008.

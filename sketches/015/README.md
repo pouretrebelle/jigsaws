@@ -13,6 +13,6 @@ pieces: 169
 
 ![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/015_gld-bjl-lvq_ubp-vxr-svd-ncj?raw=true)
 
-Layers of strokes are composited over one another with slightly altered flow fields.
+Layers of strokes are composited over one another with slightly altered flow fields; the blend modes of each layer create a vivid palette where the colours intersect.
 
-This makes for a really tricky jigsaw as all the colours are spread across the design.
+Although the layered effect created a beautiful design it made for a really tricky jigsaw. Finding the thickest strokes to follow was confused by all of the stacked strokes, and it was impossible to group pieces by colour as the colours are spread across the design.

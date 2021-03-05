@@ -12,3 +12,7 @@ pieces: 225
 # 017
 
 ![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/017_zao-ozs-qlq-osa_prm-vxo-jlb-vue?raw=true)
+
+In this design the strokes expand to fill the empty space, creating eerie, almost biological forms. This inverts the colours of 016 with a luminous light-on-dark pallette.
+
+I found it fun to match the more-isolated groups of colour together before connecting all the edge pieces of the puzzle and work outwards from there.

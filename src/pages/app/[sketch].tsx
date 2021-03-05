@@ -23,7 +23,7 @@ const App: React.FC<Props> = ({ sketch, ...props }) => (
       smallImage
     />
     <SketchProvider {...props}>
-      <Demo />
+      <Demo accentColorRgb={sketch.accentColorRgb} />
     </SketchProvider>
   </>
 )

@@ -54,16 +54,6 @@ class Point extends Vector2 {
   }
 }
 
-interface Square {
-  x: number
-  y: number
-  topLeft: Point
-  topRight: Point
-  bottomLeft: Point
-  bottomRight: Point
-  middle: Point
-}
-
 const addToCurves = (
   c: CanvasRenderingContext2D,
   p1: Vector2,
@@ -91,15 +81,30 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
-  c.beginPath()
-  c.moveTo(0, 0)
-  c.lineTo(width, 0)
-  c.lineTo(width, height)
-  c.lineTo(0, height)
-  c.lineTo(0, 0)
-  c.stroke()
+interface PointConnection {
+  start: Point
+  end: Point
+  render: boolean
+  flipEdge: boolean
+}
 
+interface Square {
+  x: number
+  y: number
+  nw: PointConnection
+  se: PointConnection
+  sw: PointConnection
+  ne: PointConnection
+}
+
+const createConnection = (start: Point, end: Point, condition1: boolean, condition2: boolean, fallback: boolean): PointConnection => ({
+  start,
+  end,
+  render: !condition1 || !condition2,
+  flipEdge: condition1 ? true : condition2 ? false : fallback
+})
+
+const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
   const cornerPoints = [] as Point[][]
 
   for (let x = 0; x < columns + 1; x++) {
@@ -122,61 +127,57 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   for (let x = 0; x < columns; x++) {
     if (!squares[x]) squares.push([])
     for (let y = 0; y < rows; y++) {
+      const topLeft = cornerPoints[x][y]
+      const topRight = cornerPoints[x + 1][y]
+      const bottomLeft = cornerPoints[x][y + 1]
+      const bottomRight = cornerPoints[x + 1][y + 1]
+      const middle = new Point({
+        x: x + 0.5,
+        y: y + 0.5,
+        rows,
+        columns,
+        simplexX: simplex[Seeds.SwayX],
+        simplexY: simplex[Seeds.SwayY],
+        width,
+        height,
+      })
+
       squares[x][y] = {
         x,
         y,
-        topLeft: cornerPoints[x][y],
-        topRight: cornerPoints[x + 1][y],
-        bottomLeft: cornerPoints[x][y + 1],
-        bottomRight: cornerPoints[x + 1][y + 1],
-        middle: new Point({
-          x: x + 0.5,
-          y: y + 0.5,
-          rows,
-          columns,
-          simplexX: simplex[Seeds.SwayX],
-          simplexY: simplex[Seeds.SwayY],
-          width,
-          height,
-        })
+        nw: createConnection(topLeft, middle, y === 0, x === 0, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
+        se: createConnection(middle, bottomRight, x === columns - 1, y === rows - 1, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
+        sw: createConnection(bottomLeft, middle, x === 0, y === rows - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
+        ne: createConnection(middle, topRight, y === 0, x === columns - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
       }
     }
   }
+  return squares
+}
+
+export const cut = (cutAttrs: Cut) => {
+  const { c, width, columns, height, rows, simplex } = cutAttrs
+
+  c.beginPath()
+  c.moveTo(0, 0)
+  c.lineTo(width, 0)
+  c.lineTo(width, height)
+  c.lineTo(0, height)
+  c.lineTo(0, 0)
+  c.stroke()
+
+  const squares = createSquares(cutAttrs)
 
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
       const square = squares[x][y]
       c.beginPath()
 
-      c.moveTo(square.topLeft.x, square.topLeft.y)
-      if (x !== 0 || y !== 0) addToCurves(
-        c,
-        square.topLeft,
-        square.middle,
-        x === 0 ? false : y === 0 ? true : simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
-        true
-      )
-      if (x !== columns - 1 || y !== rows - 1) addToCurves(
-        c,
-        square.middle,
-        square.bottomRight,
-        x === columns - 1 ? true : y === rows - 1 ? false : simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
-        true
-      )
-      if (x !== columns - 1 || y !== 0) addToCurves(
-        c,
-        square.topRight,
-        square.middle,
-        x === columns - 1 ? true : y === 0 ? false : simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
-        true
-      )
-      if (x !== 0 || y !== rows - 1) addToCurves(
-        c,
-        square.middle,
-        square.bottomLeft,
-        x === 0 ? false : y === rows - 1 ? true : simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
-        true
-      )
+      ; ([square.nw, square.se, square.sw, square.ne]).forEach((pointConnection: PointConnection) => {
+        if (pointConnection.render) {
+          addToCurves(c, pointConnection.start, pointConnection.end, pointConnection.flipEdge, true)
+        }
+      })
 
       c.stroke()
     }

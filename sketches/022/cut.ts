@@ -54,6 +54,16 @@ class Point extends Vector2 {
   }
 }
 
+interface Square {
+  x: number
+  y: number
+  topLeft: Point
+  topRight: Point
+  bottomLeft: Point
+  bottomRight: Point
+  middle: Point
+}
+
 const addToCurves = (
   c: CanvasRenderingContext2D,
   p1: Vector2,
@@ -61,8 +71,8 @@ const addToCurves = (
   flip: boolean,
   moveTo: boolean
 ) => {
-  const tVmult = 0.25 // push of t towards other side of piece
-  const tVdiv = 0.4 // push of p1c and p2c away from other side of piece
+  const tVmult = 0.2 // push of t towards other side of piece
+  const tVdiv = 0.6 // push of p1c and p2c away from other side of piece
   const tWidth = 0.7 // how far t1 and t2 are from the canter
   const pWidth = 0.8 // how far p1x and p2c are from the center
 
@@ -90,12 +100,12 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
-  const crossPoints = [] as Point[][]
+  const cornerPoints = [] as Point[][]
 
   for (let x = 0; x < columns + 1; x++) {
-    if (!crossPoints[x]) crossPoints.push([])
+    if (!cornerPoints[x]) cornerPoints.push([])
     for (let y = 0; y < rows + 1; y++) {
-      crossPoints[x][y] = new Point({
+      cornerPoints[x][y] = new Point({
         x,
         y,
         rows,
@@ -108,44 +118,68 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
     }
   }
 
-  // vertical
+  const squares = [] as Square[][]
   for (let x = 0; x < columns; x++) {
-    c.beginPath()
+    if (!squares[x]) squares.push([])
     for (let y = 0; y < rows; y++) {
-      const corner = crossPoints[x + 1][y + 1]
-      const right = crossPoints[x + 1][y]
-
-      if (x < columns - 1) {
-        addToCurves(
-          c,
-          right,
-          corner,
-          simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
-          true
-        )
+      squares[x][y] = {
+        x,
+        y,
+        topLeft: cornerPoints[x][y],
+        topRight: cornerPoints[x + 1][y],
+        bottomLeft: cornerPoints[x][y + 1],
+        bottomRight: cornerPoints[x + 1][y + 1],
+        middle: new Point({
+          x: x + 0.5,
+          y: y + 0.5,
+          rows,
+          columns,
+          simplexX: simplex[Seeds.SwayX],
+          simplexY: simplex[Seeds.SwayY],
+          width,
+          height,
+        })
       }
     }
-    c.stroke()
   }
 
-  // horizontal
-  for (let y = 0; y < rows; y++) {
-    c.beginPath()
-    for (let x = 0; x < columns; x++) {
-      const left = crossPoints[x][y + 1]
-      const corner = crossPoints[x + 1][y + 1]
+  for (let x = 0; x < columns; x++) {
+    for (let y = 0; y < rows; y++) {
+      const square = squares[x][y]
+      c.beginPath()
 
-      if (y < rows - 1) {
-        addToCurves(
-          c,
-          left,
-          corner,
-          simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
-          true
-        )
-      }
+      c.moveTo(square.topLeft.x, square.topLeft.y)
+      addToCurves(
+        c,
+        square.topLeft,
+        square.middle,
+        simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+        false
+      )
+      addToCurves(
+        c,
+        square.middle,
+        square.bottomRight,
+        simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+        false
+      )
+      addToCurves(
+        c,
+        square.topRight,
+        square.middle,
+        simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
+        true
+      )
+      addToCurves(
+        c,
+        square.middle,
+        square.bottomLeft,
+        simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
+        false
+      )
+
+      c.stroke()
     }
-    c.stroke()
   }
 }
 
@@ -157,88 +191,4 @@ export const cutPieces = ({
   rows,
   simplex,
 }: Cut) => {
-  const crossPoints = [] as Point[][]
-
-  for (let x = 0; x < columns + 1; x++) {
-    if (!crossPoints[x]) crossPoints.push([])
-    for (let y = 0; y < rows + 1; y++) {
-      crossPoints[x][y] = new Point({
-        x,
-        y,
-        rows,
-        columns,
-        simplexX: simplex[Seeds.SwayX],
-        simplexY: simplex[Seeds.SwayY],
-        width,
-        height,
-      })
-    }
-  }
-
-  for (let x = 0; x < columns; x++) {
-    for (let y = 0; y < rows; y++) {
-      c.beginPath()
-      const topLeft = crossPoints[x][y]
-      const topRight = crossPoints[x + 1][y]
-      const bottomLeft = crossPoints[x][y + 1]
-      const bottomRight = crossPoints[x + 1][y + 1]
-
-      c.moveTo(topLeft.x, topLeft.y)
-
-      // top
-      if (y === 0) {
-        c.lineTo(topRight.x, topRight.y)
-      } else {
-        addToCurves(
-          c,
-          topLeft,
-          topRight,
-          simplex[Seeds.FlipY].noise2D(x, y - 1) < 0,
-          false
-        )
-      }
-
-      // right
-      if (x < columns - 1) {
-        addToCurves(
-          c,
-          topRight,
-          bottomRight,
-          simplex[Seeds.FlipX].noise2D(x, y) < 0,
-          false
-        )
-      } else {
-        c.lineTo(bottomRight.x, bottomRight.y)
-      }
-
-      // bottom
-      if (y < rows - 1) {
-        addToCurves(
-          c,
-          bottomRight,
-          bottomLeft,
-          simplex[Seeds.FlipY].noise2D(x, y) >= 0,
-          false
-        )
-      } else {
-        c.lineTo(bottomLeft.x, bottomLeft.y)
-      }
-
-      // left
-      if (x === 0) {
-        c.lineTo(topLeft.x, topLeft.y)
-      } else {
-        addToCurves(
-          c,
-          bottomLeft,
-          topLeft,
-          simplex[Seeds.FlipX].noise2D(x - 1, y) >= 0,
-          false
-        )
-      }
-
-      c.closePath()
-      c.stroke()
-    }
-  }
 }

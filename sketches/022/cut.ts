@@ -21,7 +21,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-        edgeAvoidanceScalar) /
+      edgeAvoidanceScalar) /
     rows
   )
 }
@@ -149,33 +149,33 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
       c.beginPath()
 
       c.moveTo(square.topLeft.x, square.topLeft.y)
-      addToCurves(
+      if (x !== 0 || y !== 0) addToCurves(
         c,
         square.topLeft,
         square.middle,
-        simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
-        false
+        x === 0 ? false : y === 0 ? true : simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+        true
       )
-      addToCurves(
+      if (x !== columns - 1 || y !== rows - 1) addToCurves(
         c,
         square.middle,
         square.bottomRight,
-        simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
-        false
+        x === columns - 1 ? true : y === rows - 1 ? false : simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+        true
       )
-      addToCurves(
+      if (x !== columns - 1 || y !== 0) addToCurves(
         c,
         square.topRight,
         square.middle,
-        simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
+        x === columns - 1 ? true : y === 0 ? false : simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
         true
       )
-      addToCurves(
+      if (x !== 0 || y !== rows - 1) addToCurves(
         c,
         square.middle,
         square.bottomLeft,
-        simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
-        false
+        x === 0 ? false : y === rows - 1 ? true : simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
+        true
       )
 
       c.stroke()

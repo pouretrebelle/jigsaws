@@ -83,6 +83,7 @@ const addToCurves = (
 
 interface PointConnection {
   draw: (c: CanvasRenderingContext2D, moveTo: boolean) => void
+  drawReverse: (c: CanvasRenderingContext2D, moveTo: boolean) => void
 }
 
 interface Square {
@@ -94,13 +95,29 @@ interface Square {
   ne: PointConnection
 }
 
-const createConnection = (start: Point, end: Point, condition1: boolean, condition2: boolean, fallback: boolean): PointConnection => ({
-  draw: (c, moveTo) => {
-    if (!condition1 || !condition2) {
-      addToCurves(c, start, end, condition1 ? true : condition2 ? false : fallback, moveTo)
-    }
+class PointConnection {
+  start: Point
+  end: Point
+  shouldDraw: boolean
+  flip: boolean
+
+  constructor(start: Point, end: Point, condition1: boolean, condition2: boolean, flipDefault: boolean) {
+    this.start = start
+    this.end = end
+    this.shouldDraw = !condition1 || !condition2
+    this.flip = condition1 ? true : condition2 ? false : flipDefault
   }
-})
+
+  draw = (c: CanvasRenderingContext2D, moveTo: boolean) => {
+    if (!this.shouldDraw) return
+    addToCurves(c, this.start, this.end, this.flip, moveTo)
+  }
+
+  drawReverse = (c: CanvasRenderingContext2D, moveTo: boolean) => {
+    if (!this.shouldDraw) return
+    addToCurves(c, this.end, this.start, !this.flip, moveTo)
+  }
+}
 
 const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
   const cornerPoints = [] as Point[][]
@@ -143,10 +160,10 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
       squares[x][y] = {
         x,
         y,
-        nw: createConnection(topLeft, middle, y === 0, x === 0, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
-        se: createConnection(middle, bottomRight, x === columns - 1, y === rows - 1, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
-        sw: createConnection(bottomLeft, middle, x === 0, y === rows - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
-        ne: createConnection(middle, topRight, y === 0, x === columns - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
+        nw: new PointConnection(topLeft, middle, y === 0, x === 0, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
+        se: new PointConnection(middle, bottomRight, x === columns - 1, y === rows - 1, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
+        sw: new PointConnection(bottomLeft, middle, x === 0, y === rows - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
+        ne: new PointConnection(middle, topRight, y === 0, x === columns - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
       }
     }
   }
@@ -154,7 +171,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
 }
 
 export const cut = (cutAttrs: Cut) => {
-  const { c, width, columns, height, rows, simplex } = cutAttrs
+  const { c, width, columns, height, rows } = cutAttrs
 
   c.beginPath()
   c.moveTo(0, 0)
@@ -215,12 +232,106 @@ export const cut = (cutAttrs: Cut) => {
   }
 }
 
-export const cutPieces = ({
-  c,
-  width,
-  columns,
-  height,
-  rows,
-  simplex,
-}: Cut) => {
+export const cutPieces = (cutAttrs: Cut) => {
+  const { c, columns, rows } = cutAttrs
+
+  const squares = createSquares(cutAttrs)
+
+  // on the right
+  for (let x = 0; x < rows - 1; x++) {
+    for (let y = 0; y < columns; y++) {
+      c.beginPath()
+      squares[x][y].ne.draw(c, true)
+      squares[x + 1][y].nw.draw(c, false)
+      squares[x + 1][y].sw.drawReverse(c, false)
+      squares[x][y].se.drawReverse(c, false)
+      c.stroke()
+    }
+  }
+
+  // to the bottom
+  for (let x = 0; x < rows; x++) {
+    for (let y = 0; y < columns - 1; y++) {
+      c.beginPath()
+      squares[x][y].sw.draw(c, true)
+      squares[x][y].se.draw(c, false)
+      squares[x][y + 1].ne.drawReverse(c, false)
+      squares[x][y + 1].nw.drawReverse(c, false)
+      c.stroke()
+    }
+  }
+
+  // vertical edges
+  for (let y = 1; y < rows - 1; y++) {
+    c.beginPath()
+    const leftSquare = squares[0][y]
+    leftSquare.nw.draw(c, true)
+    leftSquare.sw.drawReverse(c, false)
+    c.lineTo(leftSquare.nw.start.x, leftSquare.nw.start.y)
+    c.stroke()
+
+    c.beginPath()
+    const rightSquare = squares[columns - 1][y]
+    rightSquare.ne.drawReverse(c, true)
+    rightSquare.se.draw(c, false)
+    c.lineTo(rightSquare.ne.end.x, rightSquare.ne.end.y)
+    c.stroke()
+  }
+
+  // horizontal edges
+  for (let x = 1; x < columns - 1; x++) {
+    c.beginPath()
+    const topSquare = squares[x][0]
+    topSquare.nw.draw(c, true)
+    topSquare.ne.draw(c, false)
+    c.lineTo(topSquare.nw.start.x, topSquare.nw.start.y)
+    c.stroke()
+
+    c.beginPath()
+    const bottomSquare = squares[x][rows - 1]
+    bottomSquare.sw.draw(c, true)
+    bottomSquare.se.draw(c, false)
+    c.lineTo(bottomSquare.sw.start.x, bottomSquare.sw.start.y)
+    c.stroke()
+  }
+
+  // top left corner
+  const topLeftSquare = squares[0][0]
+  c.beginPath()
+  c.moveTo(topLeftSquare.nw.start.x, topLeftSquare.nw.start.y)
+  c.lineTo(topLeftSquare.ne.end.x, topLeftSquare.ne.end.y)
+  topLeftSquare.ne.drawReverse(c, false)
+  topLeftSquare.sw.drawReverse(c, false)
+  c.lineTo(topLeftSquare.nw.start.x, topLeftSquare.nw.start.y)
+  c.stroke()
+
+  // top right corner
+  const topRightSquare = squares[columns - 1][0]
+  c.beginPath()
+  c.moveTo(topRightSquare.ne.end.x, topRightSquare.ne.end.y)
+  c.lineTo(topRightSquare.se.end.x, topRightSquare.se.end.y)
+  topRightSquare.se.drawReverse(c, false)
+  topRightSquare.nw.drawReverse(c, false)
+  c.lineTo(topRightSquare.ne.end.x, topRightSquare.ne.end.y)
+  c.stroke()
+
+  // bottom right corner
+  const bottomRightSquare = squares[columns - 1][rows - 1]
+  c.beginPath()
+  c.moveTo(bottomRightSquare.se.end.x, bottomRightSquare.se.end.y)
+  c.lineTo(bottomRightSquare.sw.start.x, bottomRightSquare.sw.start.y)
+  bottomRightSquare.sw.draw(c, false)
+  bottomRightSquare.ne.draw(c, false)
+  c.lineTo(bottomRightSquare.se.end.x, bottomRightSquare.se.end.y)
+  c.stroke()
+
+  // top right corner
+  const bottomLeftSquare = squares[0][rows - 1]
+  c.beginPath()
+  c.moveTo(bottomLeftSquare.sw.start.x, bottomLeftSquare.sw.start.y)
+  c.lineTo(bottomLeftSquare.se.end.x, bottomLeftSquare.se.end.y)
+  bottomLeftSquare.se.drawReverse(c, false)
+  bottomLeftSquare.nw.drawReverse(c, false)
+  c.lineTo(bottomLeftSquare.sw.start.x, bottomLeftSquare.sw.start.y)
+  c.stroke()
 }

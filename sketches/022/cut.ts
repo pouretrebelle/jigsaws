@@ -82,10 +82,7 @@ const addToCurves = (
 }
 
 interface PointConnection {
-  start: Point
-  end: Point
-  render: boolean
-  flipEdge: boolean
+  draw: (c: CanvasRenderingContext2D, moveTo: boolean) => void
 }
 
 interface Square {
@@ -98,10 +95,11 @@ interface Square {
 }
 
 const createConnection = (start: Point, end: Point, condition1: boolean, condition2: boolean, fallback: boolean): PointConnection => ({
-  start,
-  end,
-  render: !condition1 || !condition2,
-  flipEdge: condition1 ? true : condition2 ? false : fallback
+  draw: (c, moveTo) => {
+    if (!condition1 || !condition2) {
+      addToCurves(c, start, end, condition1 ? true : condition2 ? false : fallback, moveTo)
+    }
+  }
 })
 
 const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
@@ -168,19 +166,52 @@ export const cut = (cutAttrs: Cut) => {
 
   const squares = createSquares(cutAttrs)
 
-  for (let x = 0; x < columns; x++) {
-    for (let y = 0; y < rows; y++) {
-      const square = squares[x][y]
-      c.beginPath()
-
-      ; ([square.nw, square.se, square.sw, square.ne]).forEach((pointConnection: PointConnection) => {
-        if (pointConnection.render) {
-          addToCurves(c, pointConnection.start, pointConnection.end, pointConnection.flipEdge, true)
-        }
-      })
-
-      c.stroke()
+  // top left half of SW -> NE
+  for (let y = 0; y <= columns; y++) {
+    c.beginPath()
+    for (let len = 0; len < y; len++) {
+      const square = squares[len][y - len - 1]
+      const moveTo = len === 0
+      square.sw.draw(c, moveTo)
+      square.ne.draw(c, moveTo)
     }
+    c.stroke()
+  }
+
+  // bottom right half of SW -> NE
+  for (let x = 0; x < columns; x++) {
+    c.beginPath()
+    for (let len = 0; len < x; len++) {
+      const square = squares[rows - x + len][rows - len - 1]
+      const moveTo = len === 0
+      square.sw.draw(c, moveTo)
+      square.ne.draw(c, moveTo)
+    }
+    c.stroke()
+  }
+
+  // bottom left half of NW -> SW
+  for (let y = 0; y <= rows; y++) {
+    c.beginPath()
+    for (let len = 0; len < y; len++) {
+      const square = squares[len][rows - y + len]
+      const moveTo = len === 0
+      square.nw.draw(c, moveTo)
+      square.se.draw(c, moveTo)
+    }
+    c.stroke()
+  }
+
+  // top right half of NW -> SW
+  for (let x = 0; x < rows; x++) {
+    c.beginPath()
+    for (let len = 0; len < x; len++) {
+      const square = squares[columns - x + len][len]
+      const moveTo = len === 0
+      square.nw.draw(c, moveTo)
+      square.se.draw(c, moveTo)
+    }
+    c.stroke()
   }
 }
 

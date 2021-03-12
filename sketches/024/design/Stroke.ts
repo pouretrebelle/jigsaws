@@ -78,9 +78,9 @@ class Stroke {
 
       let stampSizeRatio = sizeRatio
       // pull in the start of the stroke
-      if (i <= 20) stampSizeRatio *= Math.sin(map(i, 0, 20, Math.PI / 4, Math.PI / 2))
+      if (i <= 40) stampSizeRatio *= Math.sin(map(i, 0, 40, Math.PI / 4, Math.PI / 2))
       // pull in the end of the stroke
-      if (i >= this.points.length - 20) stampSizeRatio *= Math.sin(map(i, this.points.length, this.points.length - 20, Math.PI / 4, Math.PI / 2))
+      if (i >= this.points.length - 40) stampSizeRatio *= Math.sin(map(i, this.points.length, this.points.length - 40, Math.PI / 4, Math.PI / 2))
 
       const stampWidth = width * stampSizeRatio
       const stampHeight = height * stampSizeRatio

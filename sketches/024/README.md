@@ -1,14 +1,14 @@
 ---
-datePublished: 2021-04-02
+datePublished: 2021-04-09
 youTubeLink: later
 
-designNoiseSeeds: [jzz, nxc, jix, pxs, qdo, vjl]
-cutNoiseSeeds: [ins, syq, xeq, kca]
+designNoiseSeeds: [rgj, mnl, ufs, qyc, enp, raw]
+cutNoiseSeeds: [akk, zbx, sms, frz]
 accentColor: fuchsia
 
 pieces: 225
 ---
 
-# 023
+# 024
 
-![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/023_jzz-nxc-jix-pxs-qdo-vjl_ins-syq-xeq-kca?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/024_rgj-mnl-ufs-qyc-enp-raw_akk-zbx-sms-frz?raw=true)

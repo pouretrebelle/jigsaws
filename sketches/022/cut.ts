@@ -335,3 +335,5 @@ export const cutPieces = (cutAttrs: Cut) => {
   c.lineTo(bottomLeftSquare.sw.start.x, bottomLeftSquare.sw.start.y)
   c.stroke()
 }
+
+export const countPieces = ({ columns, rows }: Cut) => columns * rows * 2 + columns + rows - 4

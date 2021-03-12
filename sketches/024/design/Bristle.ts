@@ -20,7 +20,18 @@ class Bristle {
       randomFromNoise(bristleSimplex.noise3D(layerI + 17.4, i + Math.PI, strokeI + Math.PI)) - 0.5,
     )
     this.weight = map(randomFromNoise(bristleSimplex.noise3D(layerI, strokeI, i * 20)), 0, 1, BRISTLE_MIN_WEIGHT, BRISTLE_MAX_WEIGHT)
-    this.color = `hsl(${hue}, 100%, ${lightness + bristleSimplex.noise2D(strokeI, i) * BRISTLE_LIGHTNESS_VARIANCE + bristleSimplex.noise2D(layerI, strokeI) * STROKE_LIGHTNESS_VARIANCE}%)`
+
+    let l = lightness + bristleSimplex.noise2D(layerI, strokeI) * STROKE_LIGHTNESS_VARIANCE
+
+    if (hue > 300 && l > 40) l -= 10 // pull down greens
+
+    let s = map(l, 100, 40, 60, 100, true)
+
+    if (hue > 220 && hue < 275 && l < 60) l += 10 // pull up blues
+
+    l += bristleSimplex.noise2D(strokeI, i) * BRISTLE_LIGHTNESS_VARIANCE
+
+    this.color = `hsl(${hue}, ${s.toFixed(2)}%, ${l.toFixed(2)}%)`
   }
 }
 

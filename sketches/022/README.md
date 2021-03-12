@@ -1,18 +1,14 @@
 ---
-datePublished: 2021-03-19
-youTubeLink: https://youtu.be/4Z3E9d1NaYg
+datePublished: 2021-03-26
+youTubeLink: later
 
-designNoiseSeeds: ['sdh', 'vts', 'mbs', 'nzu']
-cutNoiseSeeds: ['wab', 'zdg', 'khr', 'cje']
-accentColor: '#FB1C98'
+designNoiseSeeds: [lza, tnj, vkb, lug, ors, zgw]
+cutNoiseSeeds: [ete, yxl, vlv, ius]
+accentColor: fuchsia
 
-pieces: 256
+pieces: 225
 ---
 
-# 021
+# 022
 
-![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/021_sdh-vts-mbs-nzu_wab-zdg-khr-cje?raw=true)
-
-This uses triangles to form the strokes on a higher fidelity flow field, resulting in highly chaotic, crystalline designs.
-
-I found the jigsaw much harder to solve than expected, because although there are clear swathes of colour throughout the puzzle, the pieces don't lead on from one another in an obvious way.
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/022_lza-tnj-vkb-lug-ors-zgw_ete-yxl-vlv-ius?raw=true)

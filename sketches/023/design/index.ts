@@ -17,7 +17,7 @@ import {
   LAYER_COUNT,
   STROKE_SEPARATION_FIDELITY,
   LAYER_SHIFT,
-  BRISTLES_PER_STROKE,
+  STROKE_SIZE_VARIANCE,
 } from './constants'
 import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
@@ -116,7 +116,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
     const strokes: Stroke[] = []
     for (let strokeI = 0; strokeI < STROKES_PER_LAYER; strokeI++) {
-      const bristles = Array.from(Array(Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, BRISTLES_PER_STROKE)))).map((_, i) => new Bristle({
+      const bristleCount = Math.round(size * 3)
+      const bristles = Array.from(Array(Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, bristleCount)))).map((_, i) => new Bristle({
         i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle], hue, lightness
       })).filter(v => v.pos.magnitude() <= 0.5)
 
@@ -138,7 +139,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       )
 
       for (let t = 0; t < length; t += DISTANCE_BETWEEN_POINTS) {
-        stroke.update(getFlowAngle(stroke, layerI))
+        stroke.update(getFlowAngle(stroke, layerI), simplex[Seeds.Size].noise3D(layerI, strokeI, t * 0.01) * STROKE_SIZE_VARIANCE)
       }
       strokes.push(stroke)
     }

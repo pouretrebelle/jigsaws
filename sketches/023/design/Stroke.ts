@@ -17,6 +17,7 @@ interface Point {
   x: number
   y: number
   angle?: number
+  sizeRatio: number
 }
 
 class Stroke {
@@ -36,11 +37,11 @@ class Stroke {
     this.initialAngle = 0
 
     this.pos = pos
-    this.points = [{ x: pos.x, y: pos.y }]
+    this.points = [{ x: pos.x, y: pos.y, sizeRatio: 0 }]
     this.vel = new Vector2()
   }
 
-  update(angle: number) {
+  update(angle: number, sizeVariance: number) {
     if (this.length === 0) {
       this.initialAngle = angle
     }
@@ -52,6 +53,7 @@ class Stroke {
       x: this.pos.x,
       y: this.pos.y,
       angle: this.vel.angle(),
+      sizeRatio: 1 + sizeVariance,
     })
 
     this.length += DISTANCE_BETWEEN_POINTS
@@ -63,16 +65,22 @@ class Stroke {
     tempC.save()
     tempC.globalAlpha = BRISTLE_OPACITY
 
-    tempC.translate(this.size, this.size)
+    tempC.translate(width / 2, height / 2)
     this.bristles.forEach(bristle => {
       tempC.fillStyle = bristle.color
       tempC.beginPath()
-      tempC.arc(bristle.pos.x * this.size, bristle.pos.y * this.size, bristle.weight/2, 0, Math.PI * 2)
+      tempC.arc(bristle.pos.x * this.size, bristle.pos.y * this.size, bristle.weight / 2, 0, Math.PI * 2)
       tempC.fill()
     })
 
-    this.points.forEach(({ x, y }, i) => {
-      c.drawImage(tempC.canvas, x - this.size, y - this.size, width, height);
+    this.points.forEach(({ x, y, sizeRatio }, i) => {
+      c.drawImage(
+        tempC.canvas,
+        x - this.size - (width * sizeRatio / 2),
+        y - this.size - (height * sizeRatio / 2),
+        width * sizeRatio,
+        height * sizeRatio
+      );
     })
 
     tempC.restore()

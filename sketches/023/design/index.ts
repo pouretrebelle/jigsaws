@@ -18,6 +18,7 @@ import {
   STROKE_SEPARATION_FIDELITY,
   LAYER_SHIFT,
   STROKE_SIZE_VARIANCE,
+  LAYER_LOOP_COUNT,
 } from './constants'
 import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
@@ -36,35 +37,24 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     simplex[Seeds.Color],
     LAYER_COUNT + 1
   )
-  const background = `hsl(${layerHues.shift()}, 70%, 40%)`
   const layers = layerHues.map((hue, hueI) => {
-    const size = Math.round(
-      map(
-        randomFromNoise(simplex[Seeds.Size].noise2D(Math.PI, hueI * 5 - Math.PI)),
-        0,
-        1,
-        STROKE_MIN_SIZE,
-        STROKE_MAX_SIZE,
-      )
-    )
     let l = Math.round(
       map(
         randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI + 17.82, Math.PI + hueI * 5)),
         0,
         1,
-        20,
+        30,
         55
       )
-    )
-    if (hue > 100 && hue < 190 && l > 40) l -= 10 // pull down aggressive greens
-    if (l > 40) l += 20 // avoid the 10% around the background l
-    return {
-      hue,
-      lightness: l,
-      size,
-      opacity: 1,
-    }
-  })
+      )
+      if (hue > 100 && hue < 190 && l > 40) l -= 10 // pull down aggressive greens
+      return {
+        hue,
+        lightness: l,
+        opacity: 1,
+      }
+    })
+  const background = `hsl(${layers[layers.length-1].hue}, 100%, 30%)`
 
   c.fillStyle = background
   c.fillRect(0, 0, width, height)
@@ -106,52 +96,63 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   tempC.setTransform(c.getTransform())
   tempC.globalAlpha = STROKE_OPACITY
 
-  layers.forEach(({ hue, lightness, size, opacity }, layerI) => {
-    const layerCanvas = document.createElement('canvas')
-    layerCanvas.width = c.canvas.width
-    layerCanvas.height = c.canvas.height
-    const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
-    layerC.setTransform(c.getTransform())
-    layerC.globalAlpha = STROKE_OPACITY
+  for (let layerLoopI = 0; layerLoopI < LAYER_LOOP_COUNT; layerLoopI++) {
+    layers.forEach(({ hue, lightness, opacity }, layerI) => {
+      const layerCanvas = document.createElement('canvas')
+      layerCanvas.width = c.canvas.width
+      layerCanvas.height = c.canvas.height
+      const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
+      layerC.setTransform(c.getTransform())
+      layerC.globalAlpha = STROKE_OPACITY
 
-    const strokes: Stroke[] = []
-    for (let strokeI = 0; strokeI < STROKES_PER_LAYER; strokeI++) {
-      const bristleCount = Math.round(size * 3)
-      const bristles = Array.from(Array(Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, bristleCount)))).map((_, i) => new Bristle({
-        i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle], hue, lightness
-      })).filter(v => v.pos.magnitude() <= 0.5)
+      const strokes: Stroke[] = []
+      for (let strokeI = 0; strokeI < STROKES_PER_LAYER; strokeI++) {
+        const size = Math.round(
+          map(
+            randomFromNoise(simplex[Seeds.Size].noise2D(layerI, strokeI)),
+            0,
+            1,
+            STROKE_MIN_SIZE,
+            STROKE_MAX_SIZE,
+          )
+        )
+        const bristleCount = Math.round(size * 3)
+        const bristles = Array.from(Array(Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, bristleCount)))).map((_, i) => new Bristle({
+          i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle], hue, lightness
+        })).filter(v => v.pos.magnitude() <= 0.5)
 
-      const stroke = new Stroke({
-        i: strokeI,
-        pos: getRandomPos(strokeI, layerI),
-        size,
-        bristles
-      })
-      const length = map(
-        randomFromNoise(simplex[Seeds.Length].noise2D(
-          layerI,
-          strokeI,
-        )),
-        0,
-        1,
-        STROKE_MIN_LENGTH,
-        STROKE_MAX_LENGTH,
-      )
+        const stroke = new Stroke({
+          i: strokeI,
+          pos: getRandomPos(strokeI, layerI + layerLoopI*layers.length),
+          size,
+          bristles
+        })
+        const length = map(
+          randomFromNoise(simplex[Seeds.Length].noise2D(
+            layerI,
+            strokeI,
+          )),
+          0,
+          1,
+          STROKE_MIN_LENGTH,
+          STROKE_MAX_LENGTH,
+        )
 
-      for (let t = 0; t < length; t += DISTANCE_BETWEEN_POINTS) {
-        stroke.update(getFlowAngle(stroke, layerI), simplex[Seeds.Size].noise3D(layerI, strokeI, t * 0.01) * STROKE_SIZE_VARIANCE)
+        for (let t = 0; t < length; t += DISTANCE_BETWEEN_POINTS) {
+          stroke.update(getFlowAngle(stroke, layerI + layerLoopI * layers.length), simplex[Seeds.Size].noise3D(layerI, strokeI, t * 0.01) * STROKE_SIZE_VARIANCE)
+        }
+        strokes.push(stroke)
       }
-      strokes.push(stroke)
-    }
 
-    strokes.forEach((stroke) => {
-      stroke.draw({
-        layerC, tempC, width, height
+      strokes.forEach((stroke) => {
+        stroke.draw({
+          layerC, tempC, width, height
+        })
+
+        c.globalAlpha = opacity
       })
-
-      c.globalAlpha = opacity
       c.drawImage(layerCanvas, 0, 0, width, height)
     })
-  })
+  }
   c.restore()
 }

@@ -13,11 +13,9 @@ export const BRISTLE_MIN_WEIGHT = 3
 export const BRISTLE_MAX_WEIGHT = 10
 export const LIGHTNESS_VARIANCE = 10
 
-export const BACKGROUND = 'hsl(180, 40%, 45%)'
+export const BACKGROUND = '#AD1F7E'
 export const HUES = [
   10,
-  // 20,
-  // 75,
   140,
   160,
   190,

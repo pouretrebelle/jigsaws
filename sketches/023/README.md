@@ -1,14 +1,14 @@
 ---
-datePublished: 2021-03-26
+datePublished: 2021-04-02
 youTubeLink: later
 
-designNoiseSeeds: [lza, tnj, vkb, lug, ors, zgw]
-cutNoiseSeeds: [ete, yxl, vlv, ius]
+designNoiseSeeds: [jzz, nxc, jix, pxs, qdo, hey]
+cutNoiseSeeds: [ins, syq, xeq, kca]
 accentColor: fuchsia
 
 pieces: 225
 ---
 
-# 022
+# 023
 
-![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/022_lza-tnj-vkb-lug-ors-zgw_ete-yxl-vlv-ius?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/023_jzz-nxc-jix-pxs-qdo-hey_ins-syq-xeq-kca?raw=true)

@@ -6,12 +6,13 @@ export const STROKE_MAX_SIZE = 60
 export const STROKE_SIZE_VARIANCE = 0.3
 export const FLOW_FIDELITY = 0.3
 export const STROKE_SEPARATION_FIDELITY = 0.1
+export const STROKE_LIGHTNESS_VARIANCE = 30
 export const DISTANCE_BETWEEN_POINTS = 1
 export const STROKE_OPACITY = 0.2
 export const BRISTLE_OPACITY = 0.05
 export const BRISTLE_MIN_WEIGHT = 3
 export const BRISTLE_MAX_WEIGHT = 10
-export const LIGHTNESS_VARIANCE = 10
+export const BRISTLE_LIGHTNESS_VARIANCE = 10
 
 export const BACKGROUND = '#AD1F7E'
 export const HUES = [

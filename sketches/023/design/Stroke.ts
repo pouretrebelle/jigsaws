@@ -1,3 +1,4 @@
+import { map } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 import Bristle from './Bristle'
 
@@ -74,12 +75,21 @@ class Stroke {
     })
 
     this.points.forEach(({ x, y, sizeRatio }, i) => {
+
+      let stampSizeRatio = sizeRatio
+      // pull in the start of the stroke
+      if (i <= 20) stampSizeRatio *= Math.sin(map(i, 0, 20, Math.PI / 4, Math.PI / 2))
+      // pull in the end of the stroke
+      if (i >= this.points.length - 20) stampSizeRatio *= Math.sin(map(i, this.points.length, this.points.length - 20, Math.PI / 4, Math.PI / 2))
+
+      const stampWidth = width * stampSizeRatio
+      const stampHeight = height * stampSizeRatio
       c.drawImage(
         tempC.canvas,
-        x - this.size - (width * sizeRatio / 2),
-        y - this.size - (height * sizeRatio / 2),
-        width * sizeRatio,
-        height * sizeRatio
+        x - this.size - (stampWidth / 2),
+        y - this.size - (stampHeight / 2),
+        stampWidth,
+        stampHeight
       );
     })
 

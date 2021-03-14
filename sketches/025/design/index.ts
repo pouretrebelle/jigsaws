@@ -6,23 +6,22 @@ import Stroke from './Stroke'
 import Bristle from './Bristle'
 import {
   STROKES_PER_LAYER,
-  STROKE_MIN_SIZE,
-  STROKE_MAX_SIZE,
   FLOW_FIDELITY,
   STROKE_MIN_LENGTH,
   STROKE_MAX_LENGTH,
+  STROKE_SIZE,
   STROKE_OPACITY,
   DISTANCE_BETWEEN_POINTS,
-  HUES,
   LAYER_COUNT,
   STROKE_POSITION_SHIFT,
-  LAYER_SHIFT,
+  LAYER_FLOW_SHIFT,
   STROKE_SIZE_VARIANCE,
   LAYER_LOOP_COUNT,
   LAYER_POSITION_SHIFT,
   BRISTLE_DENSITY,
+  HUE_MIN,
+  HUE_MAX,
 } from './constants'
-import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 
 export enum Seeds {
   Flow,
@@ -34,19 +33,15 @@ export enum Seeds {
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
-  const layerHues = arrayValuesFromSimplex(
-    HUES,
-    simplex[Seeds.Color],
-    LAYER_COUNT + 1
-  )
-  const layers = layerHues.map((hue, hueI) => {
+  const layers = Array.from(Array(LAYER_COUNT)).map((_, i) => {
+    const hue = map(randomFromNoise(simplex[Seeds.Color].noise2D(10 + i * 23.1, 14.3)), 0, 1, HUE_MIN, HUE_MAX)
     let l = Math.round(
       map(
-        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI + 17.82, Math.PI + hueI * 5)),
+        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI + 17.82, Math.PI + i * 5)),
         0,
         1,
-        30,
-        55
+        40,
+        65
       )
     )
     return {
@@ -55,7 +50,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       opacity: 1,
     }
   })
-  const background = `hsl(${layers[layers.length - 1].hue}, 80%, 40%)`
+  const background = `hsl(${layers[layers.length - 1].hue}, 80%, 50%)`
 
   c.fillStyle = background
   c.fillRect(0, 0, width, height)
@@ -70,7 +65,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
       simplex[Seeds.Flow].noise3D(
         noiseX,
         noiseY,
-        noiseStart * 0.02 + layerI * LAYER_SHIFT
+        noiseStart * 0.02 + layerI * LAYER_FLOW_SHIFT
       ),
       -1,
       1,
@@ -80,11 +75,11 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   }
 
   const getRandomLength = (a: number, b: number) =>
-    map(simplex[Seeds.Position].noise2D(a, b), -0.5, 0.5, 0, width)
+    map(simplex[Seeds.Position].noise2D(a, b), -0.6, 0.6, 0, width)
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(layerI * LAYER_POSITION_SHIFT, layerI * LAYER_POSITION_SHIFT),
+      getRandomLength(layerI * LAYER_POSITION_SHIFT, i * STROKE_POSITION_SHIFT),
       getRandomLength(i * STROKE_POSITION_SHIFT, layerI * LAYER_POSITION_SHIFT)
     )
 
@@ -108,24 +103,15 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
       const strokes: Stroke[] = []
       for (let strokeI = 0; strokeI < STROKES_PER_LAYER; strokeI++) {
-        const size = Math.round(
-          map(
-            randomFromNoise(simplex[Seeds.Size].noise2D(layerI, strokeI)),
-            0,
-            1,
-            STROKE_MIN_SIZE,
-            STROKE_MAX_SIZE,
-          )
-        )
-        const bristleCount = Math.round(size * BRISTLE_DENSITY)
-        const bristles = Array.from(Array(Math.ceil(map(size, 0, STROKE_MAX_SIZE, 0, bristleCount)))).map((_, i) => new Bristle({
-          i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle], hue, lightness
+        const bristleCount = Math.round(STROKE_SIZE * BRISTLE_DENSITY)
+        const bristles = Array.from(Array(bristleCount)).map((_, i) => new Bristle({
+          i, layerI, strokeI, bristleSimplex: simplex[Seeds.Bristle], colorSimplex: simplex[Seeds.Color], hue, lightness
         })).filter(v => v.pos.magnitude() <= 0.5)
 
         const stroke = new Stroke({
           i: strokeI,
           pos: getRandomPos(strokeI, layerI + layerLoopI * layers.length),
-          size,
+          size: STROKE_SIZE,
           bristles
         })
         const length = map(

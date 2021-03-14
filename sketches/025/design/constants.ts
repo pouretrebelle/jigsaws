@@ -1,31 +1,27 @@
-export const STROKES_PER_LAYER = 5
-export const STROKE_MIN_LENGTH = 40
-export const STROKE_MAX_LENGTH = 100
-export const STROKE_MIN_SIZE = 30
-export const STROKE_MAX_SIZE = 80
-export const STROKE_SIZE_VARIANCE = 0.5
-export const FLOW_FIDELITY = 1.5
-export const STROKE_POSITION_SHIFT = 0.02
-export const STROKE_LIGHTNESS_VARIANCE = 20
+export const FLOW_FIDELITY = 0.6
+export const STROKES_PER_LAYER = 50
+export const STROKE_MIN_LENGTH = 100
+export const STROKE_MAX_LENGTH = 200
+export const STROKE_SIZE = 30
+export const STROKE_SIZE_VARIANCE = 0.8
+export const STROKE_POSITION_SHIFT = 0.03
+export const STROKE_HUE_SHIFT = 0.1
+export const STROKE_HUE_VARIANCE = 3
+export const STROKE_LIGHTNESS_SHIFT = 0.1
+export const STROKE_LIGHTNESS_VARIANCE = 25
+export const STROKE_OPACITY = 1
 export const DISTANCE_BETWEEN_POINTS = 1
-export const STROKE_OPACITY = 0.5
-export const BRISTLE_OPACITY = 0.4
-export const BRISTLE_MIN_WEIGHT = 5
-export const BRISTLE_MAX_WEIGHT = 30
+export const BRISTLE_OPACITY = 0.2
+export const BRISTLE_MIN_WEIGHT = 2
+export const BRISTLE_MAX_WEIGHT = 8
+export const BRISTLE_LIGHTNESS_SHIFT = 0.1
 export const BRISTLE_LIGHTNESS_VARIANCE = 5
 export const BRISTLE_DENSITY = 2
-
-export const BACKGROUND = '#173efe'
-export const HUES = [
-  190,
-  205,
-  230,
-  240,
-  270,
-  285,
-  320,
-]
-export const LAYER_COUNT = 6
-export const LAYER_LOOP_COUNT = 10
-export const LAYER_SHIFT = 0.001
+export const HUE_MIN = 190
+export const HUE_MAX = 320
+export const LAYER_COUNT = 1
+export const LAYER_LOOP_COUNT = 8
+export const LAYER_FLOW_SHIFT = 0.02
 export const LAYER_POSITION_SHIFT = 10
+
+export const BACKGROUND = '#cb0a94'

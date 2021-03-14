@@ -1,14 +1,14 @@
 ---
-datePublished: 2021-04-09
+datePublished: 2021-04-16
 youTubeLink: later
 
-designNoiseSeeds: [qgd, zsn, vhu, dpe, ycp, iig]
-cutNoiseSeeds: [ajz, mwe, ggr, krn]
+designNoiseSeeds: [prb, zxv, efv, qqj, hoj, zio]
+cutNoiseSeeds: [zla, xqt, tvh, xcg]
 accentColor: fuchsia
 
-pieces: 225
+pieces: 144
 ---
 
-# 024
+# 025
 
-![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/024_qgd-zsn-vhu-dpe-ycp-iig_ajz-mwe-ggr-krn?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/025_prb-zxv-efv-qqj-hoj-zio_zla-xqt-tvh-xcg?raw=true)

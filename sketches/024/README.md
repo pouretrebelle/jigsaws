@@ -2,13 +2,13 @@
 datePublished: 2021-04-09
 youTubeLink: later
 
-designNoiseSeeds: [rgj, mnl, ufs, qyc, enp, raw]
+designNoiseSeeds: [qgd, zsn, vhu, dpe, ycp, iig]
 cutNoiseSeeds: [akk, zbx, sms, frz]
-accentColor: fuchsia
+accentColor: '#ad2de2'
 
 pieces: 225
 ---
 
 # 024
 
-![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/024_rgj-mnl-ufs-qyc-enp-raw_akk-zbx-sms-frz?raw=true)
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/024_qgd-zsn-vhu-dpe-ycp-iig_akk-zbx-sms-frz?raw=true)

@@ -4,7 +4,7 @@ youTubeLink: later
 
 designNoiseSeeds: [prb, zxv, efv, qqj, hoj, zio]
 cutNoiseSeeds: [zla, xqt, tvh, xcg]
-accentColor: fuchsia
+accentColor: '#e816b5'
 
 pieces: 144
 ---

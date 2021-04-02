@@ -1,6 +1,6 @@
 ---
 datePublished: 2021-04-16
-youTubeLink: later
+youTubeLink: https://youtu.be/r53IAor9zFg
 
 designNoiseSeeds: [prb, zxv, efv, qqj, hoj, zio]
 cutNoiseSeeds: [zla, xqt, tvh, xcg]

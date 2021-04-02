@@ -1,6 +1,6 @@
 ---
 datePublished: 2021-04-09
-youTubeLink: later
+youTubeLink: https://youtu.be/JNSkqbXV4ac
 
 designNoiseSeeds: [qgd, zsn, vhu, dpe, ycp, iig]
 cutNoiseSeeds: [akk, zbx, sms, frz]

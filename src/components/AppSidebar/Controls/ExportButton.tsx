@@ -6,7 +6,7 @@ import Loader from 'components/Loader'
 interface Props {
   children: React.ReactNode
   onClick?: () => void
-  loading: boolean
+  loading?: boolean
   ext: string
 }
 

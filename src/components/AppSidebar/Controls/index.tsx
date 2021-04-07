@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
+import yaml from 'js-yaml'
 
 import { SketchContext } from 'store/Provider'
 import { Env, EnvContext, ExceptEnv, OnlyEnv } from 'env'
@@ -61,6 +62,18 @@ const Controls = () => {
         >
           Export canvas
         </ExportButton>
+        <ExceptEnv env={Env.Prod}>
+          <ExportButton
+            onClick={() =>
+              navigator.clipboard.writeText(
+                yaml.dump({ designNoiseSeeds, cutNoiseSeeds }, { flowLevel: 1 })
+              )
+            }
+            ext="yml"
+          >
+            Copy seeds
+          </ExportButton>
+        </ExceptEnv>
       </Section>
       <Section>
         <h2>

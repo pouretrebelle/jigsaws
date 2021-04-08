@@ -34,45 +34,9 @@ const shapes = {
       c.fill()
     },
   },
-  opposites: {
-    weight: 1,
-    draw: ({ c, x, y, w, h, simplex }: Shape) => {
-      const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 2)
-      c.rotate(rotate * Math.PI / 2)
-      c.beginPath()
-      c.arc(0, 0, w / 2, 0, Math.PI / 2)
-      c.lineTo(-w / 2, h / 2)
-      c.arc(0, 0, w / 2, Math.PI, Math.PI * 1.5)
-      c.lineTo(w / 2, -h / 2)
-      c.fill()
-    },
-  },
-  twocorners: {
-    weight: 1,
-    draw: ({ c, x, y, w, h, simplex }: Shape) => {
-      const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 4)
-      c.rotate(rotate * Math.PI / 2)
-      c.beginPath()
-      c.arc(0, 0, w / 2, 0, Math.PI)
-      c.lineTo(-w / 2, -h / 2)
-      c.lineTo(w / 2, -h / 2)
-      c.fill()
-    },
-  },
-  onecorner: {
-    weight: 1,
-    draw: ({ c, x, y, w, h, simplex }: Shape) => {
-      const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 4)
-      c.rotate(rotate * Math.PI / 2)
-      c.beginPath()
-      c.arc(0, 0, w / 2, 0, Math.PI * 1.5)
-      c.lineTo(w / 2, -h / 2)
-      c.fill()
-    },
-  },
   quatrefoil: {
     weight: 1,
-    draw: ({ c, x, y, w, h, simplex }: Shape) => {
+    draw: ({ c, w, h }: Shape) => {
       c.beginPath()
       c.arc(0, h / 2, w / 2, 0, Math.PI)
       c.arc(-w / 2, 0, w / 2, Math.PI * 0.5, Math.PI * 1.5)
@@ -80,7 +44,18 @@ const shapes = {
       c.arc(w / 2, 0, w / 2, Math.PI * 1.5, Math.PI * 2.5)
       c.fill()
     },
-  }
+  },
+  pill: {
+    weight: 1,
+    draw: ({ c, x, y, w, h, simplex }: Shape) => {
+      const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 2)
+      c.rotate(rotate * Math.PI / 2)
+      c.beginPath()
+      c.arc(0, h / 2, w / 2, 0, Math.PI)
+      c.arc(0, -h / 2, w / 2, Math.PI, Math.PI * 2)
+      c.fill()
+    },
+  },
 }
 const shapeKeys = Object.keys(shapes)
 const shapeTotalWeights = shapeKeys.reduce(

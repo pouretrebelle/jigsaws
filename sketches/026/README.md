@@ -2,11 +2,11 @@
 datePublished: 2021-04-23
 youTubeLink: incoming
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
-accentColor: '#FB1C98'
+designNoiseSeeds: [plq, jpm]
+cutNoiseSeeds: [qtj, fvs, rxj, itc]
+accentColor: '#d7447b'
 
-pieces: 256
+pieces: 176
 ---
 
 # 026

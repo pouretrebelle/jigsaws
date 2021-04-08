@@ -94,7 +94,7 @@ const drawShape = (args: Shape) => {
 export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
   const hues: number[] = []
   for (let i = 0; i < 5; i++) {
-    hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5 + i, 3)) * 360))
+    hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5.25 + i, 3.33)) * 360))
   }
   c.save()
 

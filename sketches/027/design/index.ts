@@ -3,11 +3,12 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, LINE_CAP_SIZE, LINE_COLOR, LINE_COUNT, LINE_MAX_LENGTH, LINE_OPACITY, LINE_WEIGHT } from './constants'
 
 export enum Seeds {
   Shape,
-  Color
+  Color,
+  Lines,
 }
 
 interface Shape {
@@ -153,6 +154,48 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
         noiseStart: noiseStart + 1, // different start to first layer
       })
     }
+  }
+
+  c.globalCompositeOperation = 'screen'
+  c.globalAlpha = LINE_OPACITY
+
+  const tempCanvas = document.createElement('canvas')
+  tempCanvas.width = c.canvas.width
+  tempCanvas.height = c.canvas.height
+  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
+  tempC.setTransform(c.getTransform())
+
+  tempC.lineWidth = LINE_WEIGHT
+  tempC.strokeStyle = LINE_COLOR
+  tempC.fillStyle = LINE_COLOR
+
+  for (let line = 0; line < LINE_COUNT; line++) {
+    const x = Math.floor(randomFromNoise(simplex[Seeds.Lines].noise2D(7.4 + noiseStart * 0.01, 10 + line)) * GRID_COLUMNS)
+    const y = Math.floor(randomFromNoise(simplex[Seeds.Lines].noise2D(5.4 + noiseStart * 0.01, 100 + line)) * GRID_ROWS)
+    const size = Math.ceil(randomFromNoise(simplex[Seeds.Lines].noise2D(12 + line, 0.5 + noiseStart * 0.1)) * LINE_MAX_LENGTH) * cellWidth
+    const rotate = simplex[Seeds.Lines].noise2D(123 + line, 0.5) > 0 ? 1 : 0
+
+    tempC.save()
+    tempC.translate(bleed + (x + 0.5) * cellWidth, bleed + (y + 0.5) * cellHeight)
+    tempC.rotate(rotate * Math.PI / 2)
+
+    tempC.beginPath()
+    tempC.moveTo(0, -size / 2)
+    tempC.lineTo(0, size / 2)
+    tempC.stroke()
+
+    tempC.beginPath()
+    tempC.arc(0, -size / 2, LINE_CAP_SIZE / 2, 0, Math.PI * 2)
+    tempC.fill()
+
+    tempC.beginPath()
+    tempC.arc(0, size / 2, LINE_CAP_SIZE / 2, 0, Math.PI * 2)
+    tempC.fill()
+
+    tempC.restore()
+
+    c.drawImage(tempCanvas, 0, 0, width, height)
+    tempC.clearRect(0, 0, width, height)
   }
 
   c.restore()

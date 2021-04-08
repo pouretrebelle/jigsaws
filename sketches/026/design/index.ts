@@ -1,9 +1,9 @@
 import SimplexNoise from 'simplex-noise'
 import { Design } from 'types'
-import { hsla } from 'utils/colorUtils'
+import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { BACKGROUND, GRID_COLUMNS, GRID_ROWS } from './constants'
+import { GRID_COLUMNS, GRID_ROWS } from './constants'
 
 export enum Seeds {
   Shape,
@@ -84,9 +84,13 @@ const drawShape = (args: Shape) => {
 }
 
 export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
+  const hues: number[] = []
+  for (let i = 0; i < 5; i++) {
+    hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5 + i, 3)) * 360))
+  }
   c.save()
 
-  c.fillStyle = BACKGROUND
+  c.fillStyle = hsl(hues[0], 40, 40)
   c.fillRect(0, 0, width, height)
 
   const cellWidth = (width - bleed * 2) / GRID_COLUMNS
@@ -95,10 +99,9 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   c.globalCompositeOperation = 'screen'
   for (let col = -0.5; col < GRID_COLUMNS + 0.5; col += 2) {
     for (let row = -0.5; row < GRID_ROWS + 0.5; row += 2) {
-      let h = 320
-      if (simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0) h = 160
-
-      c.fillStyle = hsla(h, 70, 50, map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1))
+      const h = simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0 ? hues[1] : hues[2]
+      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
+      c.fillStyle = hsla(h, 70, 50, a)
 
       drawShape({
         c,
@@ -111,10 +114,9 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   c.globalCompositeOperation = 'multiply'
   for (let col = 0; col < GRID_COLUMNS; col++) {
     for (let row = 0; row < GRID_ROWS; row++) {
-      let h = 10
-      if (simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0) h = 180
-
-      c.fillStyle = hsla(h, 70, 50, map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1))
+      const h = simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0 ? hues[3] : hues[4]
+      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
+      c.fillStyle = hsla(h, 70, 50, a)
 
       drawShape({
         c,

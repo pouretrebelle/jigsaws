@@ -3,7 +3,7 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS, LINE_CAP_SIZE, LINE_COLOR, LINE_COUNT, LINE_MAX_LENGTH, LINE_OPACITY, LINE_WEIGHT } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, LINE_CAP_SIZE, LINE_COUNT, LINE_MAX_LENGTH, LINE_OPACITY, LINE_WEIGHT } from './constants'
 
 export enum Seeds {
   Shape,
@@ -23,7 +23,7 @@ interface Shape {
 
 const shapes = {
   blank: {
-    weight: 2,
+    weight: 3,
     draw: () => { }
   },
   circle: {
@@ -118,12 +118,12 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   const cellWidth = (width - bleed * 2) / GRID_COLUMNS
   const cellHeight = (height - bleed * 2) / GRID_ROWS
 
-  c.globalCompositeOperation = 'screen'
+  c.globalCompositeOperation = 'multiply'
   for (let col = -0.5; col < GRID_COLUMNS + 0.5; col += 2) {
     for (let row = -0.5; row < GRID_ROWS + 0.5; row += 2) {
       const h = simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0 ? hues[1] : hues[2]
       const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
-      c.fillStyle = hsla(h, 70, 50, a)
+      c.fillStyle = hsla(h, 80, 50, a)
 
       drawShape({
         c,
@@ -137,7 +137,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
     }
   }
 
-  c.globalCompositeOperation = 'multiply'
+  c.globalCompositeOperation = 'screen'
   for (let col = 0; col < GRID_COLUMNS; col++) {
     for (let row = 0; row < GRID_ROWS; row++) {
       const h = simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0 ? hues[3] : hues[4]
@@ -166,14 +166,15 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   tempC.setTransform(c.getTransform())
 
   tempC.lineWidth = LINE_WEIGHT
-  tempC.strokeStyle = LINE_COLOR
-  tempC.fillStyle = LINE_COLOR
+  const lineColor = hsl((hues[0] + 180) % 360, 100, 70)
+  tempC.fillStyle = lineColor
+  tempC.strokeStyle = lineColor
 
   for (let line = 0; line < LINE_COUNT; line++) {
-    const x = Math.floor(randomFromNoise(simplex[Seeds.Lines].noise2D(7.4 + noiseStart * 0.01, 10 + line)) * GRID_COLUMNS)
-    const y = Math.floor(randomFromNoise(simplex[Seeds.Lines].noise2D(5.4 + noiseStart * 0.01, 100 + line)) * GRID_ROWS)
+    const x = Math.floor(randomFromNoise(simplex[Seeds.Lines].noise2D(7.4 + noiseStart * 0.01, 10 + line * 10)) * GRID_COLUMNS)
+    const y = Math.floor(randomFromNoise(simplex[Seeds.Lines].noise2D(5.4 + noiseStart * 0.01, 100 + line * 10)) * GRID_ROWS)
     const size = Math.ceil(randomFromNoise(simplex[Seeds.Lines].noise2D(12 + line, 0.5 + noiseStart * 0.1)) * LINE_MAX_LENGTH) * cellWidth
-    const rotate = simplex[Seeds.Lines].noise2D(123 + line, 0.5) > 0 ? 1 : 0
+    const rotate = simplex[Seeds.Lines].noise2D(123 + line * 30, 0.5) > 0 ? 1 : 0
 
     tempC.save()
     tempC.translate(bleed + (x + 0.5) * cellWidth, bleed + (y + 0.5) * cellHeight)
@@ -193,10 +194,8 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
     tempC.fill()
 
     tempC.restore()
-
-    c.drawImage(tempCanvas, 0, 0, width, height)
-    tempC.clearRect(0, 0, width, height)
   }
+  c.drawImage(tempCanvas, 0, 0, width, height)
 
   c.restore()
 }

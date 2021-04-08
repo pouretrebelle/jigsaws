@@ -2,11 +2,11 @@
 datePublished: 2021-04-30
 youTubeLink: incoming
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
-accentColor: '#B66522'
+designNoiseSeeds: [bmw, egh, mew]
+cutNoiseSeeds: [ekg, ymi, bat, oyf]
+accentColor: '#50B4CC'
 
-pieces: 176
+pieces: 260
 ---
 
 # 027

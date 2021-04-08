@@ -2,9 +2,9 @@
 datePublished: 2021-05-07
 youTubeLink: incoming
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
-accentColor: '#50B4CC'
+designNoiseSeeds: [epg, jtq, tqp]
+cutNoiseSeeds: [bwy, ttq, irx, psd]
+accentColor: '#D5D458'
 
 pieces: 260
 ---

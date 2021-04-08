@@ -10,7 +10,15 @@ export enum Seeds {
   Color
 }
 
-interface Shape { c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, simplex: SimplexNoise }
+interface Shape {
+  c: CanvasRenderingContext2D
+  x: number
+  y: number
+  w: number
+  h: number
+  simplex: SimplexNoise
+  noiseStart: number
+}
 
 const shapes = {
   blank: {
@@ -66,9 +74,9 @@ const shapeTotalWeights = shapeKeys.reduce(
 )
 
 const drawShape = (args: Shape) => {
-  const { c, x, y, w, h, simplex } = args
+  const { c, x, y, w, h, simplex, noiseStart } = args
 
-  const shapeRand = randomFromNoise(simplex.noise2D(3 + x * 5, 5 + y * 3)) * shapeTotalWeights
+  const shapeRand = randomFromNoise(simplex.noise3D(0.555 + x * 0.1, 0.444 + y * 0.1, 0.333 + noiseStart * 0.05)) * shapeTotalWeights
   let shapeKey = shapeKeys[0] as keyof typeof shapes
   shapeKeys.reduce(
     (prev, curr) => {
@@ -105,8 +113,12 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
       drawShape({
         c,
-        x: col * cellWidth + bleed, y: row * cellHeight + bleed, w: cellWidth * 2, h: cellHeight * 2,
-        simplex: simplex[Seeds.Shape]
+        x: col * cellWidth + bleed,
+        y: row * cellHeight + bleed,
+        w: cellWidth * 2,
+        h: cellHeight * 2,
+        simplex: simplex[Seeds.Shape],
+        noiseStart,
       })
     }
   }
@@ -120,8 +132,12 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
       drawShape({
         c,
-        x: col * cellWidth + bleed, y: row * cellHeight + bleed, w: cellWidth, h: cellHeight,
-        simplex: simplex[Seeds.Shape]
+        x: col * cellWidth + bleed,
+        y: row * cellHeight + bleed,
+        w: cellWidth,
+        h: cellHeight,
+        simplex: simplex[Seeds.Shape],
+        noiseStart: noiseStart + 1, // different start to first layer
       })
     }
   }

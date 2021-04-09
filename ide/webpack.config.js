@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const sketches = readdirSync('sketches', { withFileTypes: true })
   .filter((dirent) => dirent.isDirectory())
   .map((dirent) => dirent.name)
+  .reverse()
 
 module.exports = (env, argv) => ({
   devtool: 'eval-source-map',

@@ -1,6 +1,6 @@
 ---
 datePublished: 2021-04-30
-youTubeLink: incoming
+# youTubeLink: 
 
 designNoiseSeeds: [bmw, egh, mew]
 cutNoiseSeeds: [ekg, ymi, bat, oyf]
@@ -10,3 +10,5 @@ pieces: 260
 ---
 
 # 027
+
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/027_bmw-egh-mew_ekg-ymi-bat-oyf?raw=true)

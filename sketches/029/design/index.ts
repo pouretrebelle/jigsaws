@@ -3,7 +3,7 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS, GRID_GAP } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO } from './constants'
 
 export enum Seeds {
   Shape,
@@ -16,6 +16,7 @@ interface Shape {
   y: number
   w: number
   h: number
+  gap: number
   simplex: SimplexNoise
   noiseStart: number
 }
@@ -26,26 +27,26 @@ const shapes = {
     draw: () => { }
   },
   pill: {
-    weight: 2,
-    draw: ({ c, x, y, w, h, simplex }: Shape) => {
+    weight: 3,
+    draw: ({ c, x, y, w, h, gap, simplex }: Shape) => {
       const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 2)
       c.rotate(rotate * Math.PI / 2)
       c.beginPath()
-      c.arc(0, (h + GRID_GAP) / 2, (w - GRID_GAP) / 2, 0, Math.PI)
-      c.arc(0, -(h + GRID_GAP) / 2, (w - GRID_GAP) / 2, Math.PI, Math.PI * 2)
+      c.arc(0, (h + gap) / 2, (w - gap) / 2, 0, Math.PI)
+      c.arc(0, -(h + gap) / 2, (w - gap) / 2, Math.PI, Math.PI * 2)
       c.fill()
     },
   },
   heart: {
     weight: 5,
-    draw: ({ c, x, y, w, h, simplex }: Shape) => {
+    draw: ({ c, x, y, w, h, gap, simplex }: Shape) => {
       const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 5)
       c.rotate(rotate * Math.PI / 2)
       c.beginPath()
-      c.arc(0, (h + GRID_GAP) / 2, (w - GRID_GAP) / 2, 0, Math.PI)
-      c.lineTo(-(w - GRID_GAP) / 2, (h - GRID_GAP) / 2)
-      c.arc(-(w + GRID_GAP) / 2, 0, (w - GRID_GAP) / 2, Math.PI * 0.5, Math.PI * 1.5)
-      c.lineTo((w - GRID_GAP) / 2, -(h - GRID_GAP) / 2)
+      c.arc(0, (h + gap) / 2, (w - gap) / 2, 0, Math.PI)
+      c.lineTo(-(w - gap) / 2, (h - gap) / 2)
+      c.arc(-(w + gap) / 2, 0, (w - gap) / 2, Math.PI * 0.5, Math.PI * 1.5)
+      c.lineTo((w - gap) / 2, -(h - gap) / 2)
       c.fill()
     },
   },
@@ -86,9 +87,10 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   c.fillStyle = hsl(hues[0], 40, 30)
   c.fillRect(0, 0, width, height)
 
-  const gridBleed = bleed - GRID_GAP / 2
-  const cellWidth = (width - gridBleed * 2) / GRID_COLUMNS
-  const cellHeight = (height - gridBleed * 2) / GRID_ROWS
+  const cellWidth = (width - bleed * 2) / (GRID_COLUMNS + GRID_GAP_RATIO)
+  const cellHeight = (height - bleed * 2) / (GRID_ROWS + GRID_GAP_RATIO)
+  const gridGap = cellWidth * GRID_GAP_RATIO
+  const gridBleed = bleed + gridGap / 2
 
   c.globalCompositeOperation = 'screen'
   for (let col = -1; col < GRID_COLUMNS + 1; col += 3) {
@@ -110,6 +112,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
         y,
         w: cellWidth * 3,
         h: cellHeight * 3,
+        gap: gridGap,
         simplex: simplex[Seeds.Shape],
         noiseStart,
       })
@@ -123,8 +126,8 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       c.fillStyle = hsla(hues[2], 80, 50, a)
 
       // this layer doesn't add the line gap between shapes because it's on a half-grid
-      const x = col * cellWidth + gridBleed - GRID_GAP / 2
-      const y = row * cellHeight + gridBleed - GRID_GAP / 2
+      const x = col * cellWidth + gridBleed - gridGap / 2
+      const y = row * cellHeight + gridBleed - gridGap / 2
       const shape = getShape({
         x,
         y,
@@ -135,8 +138,9 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
         c,
         x,
         y,
-        w: cellWidth * 2 + GRID_GAP,
-        h: cellHeight * 2 + GRID_GAP,
+        w: cellWidth * 2 + gridGap,
+        h: cellHeight * 2 + gridGap,
+        gap: gridGap,
         simplex: simplex[Seeds.Shape],
         noiseStart: noiseStart + 1, // different start to first layer
       })
@@ -145,7 +149,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
   c.globalCompositeOperation = 'screen'
   for (let col = 0; col < GRID_COLUMNS; col++) {
-    for (let row = 0; row < GRID_ROWS; row++) {      
+    for (let row = 0; row < GRID_ROWS; row++) {
       const x = col * cellWidth + gridBleed
       const y = row * cellHeight + gridBleed
       const shape = getShape({
@@ -163,6 +167,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
         x,
         y,
         w: cellWidth,
+        gap: gridGap,
         h: cellHeight,
         simplex: simplex[Seeds.Shape],
         noiseStart: noiseStart + 2, // different start to first layer

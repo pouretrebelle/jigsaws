@@ -55,10 +55,8 @@ const shapeTotalWeights = shapeKeys.reduce(
   (prev, curr) => (prev + shapes[curr as keyof typeof shapes].weight), 0
 )
 
-const drawShape = (args: Shape) => {
-  const { c, x, y, w, h, simplex, noiseStart } = args
-
-  const shapeRand = randomFromNoise(simplex.noise3D(0.555 + x * 0.1, 0.444 + y * 0.1, 0.333 + noiseStart * 0.05)) * shapeTotalWeights
+const getShape = ({ x, y, simplex, noiseStart }: Pick<Shape, 'x' | 'y' | 'simplex' | 'noiseStart'>) => {
+  const shapeRand = randomFromNoise(simplex.noise3D(0.555 + x * 0.01, 0.444 + y * 0.01, 0.333 + noiseStart * 0.05)) * shapeTotalWeights
   let shapeKey = shapeKeys[0] as keyof typeof shapes
   shapeKeys.reduce(
     (prev, curr) => {
@@ -66,10 +64,15 @@ const drawShape = (args: Shape) => {
       return (prev + shapes[curr as keyof typeof shapes].weight)
     }, 0
   )
+  return shapeKey
+}
+
+const drawShape = (shape: keyof typeof shapes, args: Shape) => {
+  const { c, x, y, w, h } = args
 
   c.save()
   c.translate(x + w / 2, y + h / 2)
-  { shapes[shapeKey].draw(args) }
+  { shapes[shape].draw(args) }
   c.restore()
 }
 
@@ -93,10 +96,18 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
       c.fillStyle = hsla(hues[1], 80, 50, a)
 
-      drawShape({
+      const x = col * cellWidth + gridBleed
+      const y = row * cellHeight + gridBleed
+      const shape = getShape({
+        x,
+        y,
+        simplex: simplex[Seeds.Shape],
+        noiseStart
+      })
+      drawShape(shape, {
         c,
-        x: col * cellWidth + gridBleed,
-        y: row * cellHeight + gridBleed,
+        x,
+        y,
         w: cellWidth * 3,
         h: cellHeight * 3,
         simplex: simplex[Seeds.Shape],
@@ -112,10 +123,18 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       c.fillStyle = hsla(hues[2], 80, 50, a)
 
       // this layer doesn't add the line gap between shapes because it's on a half-grid
-      drawShape({
+      const x = col * cellWidth + gridBleed - GRID_GAP / 2
+      const y = row * cellHeight + gridBleed - GRID_GAP / 2
+      const shape = getShape({
+        x,
+        y,
+        simplex: simplex[Seeds.Shape],
+        noiseStart: noiseStart + 1, // different start to first layer
+      })
+      drawShape(shape, {
         c,
-        x: col * cellWidth + gridBleed - GRID_GAP / 2,
-        y: row * cellHeight + gridBleed - GRID_GAP / 2,
+        x,
+        y,
         w: cellWidth * 2 + GRID_GAP,
         h: cellHeight * 2 + GRID_GAP,
         simplex: simplex[Seeds.Shape],
@@ -126,15 +145,23 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
   c.globalCompositeOperation = 'screen'
   for (let col = 0; col < GRID_COLUMNS; col++) {
-    for (let row = 0; row < GRID_ROWS; row++) {
-      const h = simplex[Seeds.Color].noise2D(1 + col * 0.2, 1 + row * 0.2) > 0 ? hues[3] : hues[4]
-      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
-      c.fillStyle = hsla(h, 70, 50, a)
+    for (let row = 0; row < GRID_ROWS; row++) {      
+      const x = col * cellWidth + gridBleed
+      const y = row * cellHeight + gridBleed
+      const shape = getShape({
+        x,
+        y,
+        simplex: simplex[Seeds.Shape],
+        noiseStart: noiseStart + 2, // different start to first layer
+      })
 
-      drawShape({
+      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
+      c.fillStyle = hsla(shape === 'pill' ? hues[3] : hues[4], 70, 50, a)
+
+      drawShape(shape, {
         c,
-        x: col * cellWidth + gridBleed,
-        y: row * cellHeight + gridBleed,
+        x,
+        y,
         w: cellWidth,
         h: cellHeight,
         simplex: simplex[Seeds.Shape],

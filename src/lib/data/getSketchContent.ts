@@ -11,6 +11,7 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
   try {
     const file = fs.readFileSync(`sketches/${sketchId}/README.md`, 'utf8');
     const { content, data: { datePublished, youTubeLink, pieces, accentColor = COLOR.ACCENT, designNoiseSeeds, cutNoiseSeeds, } } = matter(file)
+    const canvas = `${sketchId}_${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}.png`
 
     return {
       id: sketchId,
@@ -22,14 +23,14 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
       pieces,
       designNoiseSeeds,
       cutNoiseSeeds,
-      youTubeLink,
+      youTubeLink: youTubeLink || '',
       appLink: `/app/${sketchId}`,
       pageLink: `/${sketchId}`,
       imagePath: {
-        solveStart: `${sketchId}_solve_start.jpg`,
-        solveMiddle: `${sketchId}_solve_middle.jpg`,
-        solveEnd: `${sketchId}_solve_end.jpg`,
-        canvas: `${sketchId}_${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}.png`,
+        solveStart: youTubeLink ? `${sketchId}_solve_start.jpg` : canvas,
+        solveMiddle: youTubeLink ? `${sketchId}_solve_middle.jpg` : canvas,
+        solveEnd: youTubeLink ? `${sketchId}_solve_end.jpg` : canvas,
+        canvas,
       }
     }
   }

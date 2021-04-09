@@ -23,7 +23,7 @@ interface Shape {
 
 const shapes = {
   blank: {
-    weight: 5,
+    weight: 7,
     draw: () => { }
   },
   pill: {

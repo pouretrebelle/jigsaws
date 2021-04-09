@@ -3,7 +3,7 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO, LINE_WEIGHT } from './constants'
 
 export enum Seeds {
   Shape,
@@ -91,6 +91,23 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   const cellHeight = (height - bleed * 2) / (GRID_ROWS + GRID_GAP_RATIO)
   const gridGap = cellWidth * GRID_GAP_RATIO
   const gridBleed = bleed + gridGap / 2
+
+  c.strokeStyle = hsla(0, 0, 100, 0.2)
+  c.lineWidth = LINE_WEIGHT
+  for (let col = 0; col < GRID_COLUMNS + GRID_GAP_RATIO; col += GRID_GAP_RATIO * 2) {
+    const x = col * cellWidth + gridBleed
+    c.beginPath()
+    c.moveTo(x, 0)
+    c.lineTo(x, height)
+    c.stroke()
+  }
+  for (let row = 0; row < GRID_ROWS + GRID_GAP_RATIO; row += GRID_GAP_RATIO * 2) {
+    const y = row * cellHeight + gridBleed
+    c.beginPath()
+    c.moveTo(0, y)
+    c.lineTo(width, y)
+    c.stroke()
+  }
 
   c.globalCompositeOperation = 'screen'
   for (let col = -1; col < GRID_COLUMNS + 1; col += 3) {

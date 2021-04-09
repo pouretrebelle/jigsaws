@@ -3,12 +3,11 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS, LINE_COUNT, LINE_MAX_LENGTH, LINE_OPACITY, LINE_WEIGHT } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, GRID_GAP } from './constants'
 
 export enum Seeds {
   Shape,
   Color,
-  Lines,
 }
 
 interface Shape {
@@ -32,8 +31,8 @@ const shapes = {
       const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 2)
       c.rotate(rotate * Math.PI / 2)
       c.beginPath()
-      c.arc(0, (h + LINE_WEIGHT) / 2, (w - LINE_WEIGHT) / 2, 0, Math.PI)
-      c.arc(0, -(h + LINE_WEIGHT) / 2, (w - LINE_WEIGHT) / 2, Math.PI, Math.PI * 2)
+      c.arc(0, (h + GRID_GAP) / 2, (w - GRID_GAP) / 2, 0, Math.PI)
+      c.arc(0, -(h + GRID_GAP) / 2, (w - GRID_GAP) / 2, Math.PI, Math.PI * 2)
       c.fill()
     },
   },
@@ -43,10 +42,10 @@ const shapes = {
       const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 5)
       c.rotate(rotate * Math.PI / 2)
       c.beginPath()
-      c.arc(0, (h + LINE_WEIGHT) / 2, (w - LINE_WEIGHT) / 2, 0, Math.PI)
-      c.lineTo(-(w - LINE_WEIGHT) / 2, (h - LINE_WEIGHT) / 2)
-      c.arc(-(w + LINE_WEIGHT) / 2, 0, (w - LINE_WEIGHT) / 2, Math.PI * 0.5, Math.PI * 1.5)
-      c.lineTo((w - LINE_WEIGHT) / 2, -(h - LINE_WEIGHT) / 2)
+      c.arc(0, (h + GRID_GAP) / 2, (w - GRID_GAP) / 2, 0, Math.PI)
+      c.lineTo(-(w - GRID_GAP) / 2, (h - GRID_GAP) / 2)
+      c.arc(-(w + GRID_GAP) / 2, 0, (w - GRID_GAP) / 2, Math.PI * 0.5, Math.PI * 1.5)
+      c.lineTo((w - GRID_GAP) / 2, -(h - GRID_GAP) / 2)
       c.fill()
     },
   },
@@ -84,7 +83,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   c.fillStyle = hsl(hues[0], 40, 30)
   c.fillRect(0, 0, width, height)
 
-  const gridBleed = bleed - LINE_WEIGHT / 2
+  const gridBleed = bleed - GRID_GAP / 2
   const cellWidth = (width - gridBleed * 2) / GRID_COLUMNS
   const cellHeight = (height - gridBleed * 2) / GRID_ROWS
 
@@ -115,10 +114,10 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       // this layer doesn't add the line gap between shapes because it's on a half-grid
       drawShape({
         c,
-        x: col * cellWidth + gridBleed - LINE_WEIGHT / 2,
-        y: row * cellHeight + gridBleed - LINE_WEIGHT / 2,
-        w: cellWidth * 2 + LINE_WEIGHT,
-        h: cellHeight * 2 + LINE_WEIGHT,
+        x: col * cellWidth + gridBleed - GRID_GAP / 2,
+        y: row * cellHeight + gridBleed - GRID_GAP / 2,
+        w: cellWidth * 2 + GRID_GAP,
+        h: cellHeight * 2 + GRID_GAP,
         simplex: simplex[Seeds.Shape],
         noiseStart: noiseStart + 1, // different start to first layer
       })
@@ -143,38 +142,6 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       })
     }
   }
-
-  c.globalCompositeOperation = 'multiply'
-  c.globalAlpha = LINE_OPACITY
-
-  const tempCanvas = document.createElement('canvas')
-  tempCanvas.width = c.canvas.width
-  tempCanvas.height = c.canvas.height
-  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
-  tempC.setTransform(c.getTransform())
-
-  tempC.lineWidth = LINE_WEIGHT
-  tempC.lineCap = 'round'
-  tempC.strokeStyle = hsl((hues[0] + 180) % 360, 100, 40)
-
-  for (let line = 0; line < LINE_COUNT; line++) {
-    const x = Math.ceil(randomFromNoise(simplex[Seeds.Lines].noise2D(7.4 + noiseStart * 0.01, 10 + line * 10)) * (GRID_COLUMNS - 1))
-    const y = Math.ceil(randomFromNoise(simplex[Seeds.Lines].noise2D(5.4 + noiseStart * 0.01, 100 + line * 10)) * (GRID_ROWS - 1))
-    const size = Math.ceil(randomFromNoise(simplex[Seeds.Lines].noise2D(12 + line, 0.5 + noiseStart * 0.1)) * LINE_MAX_LENGTH) * cellWidth
-    const rotate = simplex[Seeds.Lines].noise2D(123 + line * 30, 0.5) > 0 ? 1 : 0
-
-    tempC.save()
-    tempC.translate(gridBleed + x * cellWidth, gridBleed + y * cellHeight)
-    tempC.rotate(rotate * Math.PI / 2)
-
-    tempC.beginPath()
-    tempC.moveTo(0, -size / 2)
-    tempC.lineTo(0, size / 2)
-    tempC.stroke()
-
-    tempC.restore()
-  }
-  c.drawImage(tempCanvas, 0, 0, width, height)
 
   c.restore()
 }

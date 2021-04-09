@@ -190,9 +190,6 @@ export const SketchPage = ({
       <CloudinaryImage
         imagePath={imagePath.solveEnd}
         aspectRatio={1}
-        options={{
-          c: 'fill',
-        }}
       />
     </StyledImage>
 

@@ -77,7 +77,9 @@ export const CloudinaryImage: React.FC<Props> = ({
   if (aspectRatio) {
     dimensions.h = Math.round(imageWidth * aspectRatio)
   }
-  const imageOptions = Object.assign({}, dimensions, options || {})
+  const imageOptions = Object.assign({
+    c: 'fill'
+  }, dimensions, options || {})
 
   return (
     <StyledWrapper

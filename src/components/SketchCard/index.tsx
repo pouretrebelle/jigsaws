@@ -30,9 +30,6 @@ export const SketchCard = ({
       <CloudinaryImage
         imagePath={imagePath.solveEnd}
         aspectRatio={1}
-        options={{
-          c: 'fill',
-        }}
       />
     </StyledLink>
   </Link>

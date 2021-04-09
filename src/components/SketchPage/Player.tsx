@@ -77,9 +77,6 @@ export const Player: React.FC<Props> = ({ youTubeLink, imagePath, id }) => {
     <CloudinaryImage
       imagePath={imagePath.solveStart}
       aspectRatio={0.5625}
-      options={{
-        c: 'fill',
-      }}
     />
   )
 

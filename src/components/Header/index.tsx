@@ -5,7 +5,7 @@ const StyledHeader = styled.header`
   margin: 2em auto 1em;
 
   @media (min-width: 500px) {
-    text-align: right;
+    text-align: center;
   }
 `
 
@@ -25,11 +25,11 @@ const StyledH1 = styled.h1`
   }
 `
 
-export const Header = () => (
+export const Header: React.FC = ({ children }) => (
   <StyledHeader>
     <StyledH1>
       <Link href="/">
-        <a>Abstract Puzzles</a>
+        <a>{children}</a>
       </Link>
     </StyledH1>
   </StyledHeader>

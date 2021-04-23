@@ -1,10 +1,13 @@
+import React from 'react'
 import styled, { css } from 'styled-components'
 import Link from 'next/link'
 
 import { SketchContent } from 'types'
+import { makeRandomSeedArray } from 'lib/seeds'
 import { CloudinaryImage } from 'components/CloudinaryImage'
 import { SketchCard } from 'components/SketchCard'
 import { Button } from 'components/Button'
+import RefreshButton from 'components/AppSidebar/Controls/RefreshButton'
 
 import { Player } from './Player'
 import ReactMarkdown from 'react-markdown'
@@ -14,13 +17,13 @@ const BP_DESKTOP = '900px'
 
 const StyledGrid = styled.article`
   display: grid;
-  grid-template-columns: 2fr 2fr 2fr 3fr;
-  grid-template-rows: auto auto auto 1fr;
-  grid-template-areas: 'title title video video' 'image image video video' 'image image details details' 'empty actions details details';
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'video video' 'image details';
   grid-gap: 2em;
   margin: 3em 0;
 
-  @media (max-width: ${BP_DESKTOP}) {
+  /* @media (max-width: ${BP_DESKTOP}) {
     grid-template-columns: 1fr 2fr;
     grid-template-rows: auto 1fr;
     grid-template-areas: 'title image' 'actions image' 'empty details';
@@ -32,6 +35,14 @@ const StyledGrid = styled.article`
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto auto;
     grid-template-areas: 'title' 'image' 'actions' 'details' 'previews';
+  } */
+
+  @media (max-width: ${BP_MOBILE}) {
+    margin: 2em 0;
+    grid-gap: 1.5em;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto auto;
+    grid-template-areas: 'image' 'details';
   }
 
   > * > *:first-child {
@@ -75,14 +86,20 @@ const StyledVideo = styled.figure`
   }
 `
 
-const StyledImage = styled.figure`
-  margin: 0;
+const StyledImageWrapper = styled.div`
   grid-area: image;
-  position: relative;
+`
+
+const StyledImage = styled.figure`
+  position: sticky;
+  top: 2em;
+  bottom: 0;
+  margin: 0;
   width: 100%;
   height: 0;
   padding-bottom: 100%;
   background: #000;
+  text-align: center;
 `
 
 const StyledDetails = styled.div`
@@ -134,10 +151,10 @@ const StyledButton = styled(Button)<{
 `
 
 const StyledPreviews = styled.aside`
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: repeat(2, 1fr);
-  margin: 2em 0 0;
+  grid-area: previews;
+  /* display: grid;
+  grid-gap: 2em;
+  grid-template-columns: 1fr 1fr; */
 `
 
 const StyledLink = styled.a<{ $internal: boolean }>`
@@ -178,21 +195,67 @@ export const SketchPage = ({
   imagePath,
   markdownDescription,
   previewSketches,
+  pieces,
+  datePublished,
 }: Props) => (
   <StyledGrid>
-    <StyledTitle>{id}</StyledTitle>
+    {/* <StyledTitle>{id}</StyledTitle> */}
 
     <StyledVideo>
       <Player id={id} youTubeLink={youTubeLink} imagePath={imagePath} />
     </StyledVideo>
 
-    <StyledImage>
-      <CloudinaryImage
-        imagePath={imagePath.solveEnd}
-        aspectRatio={1}
-      />
-    </StyledImage>
-
+    <StyledImageWrapper>
+      <StyledImage>
+        <CloudinaryImage imagePath={imagePath.solveEnd} aspectRatio={1} />
+        <p style={{ marginTop: '1em' }}>
+          Posted{' '}
+          {new Date(datePublished).toLocaleDateString('en-GB')}
+        </p>
+        <p>
+          Solved 1h 43mins
+          </p>
+        <p style={{ marginBottom: '0.5em' }}>{pieces} pieces</p>
+        <p>
+          <svg
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 15 15"
+            style={{ width: '1em', height: '1em', marginRight: '0.5em' }}
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M9.97 3.47a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H.75a.75.75 0 010-1.5h11.69L9.97 4.53a.75.75 0 010-1.06z"
+              fill="#000"
+            />
+          </svg>{' '}
+          Previous puzzle
+        </p>
+        <p>
+          <svg
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 15 15"
+            style={{
+              width: '1em',
+              height: '1em',
+              marginRight: '0.5em',
+              transform: 'rotate(180deg)',
+            }}
+          >
+            <path
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M9.97 3.47a.75.75 0 011.06 0l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 11-1.06-1.06l2.47-2.47H.75a.75.75 0 010-1.5h11.69L9.97 4.53a.75.75 0 010-1.06z"
+              fill="#000"
+            />
+          </svg>{' '}
+          Next puzzle
+        </p>
+      </StyledImage>
+    </StyledImageWrapper>
+    {/* 
     <StyledActions>
       <Link href={appLink} passHref>
         <StyledButton $wideOnMobile>Open in explorer</StyledButton>
@@ -205,7 +268,7 @@ export const SketchPage = ({
       <StyledButton $hideOnDesktop href={youTubeLink}>
         Watch solve
       </StyledButton>
-    </StyledActions>
+    </StyledActions> */}
 
     <StyledDetails>
       <ReactMarkdown
@@ -217,11 +280,59 @@ export const SketchPage = ({
         }}
       />
 
-      <StyledPreviews>
-        {previewSketches.map((sketch) => (
-          <SketchCard key={sketch.id} {...sketch} />
+      <h2 style={{ fontSize: '1.5em', margin: '1em 0 0' }}>Explore designs</h2>
+      <p>
+        <small>
+          These designs have been generated on the fly from the code for this
+          jigsaw:
+        </small>
+      </p>
+
+      <section
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr 1fr',
+          gridGap: '1em',
+          margin: '0.5em 0',
+        }}
+      >
+        {[...Array(3)].map((_, i) => (
+          <article key={i}>
+            <CloudinaryImage
+              imagePath={`0${parseInt(id) - 1 - i}_solve_end.jpg`}
+              aspectRatio={1}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <small>{makeRandomSeedArray(4).join('_')}</small>
+              <RefreshButton />
+            </div>
+          </article>
         ))}
-      </StyledPreviews>
+      </section>
+
+      <p>
+        You can play with the parameters of this programme in{' '}
+        <Link href={appLink} passHref>
+          <a>the explorer</a>
+        </Link>{' '}
+        or check the code out{' '}
+        <Link
+          href={`https://github.com/pouretrebelle/jigsaws/tree/master/sketches/${id}`}
+          passHref
+        >
+          <a>on GitHub</a>
+        </Link>
+        .
+      </p>
     </StyledDetails>
+
+    {/* <StyledPreviews>
+      {previewSketches.map((sketch, i) => (
+        <div key={sketch.id}>
+          Go to {i === 0 ? 'next' : 'previous'} sketch - {sketch.id}
+          <SketchCard key={sketch.id} {...sketch} />
+        </div>
+      ))}
+    </StyledPreviews> */}
   </StyledGrid>
 )

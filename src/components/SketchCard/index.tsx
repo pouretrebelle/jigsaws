@@ -26,10 +26,12 @@ export const SketchCard = ({
 }: SketchContent) => (
   <Link href={pageLink} passHref>
     <StyledLink style={{ '--color-accent': accentColorRgb } as object}>
-      <StyledTitle>{id}</StyledTitle>
+      {/* <StyledTitle>{id}</StyledTitle> */}
       <CloudinaryImage
-        imagePath={imagePath.solveEnd}
-        aspectRatio={1}
+        // imagePath={imagePath.solveEnd}
+        // aspectRatio={1}
+        imagePath={imagePath.solveMiddle}
+        aspectRatio={9/16}
       />
     </StyledLink>
   </Link>

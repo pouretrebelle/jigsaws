@@ -14,10 +14,12 @@ const StyledWrapper = styled.div`
 
 interface Props {
   accentColorRgb?: string
+  title?: string
 }
 
 export const PageWrapper: React.FC<Props> = ({
   accentColorRgb,
+  title,
   children,
 }) => {
   let faviconUrl = '/api/favicon.svg'
@@ -30,7 +32,9 @@ export const PageWrapper: React.FC<Props> = ({
       }
     >
       <Favicon accentColorRgb={accentColorRgb} />
-      <Header />
+      <Header>
+        {title || 'Abstract Puzzles'}
+      </Header>
 
       {children}
 

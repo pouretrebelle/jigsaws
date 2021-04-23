@@ -14,7 +14,7 @@ const StyledGrid = styled.section`
   margin: 2em 0;
 
   @media (min-width: 500px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 `
 

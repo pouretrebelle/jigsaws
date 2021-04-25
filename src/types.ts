@@ -90,6 +90,7 @@ export interface Sketch {
 export interface Cut {
   c: CanvasRenderingContext2D
   simplex: SimplexNoise[]
+  seed: string[]
   width: number
   height: number
   rows: number
@@ -99,6 +100,7 @@ export interface Cut {
 export interface Design {
   c: CanvasRenderingContext2D
   simplex: SimplexNoise[]
+  seed: string[]
   width: number
   height: number
   bleed: number

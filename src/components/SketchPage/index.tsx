@@ -3,11 +3,9 @@ import styled, { css } from 'styled-components'
 import Link from 'next/link'
 
 import { SketchContent } from 'types'
-import { makeRandomSeedArray } from 'lib/seeds'
 import { CloudinaryImage } from 'components/CloudinaryImage'
-import { SketchCard } from 'components/SketchCard'
+import { SketchPreviewCard } from 'components/SketchPreviewCard'
 import { Button } from 'components/Button'
-import RefreshButton from 'components/AppSidebar/Controls/RefreshButton'
 
 import { Player } from './Player'
 import ReactMarkdown from 'react-markdown'
@@ -197,6 +195,8 @@ export const SketchPage = ({
   previewSketches,
   pieces,
   datePublished,
+  designNoiseSeeds,
+  cutNoiseSeeds,
 }: Props) => (
   <StyledGrid>
     {/* <StyledTitle>{id}</StyledTitle> */}
@@ -209,12 +209,9 @@ export const SketchPage = ({
       <StyledImage>
         <CloudinaryImage imagePath={imagePath.solveEnd} aspectRatio={1} />
         <p style={{ marginTop: '1em' }}>
-          Posted{' '}
-          {new Date(datePublished).toLocaleDateString('en-GB')}
+          Posted {new Date(datePublished).toLocaleDateString('en-GB')}
         </p>
-        <p>
-          Solved 1h 43mins
-          </p>
+        <p>Solved 1h 43mins</p>
         <p style={{ marginBottom: '0.5em' }}>{pieces} pieces</p>
         <p>
           <svg
@@ -297,16 +294,11 @@ export const SketchPage = ({
         }}
       >
         {[...Array(3)].map((_, i) => (
-          <article key={i}>
-            <CloudinaryImage
-              imagePath={`0${parseInt(id) - 1 - i}_solve_end.jpg`}
-              aspectRatio={1}
-            />
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <small>{makeRandomSeedArray(4).join('_')}</small>
-              <RefreshButton />
-            </div>
-          </article>
+          <SketchPreviewCard
+            key={i}
+            designNoiseSeeds={designNoiseSeeds}
+            cutNoiseSeeds={cutNoiseSeeds}
+          />
         ))}
       </section>
 

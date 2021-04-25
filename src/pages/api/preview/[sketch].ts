@@ -26,8 +26,8 @@ const handler = async (req: Req, res: Res) => {
   const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } = await import(`../../../../sketches/${req.query.sketch || '001'}/index.ts`)
 
   const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
-  const designSeeds = req.query.designSeeds ? req.query.designSeeds.split(',') : []
-  const cutSeeds = req.query.cutSeeds ? req.query.cutSeeds.split(',') : []
+  const queryDesignSeeds = req.query.designSeeds ? req.query.designSeeds.split(',') : []
+  const queryCutSeeds = req.query.cutSeeds ? req.query.cutSeeds.split(',') : []
 
   const canvas = createCanvas(canvasWidth, canvasWidth)
   const c = canvas.getContext('2d') as CanvasRenderingContext2D
@@ -36,7 +36,7 @@ const handler = async (req: Req, res: Res) => {
   const designWidth = canvasWidth - canvasBleed * 2
   const designCanvas = createCanvas(designWidth, designWidth)
   const designC = designCanvas.getContext('2d') as CanvasRenderingContext2D
-  const designSimplex = Object.keys(DesignNoiseSeeds).map((_, i) => new SimplexNoise(designSeeds[i] || makeRandomSeed()))
+  const designSeeds = Object.keys(DesignNoiseSeeds).map((_, i) => queryDesignSeeds[i] || makeRandomSeed())
 
   const designScale = designWidth / (settings.width)
 
@@ -51,7 +51,8 @@ const handler = async (req: Req, res: Res) => {
 
   design({
     c: designC,
-    simplex: designSimplex,
+    seed: designSeeds,
+    simplex: designSeeds.map(seed => new SimplexNoise(seed)),
     noiseStart: 0,
     ...settings,
     width: settings.width ? settings.width + settings.bleed * 2 : undefined,
@@ -59,7 +60,7 @@ const handler = async (req: Req, res: Res) => {
   } as Design)
   designC.restore()
 
-  const cutSimplex = Object.keys(CutNoiseSeeds).map((_, i) => new SimplexNoise(cutSeeds[i] || makeRandomSeed()))
+  const cutSeeds = Object.keys(CutNoiseSeeds).map((_, i) => queryCutSeeds[i] || makeRandomSeed())
 
   designC.strokeStyle = 'black'
   designC.lineWidth = 0.5 / designScale
@@ -68,7 +69,8 @@ const handler = async (req: Req, res: Res) => {
   designC.scale(designScale, designScale)
   cut({
     c: designC,
-    simplex: cutSimplex,
+    seed: cutSeeds,
+    simplex: cutSeeds.map(seed => new SimplexNoise(seed)),
     noiseStart: 0,
     ...settings
   } as Cut)

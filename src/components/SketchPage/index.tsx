@@ -296,6 +296,7 @@ export const SketchPage = ({
         {[...Array(3)].map((_, i) => (
           <SketchPreviewCard
             key={i}
+            id={id}
             designNoiseSeeds={designNoiseSeeds}
             cutNoiseSeeds={cutNoiseSeeds}
           />

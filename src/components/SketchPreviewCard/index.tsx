@@ -20,9 +20,10 @@ const StyledActions = styled.div`
   flex: 0 0 0;
 `
 
-type Props = Pick<SketchContent, 'designNoiseSeeds' | 'cutNoiseSeeds'>
+type Props = Pick<SketchContent, 'id' | 'designNoiseSeeds' | 'cutNoiseSeeds'>
 
 export const SketchPreviewCard: React.FC<Props> = ({
+  id,
   designNoiseSeeds,
   cutNoiseSeeds,
 }) => {
@@ -40,7 +41,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
     <article>
       <ResponsiveImage
         formatPath={({ width }) =>
-          `/api/preview.png?width=${width}&designSeeds=${designSeeds.join(
+          `/api/preview/${id}?width=${width}&designSeeds=${designSeeds.join(
             ','
           )}&cutSeeds=${cutSeeds.join(',')}`
         }

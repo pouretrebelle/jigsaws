@@ -4,10 +4,9 @@ import { createCanvas } from 'canvas'
 import { Design, Cut } from 'types'
 import { makeRandomSeed } from 'lib/seeds'
 
-import { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } from '../../../sketches/004'
-
 interface Req {
   query: {
+    sketch?: string,
     width?: string,
     designSeeds?: string,
     cutSeeds?: string,
@@ -21,8 +20,10 @@ type Res = NodeJS.WritableStream & {
   pipe: (arg0: any) => void
 }
 
-const handler = (req: Req, res: Res) => {
+const handler = async (req: Req, res: Res) => {
   res.setHeader('content-type', 'image/png')
+
+  const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } = await import(`../../../../sketches/${req.query.sketch || '001'}/index.ts`)
 
   const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
   const designSeeds = req.query.designSeeds ? req.query.designSeeds.split(',') : []

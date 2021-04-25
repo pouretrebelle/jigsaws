@@ -41,8 +41,8 @@ const handler = async (req: Req, res: Res) => {
   const designScale = designWidth / (settings.width)
 
   designC.save()
-  designC.translate(-settings.bleed, -settings.bleed)
   designC.scale(designScale, designScale)
+  designC.translate(-settings.bleed, -settings.bleed)
 
   if (settings.backgroundColor) {
     c.fillStyle = settings.backgroundColor

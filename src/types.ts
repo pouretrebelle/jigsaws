@@ -99,6 +99,7 @@ export interface Cut {
 
 export interface Design {
   c: CanvasRenderingContext2D
+  createCanvas: (width: number, height: number) => HTMLCanvasElement | OffscreenCanvas
   simplex: SimplexNoise[]
   seed: string[]
   width: number

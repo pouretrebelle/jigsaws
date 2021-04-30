@@ -84,7 +84,7 @@ const drawShape = (args: Shape) => {
   c.restore()
 }
 
-export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
+export const design = ({ c, createCanvas, simplex, width, height, bleed, noiseStart }: Design) => {
   const hues: number[] = []
   for (let i = 0; i < 5; i++) {
     hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5.25 + i, 3.33)) * 360))
@@ -157,9 +157,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   c.globalCompositeOperation = 'multiply'
   c.globalAlpha = LINE_OPACITY
 
-  const tempCanvas = document.createElement('canvas')
-  tempCanvas.width = c.canvas.width
-  tempCanvas.height = c.canvas.height
+  const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
   tempC.setTransform(c.getTransform())
 

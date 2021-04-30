@@ -25,7 +25,14 @@ export enum Seeds {
   Size,
 }
 
-export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
+export const design = ({
+  c,
+  createCanvas,
+  simplex,
+  width,
+  height,
+  noiseStart,
+}: Design) => {
   const layerHues = arrayValuesFromSimplex(
     HUES,
     simplex[Seeds.Color],
@@ -103,9 +110,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   c.save()
   layers.forEach(({ color, size, composite, opacity }, layerI) => {
-    const layerCanvas = document.createElement('canvas')
-    layerCanvas.width = c.canvas.width
-    layerCanvas.height = c.canvas.height
+    const layerCanvas = createCanvas(c.canvas.width, c.canvas.height)
     const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
     layerC.setTransform(c.getTransform())
     layerC.globalAlpha = STROKE_OPACITY

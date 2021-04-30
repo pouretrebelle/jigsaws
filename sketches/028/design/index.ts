@@ -127,6 +127,7 @@ const drawShape = (args: Shape) => {
 
 export const design = ({
   c,
+  createCanvas,
   simplex,
   width,
   height,
@@ -230,9 +231,7 @@ export const design = ({
   c.globalCompositeOperation = 'multiply'
   c.globalAlpha = LINE_OPACITY
 
-  const tempCanvas = document.createElement('canvas')
-  tempCanvas.width = c.canvas.width
-  tempCanvas.height = c.canvas.height
+  const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
   tempC.setTransform(c.getTransform())
 

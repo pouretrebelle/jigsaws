@@ -1,17 +1,15 @@
 import React from 'react'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import Link from 'next/link'
 
 import { SketchContent } from 'types'
 import { CloudinaryImage } from 'components/CloudinaryImage'
 import { SketchPreviewCard } from 'components/SketchPreviewCard'
-import { Button } from 'components/Button'
 
 import { Player } from './Player'
 import ReactMarkdown from 'react-markdown'
 
-const BP_MOBILE = '500px'
-const BP_DESKTOP = '900px'
+const BREAKPOINT = '800px'
 
 const StyledGrid = styled.article`
   display: grid;
@@ -21,25 +19,10 @@ const StyledGrid = styled.article`
   grid-gap: 2em;
   margin: 3em 0;
 
-  /* @media (max-width: ${BP_DESKTOP}) {
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: auto 1fr;
-    grid-template-areas: 'title image' 'actions image' 'empty details';
-  }
-
-  @media (max-width: ${BP_MOBILE}) {
+  @media (max-width: ${BREAKPOINT}) {
     margin: 2em 0;
     grid-gap: 1.5em;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto auto;
-    grid-template-areas: 'title' 'image' 'actions' 'details' 'previews';
-  } */
-
-  @media (max-width: ${BP_MOBILE}) {
-    margin: 2em 0;
-    grid-gap: 1.5em;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto auto;
     grid-template-areas: 'image' 'details';
   }
 
@@ -56,19 +39,6 @@ const StyledGrid = styled.article`
   }
 `
 
-const StyledTitle = styled.h2`
-  grid-area: title;
-  align-self: end;
-  margin: 0;
-  font-size: 4em;
-  font-weight: 700;
-  line-height: 0.8;
-
-  @media (min-width: ${BP_MOBILE}) {
-    text-align: right;
-  }
-`
-
 const StyledVideo = styled.figure`
   margin: 0;
   grid-area: video;
@@ -79,7 +49,7 @@ const StyledVideo = styled.figure`
   padding-bottom: 56.35%;
   background: #000;
 
-  @media (max-width: ${BP_DESKTOP}) {
+  @media (max-width: ${BREAKPOINT}) {
     display: none;
   }
 `
@@ -93,10 +63,6 @@ const StyledImage = styled.figure`
   top: 2em;
   bottom: 0;
   margin: 0;
-  width: 100%;
-  height: 0;
-  padding-bottom: 100%;
-  background: #000;
   text-align: center;
 `
 
@@ -110,49 +76,6 @@ const StyledDetails = styled.div`
       display: none;
     }
   }
-`
-
-const StyledActions = styled.nav`
-  grid-area: actions;
-  display: grid;
-  grid-gap: 1em;
-  grid-template-columns: 1fr 1fr;
-  align-self: start;
-  margin: -0.5em 0 0;
-  font-size: 0.75em;
-
-  @media (min-width: ${BP_MOBILE}) {
-    grid-template-columns: 1fr;
-    margin: 0;
-  }
-`
-
-const StyledButton = styled(Button)<{
-  $hideOnDesktop?: boolean
-  $wideOnMobile?: boolean
-}>`
-  ${({ $wideOnMobile }) =>
-    $wideOnMobile &&
-    `
-    @media (max-width: ${BP_MOBILE}) {
-      grid-column: span 2;
-    }
-  `}
-
-  ${({ $hideOnDesktop }) =>
-    $hideOnDesktop &&
-    `
-    @media (min-width: ${BP_DESKTOP}) {
-      display: none !important;
-    }
-  `}
-`
-
-const StyledPreviews = styled.aside`
-  grid-area: previews;
-  /* display: grid;
-  grid-gap: 2em;
-  grid-template-columns: 1fr 1fr; */
 `
 
 const StyledLink = styled.a<{ $internal: boolean }>`
@@ -192,15 +115,12 @@ export const SketchPage = ({
   appLink,
   imagePath,
   markdownDescription,
-  previewSketches,
   pieces,
   datePublished,
   designNoiseSeeds,
   cutNoiseSeeds,
 }: Props) => (
   <StyledGrid>
-    {/* <StyledTitle>{id}</StyledTitle> */}
-
     <StyledVideo>
       <Player id={id} youTubeLink={youTubeLink} imagePath={imagePath} />
     </StyledVideo>
@@ -252,20 +172,6 @@ export const SketchPage = ({
         </p>
       </StyledImage>
     </StyledImageWrapper>
-    {/* 
-    <StyledActions>
-      <Link href={appLink} passHref>
-        <StyledButton $wideOnMobile>Open in explorer</StyledButton>
-      </Link>
-      <StyledButton
-        href={`https://github.com/pouretrebelle/jigsaws/tree/master/sketches/${id}`}
-      >
-        Check out code
-      </StyledButton>
-      <StyledButton $hideOnDesktop href={youTubeLink}>
-        Watch solve
-      </StyledButton>
-    </StyledActions> */}
 
     <StyledDetails>
       <ReactMarkdown
@@ -318,14 +224,5 @@ export const SketchPage = ({
         .
       </p>
     </StyledDetails>
-
-    {/* <StyledPreviews>
-      {previewSketches.map((sketch, i) => (
-        <div key={sketch.id}>
-          Go to {i === 0 ? 'next' : 'previous'} sketch - {sketch.id}
-          <SketchCard key={sketch.id} {...sketch} />
-        </div>
-      ))}
-    </StyledPreviews> */}
   </StyledGrid>
 )

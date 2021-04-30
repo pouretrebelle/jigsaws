@@ -8,6 +8,13 @@ interface DrawArgs {
   state: State
 }
 
+const createCanvas = (width: number, height: number) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  return canvas
+}
+
 export const drawBackground = ({ canvas, c, state }: DrawArgs) => {
   if (!state.sketch) return
 
@@ -30,6 +37,7 @@ export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
 
   state.sketch.design({
     c,
+    createCanvas,
     simplex,
     seed: state.designNoiseSeeds,
     noiseStart: state.noiseStart,

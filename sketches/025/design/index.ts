@@ -32,7 +32,14 @@ export enum Seeds {
   Bristle,
 }
 
-export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
+export const design = ({
+  c,
+  createCanvas,
+  simplex,
+  width,
+  height,
+  noiseStart,
+}: Design) => {
   const layers = Array.from(Array(LAYER_COUNT)).map((_, i) => {
     const hue = map(
       randomFromNoise(simplex[Seeds.Color].noise2D(10 + i * 23.1, 14.3)),
@@ -93,9 +100,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   c.save()
 
-  const tempCanvas = document.createElement('canvas')
-  tempCanvas.width = c.canvas.width
-  tempCanvas.height = c.canvas.height
+  const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
   tempC.setTransform(c.getTransform())
   tempC.globalAlpha = STROKE_OPACITY

@@ -51,6 +51,7 @@ const handler = async (req: Req, res: Res) => {
 
   design({
     c: designC,
+    createCanvas,
     seed: designSeeds,
     simplex: designSeeds.map(seed => new SimplexNoise(seed)),
     noiseStart: 0,

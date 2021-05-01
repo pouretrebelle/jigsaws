@@ -1,12 +1,10 @@
-import { useEffect } from "react"
-import { SketchContent } from "types"
+import { useEffect } from 'react'
+import { SketchContent } from 'types'
+
+import { setLocalStorageSeeds } from 'lib/seeds'
 
 export const useSetLocalStorageSeeds = (sketch: SketchContent) => {
   useEffect(() => {
-    localStorage.setItem('cutNoiseSeeds', JSON.stringify(sketch.cutNoiseSeeds))
-    localStorage.setItem(
-      'designNoiseSeeds',
-      JSON.stringify(sketch.designNoiseSeeds)
-    )
+    setLocalStorageSeeds(sketch)
   }, [sketch.id])
 }

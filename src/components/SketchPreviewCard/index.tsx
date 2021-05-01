@@ -5,15 +5,17 @@ import { SketchContent } from 'types'
 import { makeRandomSeed } from 'lib/seeds'
 import { ResponsiveImage } from 'components/ResponsiveImage'
 import RefreshButton from 'components/AppSidebar/Controls/RefreshButton'
+import { SketchVariant } from 'components/SketchVariant'
+
+const StyledArticle = styled.article`
+  min-width: 0;
+  font-size: 0.75em;
+`
 
 const StyledMeta = styled.aside`
   display: flex;
   min-width: 0;
-`
-
-const StyledName = styled.div`
-  flex: 1;
-  font-size: 0.75em;
+  gap: 0.5em;
 `
 
 const StyledActions = styled.div`
@@ -38,7 +40,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
   }
 
   return (
-    <article>
+    <StyledArticle key={`${id}${designSeeds.join('')}${cutSeeds.join('')}`}>
       <ResponsiveImage
         formatPath={({ width }) =>
           `/api/preview/${id}?width=${width}&designSeeds=${designSeeds.join(
@@ -48,13 +50,14 @@ export const SketchPreviewCard: React.FC<Props> = ({
         aspectRatio={1}
       />
       <StyledMeta>
-        <StyledName>
-          {designSeeds.join('-')}_{cutSeeds.join('-')}
-        </StyledName>
+        <SketchVariant
+          designNoiseSeeds={designSeeds}
+          cutNoiseSeeds={cutSeeds}
+        />
         <StyledActions>
           <RefreshButton onClick={refreshSeeds} />
         </StyledActions>
       </StyledMeta>
-    </article>
+    </StyledArticle>
   )
 }

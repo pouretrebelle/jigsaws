@@ -9,35 +9,28 @@ import { SketchPage as SketchPageComponent } from 'components/SketchPage'
 
 const NOW = new Date()
 
-const getSurroundingIds = (id: string, ids: string[]): string[] => {
-  const idIndex = ids.indexOf(id)
-
-  if (idIndex < 0 || ids.length <= 5) return []
-
-  if (idIndex === 0) return ids.slice(1, 3)
-  if (idIndex === ids.length - 1) return ids.slice(-3, -1)
-
-  return [ids[idIndex - 1], ids[idIndex + 1]]
-}
-
 interface Props {
   sketch: SketchContent
-  previewSketches: SketchContent[]
+  olderSketchId?: string
+  newerSketchId?: string
 }
 
-const SketchPage = ({ sketch, previewSketches }: Props) => {
+const SketchPage = ({ sketch, ...props }: Props) => {
   // Set storage to sketch's seeds so the app opens with these values
   useSetLocalStorageSeeds(sketch)
 
   return (
-    <PageWrapper accentColorRgb={sketch.accentColorRgb} title={`Abstract Puzzle ${sketch.id}`}>
+    <PageWrapper
+      accentColorRgb={sketch.accentColorRgb}
+      title={`Abstract Puzzle ${sketch.id}`}
+    >
       <SEO
         title={sketch.id}
         description={sketch.excerpt}
         imagePath={sketch.imagePath.solveEnd}
         smallImage
       />
-      <SketchPageComponent {...sketch} previewSketches={previewSketches} />
+      <SketchPageComponent {...sketch} {...props} />
     </PageWrapper>
   )
 }
@@ -58,17 +51,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const sketchId = (params && params.sketch) as string
   const sketches = getAllSketchContent()
-  const sketch = sketches.find(({ id }) => id === sketchId)
+  const sketchIndex = sketches.findIndex(({ id }) => id === sketchId)
+  const sketch = sketches[sketchIndex]
 
-  const previewSketches = getSurroundingIds(
-    sketchId,
-    sketches.map(({ id }) => id)
-  ).map((thisId) => sketches.find(({ id }) => id === thisId))
+  let prevSketchLink = null, nextSketchLink = null
+  if (sketchIndex !== sketches.length - 1)
+    prevSketchLink = sketches[sketchIndex + 1].pageLink
+  if (sketchIndex > 0)
+    nextSketchLink = sketches[sketchIndex - 1].pageLink
 
   return {
     props: {
       sketch,
-      previewSketches,
+      prevSketchLink,
+      nextSketchLink,
     },
   }
 }

@@ -5,7 +5,7 @@ interface Props {
   onClick?: () => void
 }
 
-const StyledRefreshButton = styled.button`
+const StyledShuffleButton = styled.button`
   position: relative;
   outline: none;
   color: #777;
@@ -28,12 +28,10 @@ const StyledIcon = styled.svg`
   vertical-align: middle;
 `
 
-const RefreshButton: React.FC<Props> = ({ onClick }) => (
-  <StyledRefreshButton onClick={onClick}>
+export const ShuffleButton: React.FC<Props> = ({ onClick }) => (
+  <StyledShuffleButton onClick={onClick} title="Shuffle">
     <StyledIcon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125">
       <path d="M11.4 41.4a38.2 38.2 0 0 1 71.8-6.6H70v7.8h26.7V16.3h-7.9V28A46.7 46.7 0 0 0 3.4 40.8L3 42.4h8.1l.3-1zM88.9 57.6l-.3 1a38.2 38.2 0 0 1-71.8 6.6H30v-7.8H3.3v26.4h7.9V72a46.5 46.5 0 0 0 85.4-12.8l.4-1.6h-8.1z" />
     </StyledIcon>
-  </StyledRefreshButton>
+  </StyledShuffleButton>
 )
-
-export default RefreshButton

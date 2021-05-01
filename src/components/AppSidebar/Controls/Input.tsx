@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import RefreshButton from './RefreshButton'
+
 import { Layer } from 'types'
 import { updateSeed } from 'store/actions'
 import { SketchContext } from 'store/Provider'
+import { ShuffleButton } from 'components/ShuffleButton'
 
 const StyledWrapper = styled.label`
   display: flex;
@@ -85,7 +86,7 @@ const Input: React.FC<Props> = ({
       />
 
       <RefreshWrapper>
-        <RefreshButton
+        <ShuffleButton
           onClick={() => {
             dispatch(updateSeed(layer, index))
             if (onChange) onChange()

@@ -12,10 +12,10 @@ import {
 } from 'store/actions'
 import { Layer, ExportPart, ActionType } from 'types'
 import { trim } from 'styles/helpers'
+import { ShuffleButton } from 'components/ShuffleButton'
 
 import Input from './Input'
 import ExportButton from './ExportButton'
-import RefreshButton from './RefreshButton'
 import ToggleButton from './ToggleButton'
 import RangeSlider from './RangeSlider'
 import { BuyPrintsButton } from '../BuyPrintsButton'
@@ -88,7 +88,7 @@ const Controls = () => {
           <>
             <H3>
               Noise seed{designNoiseSeeds.length > 1 && 's'}{' '}
-              <RefreshButton
+              <ShuffleButton
                 onClick={() => {
                   dispatch(updateSeed(Layer.Design))
                   trackEvent('Update design seed', {
@@ -158,7 +158,7 @@ const Controls = () => {
           <>
             <H3>
               Noise seed{cutNoiseSeeds.length > 1 && 's'}{' '}
-              <RefreshButton
+              <ShuffleButton
                 onClick={() => {
                   dispatch(updateSeed(Layer.Cut))
                   trackEvent('Update cut seed', { id: sketch?.id, all: true })

@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import { SketchContent } from 'types'
 import { makeRandomSeed } from 'lib/seeds'
 import { ResponsiveImage } from 'components/ResponsiveImage'
-import RefreshButton from 'components/AppSidebar/Controls/RefreshButton'
 import { SketchVariant } from 'components/SketchVariant'
+import { ShuffleButton } from 'components/ShuffleButton'
 
 const StyledArticle = styled.article`
   min-width: 0;
@@ -34,7 +34,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
   )
   const [cutSeeds, setCutSeeds] = useState(cutNoiseSeeds.map(makeRandomSeed))
 
-  const refreshSeeds = () => {
+  const shuffleSeeds = () => {
     setDesignSeeds(designNoiseSeeds.map(makeRandomSeed))
     setCutSeeds(cutNoiseSeeds.map(makeRandomSeed))
   }
@@ -55,7 +55,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
           cutNoiseSeeds={cutSeeds}
         />
         <StyledActions>
-          <RefreshButton onClick={refreshSeeds} />
+          <ShuffleButton onClick={shuffleSeeds} />
         </StyledActions>
       </StyledMeta>
     </StyledArticle>

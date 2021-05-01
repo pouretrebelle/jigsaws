@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 const StyledWrapper = styled.figure<{ $hasAspectRatio: boolean }>`
@@ -33,6 +33,10 @@ export const ResponsiveImage: React.FC<Props> = ({
   const imageElement = useRef<HTMLImageElement>(null)
   const [imageWidth, setImageWidth] = useState(0)
   const [hasLoaded, setHasLoaded] = useState(false)
+
+  useLayoutEffect(() => {
+    setHasLoaded(false)
+  }, [formatPath])
 
   const calculateWidth = () => {
     const pixelRatio = window.devicePixelRatio || 1

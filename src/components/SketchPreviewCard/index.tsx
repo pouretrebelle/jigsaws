@@ -40,7 +40,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
   }
 
   return (
-    <StyledArticle key={`${id}${designSeeds.join('')}${cutSeeds.join('')}`}>
+    <StyledArticle>
       <ResponsiveImage
         formatPath={({ width }) =>
           `/api/preview/${id}?width=${width}&designSeeds=${designSeeds.join(

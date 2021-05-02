@@ -24,7 +24,7 @@ const StyledGrid = styled.article`
   @media (max-width: ${BREAKPOINT}) {
     margin: 2em 0;
     grid-template-columns: 1fr;
-    grid-template-areas: 'image' 'details' 'video' 'preview' 'mobile-nav';
+    grid-template-areas: 'image' 'details' 'video' 'mobile-nav';
   }
 
   > * > *:first-child {
@@ -152,19 +152,16 @@ const StyledMeta = styled.aside`
 
 const StyledPreviews = styled.div`
   grid-area: preview;
+
+  @media (max-width: ${BREAKPOINT}) {
+    display: none;
+  }
 `
 
 const StyledPreviewGrid = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 1em;
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr 1fr;
-    > *:last-child {
-      display: none;
-    }
-  }
 `
 
 const StyledDivider = styled.hr`
@@ -247,7 +244,12 @@ export const SketchPage = ({
         </StyledSidebarInner>
       </StyledSidebar>
 
-      <StyledMobileNav>{navButtons}</StyledMobileNav>
+      <StyledMobileNav>
+        <Link href={appLink} passHref>
+          <Button style={{ flexBasis: '100%' }}>Open in explorer</Button>
+        </Link>
+        {navButtons}
+      </StyledMobileNav>
 
       <StyledDetails>
         <ReactMarkdown

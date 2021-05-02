@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styled, { keyframes } from 'styled-components'
 
 export const spin = keyframes`
@@ -65,7 +65,7 @@ export const ResponsiveImage: React.FC<Props> = ({
   const loadedRef = useRef(hasLoaded)
   loadedRef.current = hasLoaded
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setHasLoaded(false)
     setTimeout(() => {
       if (!loadedRef.current) setShowLoader(true)

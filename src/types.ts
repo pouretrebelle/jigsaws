@@ -123,6 +123,7 @@ export interface SketchContent {
   accentColorRgb?: string
   datePublished: number
   pieces: number
+  timeToSolve: string
   imagePath: {
     solveStart: string
     solveMiddle: string

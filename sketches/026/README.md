@@ -7,6 +7,7 @@ cutNoiseSeeds: [qtj, fvs, rxj, itc]
 accentColor: '#27C87A'
 
 pieces: 176
+timeToSolve: 47:20
 ---
 
 # 026

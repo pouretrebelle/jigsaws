@@ -7,6 +7,7 @@ cutNoiseSeeds: ['ivl', 'rtu', 'yvc', 'ppm']
 accentColor: '#d5e371'
 
 pieces: 196
+timeToSolve: 30:42
 ---
 
 # 020

@@ -7,6 +7,7 @@ cutNoiseSeeds: [zla, xqt, tvh, xcg]
 accentColor: '#e816b5'
 
 pieces: 144
+timeToSolve: 49:06
 ---
 
 # 025

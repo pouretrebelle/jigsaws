@@ -7,6 +7,7 @@ cutNoiseSeeds: [bwy, ttq, irx, psd]
 accentColor: '#D5D458'
 
 pieces: 260
+timeToSolve: 48:54
 ---
 
 # 028

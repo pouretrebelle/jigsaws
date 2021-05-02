@@ -7,6 +7,7 @@ cutNoiseSeeds: [ins, syq, xeq, kca]
 accentColor: '#32bbef'
 
 pieces: 225
+timeToSolve: 1:20:30
 ---
 
 # 023

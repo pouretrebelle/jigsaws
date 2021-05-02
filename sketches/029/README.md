@@ -7,6 +7,7 @@ cutNoiseSeeds: [ojd, ihc, mwh, zmq]
 accentColor: '#FC5744'
 
 pieces: 260
+timeToSolve: 1:05:28
 ---
 
 # 029

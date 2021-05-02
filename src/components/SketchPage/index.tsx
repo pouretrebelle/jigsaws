@@ -203,6 +203,7 @@ export const SketchPage = ({
   imagePath,
   markdownDescription,
   pieces,
+  timeToSolve,
   designNoiseSeeds,
   cutNoiseSeeds,
   nextSketchLink,
@@ -257,7 +258,9 @@ export const SketchPage = ({
             link: LinkWrapper,
           }}
         />
-        <StyledMeta>{pieces} pieces &bull; Solved in 1h 43mins</StyledMeta>
+        <StyledMeta>
+          {pieces} pieces &bull; Solved in {timeToSolve}
+        </StyledMeta>
       </StyledDetails>
 
       <StyledPreviews>

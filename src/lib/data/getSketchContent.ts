@@ -1,8 +1,10 @@
 import fs from 'fs'
 import matter from 'gray-matter'
-import { getExcerpt, wrapSketchLinks } from 'lib/markdown/processMarkdown'
 import chroma from 'chroma-js'
+
 import { SketchContent } from 'types'
+import { getExcerpt, wrapSketchLinks } from 'lib/markdown/processMarkdown'
+import { formatDuration } from 'lib/formatting'
 import { COLOR } from 'styles/tokens'
 
 const getRgb = (color: string): string => chroma(color).rgb().join(', ')
@@ -10,7 +12,7 @@ const getRgb = (color: string): string => chroma(color).rgb().join(', ')
 export const getSketchContent = (sketchId: string): SketchContent | null => {
   try {
     const file = fs.readFileSync(`sketches/${sketchId}/README.md`, 'utf8');
-    const { content, data: { datePublished, youTubeLink, pieces, accentColor = COLOR.ACCENT, designNoiseSeeds, cutNoiseSeeds, } } = matter(file)
+    const { content, data: { datePublished, youTubeLink, pieces, timeToSolve, accentColor = COLOR.ACCENT, designNoiseSeeds, cutNoiseSeeds, } } = matter(file)
     const canvas = `${sketchId}_${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}.png`
 
     return {
@@ -21,6 +23,7 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
       accentColorRgb: getRgb(accentColor),
       datePublished: +datePublished,
       pieces,
+      timeToSolve: formatDuration(timeToSolve || 3600),
       designNoiseSeeds,
       cutNoiseSeeds,
       youTubeLink: youTubeLink || '',

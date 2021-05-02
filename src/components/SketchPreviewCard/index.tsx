@@ -17,6 +17,10 @@ const StyledMeta = styled.aside`
   display: flex;
   min-width: 0;
   gap: 0.5em;
+
+  > *:first-child {
+    flex: 1;
+  }
 `
 
 const StyledActions = styled.div`

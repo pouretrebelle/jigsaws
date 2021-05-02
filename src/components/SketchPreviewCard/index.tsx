@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 
 import { SketchContent } from 'types'
+import { EnvContext } from 'env'
 import { makeRandomSeed, setLocalStorageSeeds } from 'lib/seeds'
 import { ResponsiveImage } from 'components/ResponsiveImage'
 import { SketchVariant } from 'components/SketchVariant'
@@ -34,6 +35,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
   designNoiseSeeds: sketchDesignNoiseSeeds,
   cutNoiseSeeds: sketchCutNoiseSeeds,
 }) => {
+  const { trackEvent } = useContext(EnvContext)
   const [designNoiseSeeds, setDesignNoiseSeeds] = useState(
     sketchDesignNoiseSeeds.map(makeRandomSeed)
   )
@@ -44,6 +46,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
   const shuffleSeeds = () => {
     setDesignNoiseSeeds(sketchDesignNoiseSeeds.map(makeRandomSeed))
     setCutNoiseSeeds(sketchCutNoiseSeeds.map(makeRandomSeed))
+    trackEvent('Shuffle preview seeds', { id })
   }
 
   return (

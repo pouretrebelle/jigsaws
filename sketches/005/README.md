@@ -7,6 +7,7 @@ cutNoiseSeeds: ['tol', 'zop', 'ovo', 'qfo']
 accentColor: '#00A7FD'
 
 pieces: 225
+timeToSolve: 1:14:10
 ---
 
 # 005

@@ -7,6 +7,7 @@ cutNoiseSeeds: [ete, yxl, vlv, ius]
 accentColor: '#f780c2'
 
 pieces: 225
+timeToSolve: 1:11:10
 ---
 
 # 022

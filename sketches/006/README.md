@@ -7,6 +7,7 @@ cutNoiseSeeds: ['gtx', 'xat', 'eoh', 'que']
 accentColor: '#CE24FD'
 
 pieces: 225
+timeToSolve: 1:02:50
 ---
 
 # 006

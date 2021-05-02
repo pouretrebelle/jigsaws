@@ -7,6 +7,7 @@ cutNoiseSeeds: ['yzh', 'tuy', 'zot', 'dfn']
 accentColor: '#D72BF7'
 
 pieces: 144
+timeToSolve: 25:00
 ---
 
 # 010

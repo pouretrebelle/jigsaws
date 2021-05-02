@@ -7,6 +7,7 @@ cutNoiseSeeds: ['hsj', 'usg', 'zlg', 'nnh']
 accentColor: '#00C2FF'
 
 pieces: 196
+timeToSolve: 33:23
 ---
 
 # 002

@@ -7,6 +7,7 @@ cutNoiseSeeds: ['uav', 'efp', 'cka', 'xja']
 accentColor: '#283DFF'
 
 pieces: 225
+timeToSolve: 47:20
 ---
 
 # 009

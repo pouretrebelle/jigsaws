@@ -7,6 +7,7 @@ cutNoiseSeeds: [ekg, ymi, bat, oyf]
 accentColor: '#50B4CC'
 
 pieces: 260
+timeToSolve: 1:20:15
 ---
 
 # 027

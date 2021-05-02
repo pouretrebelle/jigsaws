@@ -7,6 +7,7 @@ cutNoiseSeeds: ['ubp', 'vxr', 'svd', 'ncj']
 accentColor: '#EE8BFB'
 
 pieces: 169
+timeToSolve: 1:42:40
 ---
 
 # 015

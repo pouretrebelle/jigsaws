@@ -49,11 +49,11 @@ const HomePage = ({ latestSketch }: Props) => {
       </StyledDescription>
 
       <StyledButtonWrapper>
-        <Link href={latestSketch.appLink} passHref>
-          <Button>Open explorer</Button>
-        </Link>
         <Link href={latestSketch.pageLink} passHref>
           <Button>Go to latest sketch</Button>
+        </Link>
+        <Link href={latestSketch.appLink} passHref>
+          <Button>Open explorer</Button>
         </Link>
         <FollowButton />
       </StyledButtonWrapper>

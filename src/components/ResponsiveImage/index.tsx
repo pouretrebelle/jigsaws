@@ -1,8 +1,19 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
+
+export const spin = keyframes`
+  from {
+    transform: rotate(0deg)
+  }
+  to {
+    transform: rotate(360deg)
+  }
+`
 
 const StyledWrapper = styled.figure<{ $hasAspectRatio: boolean }>`
   background: black;
+  position: relative;
+
   ${({ $hasAspectRatio }) =>
     $hasAspectRatio &&
     `
@@ -19,6 +30,23 @@ const StyledImage = styled.img<{ $hasLoaded: boolean }>`
   transition: opacity 0.1s linear;
 `
 
+const StyledLoader = styled.div<{ $visible: boolean }>`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2em;
+  height: 2em;
+  margin: -1em;
+  border: 0.125em solid rgba(255, 255, 255, 0.75);
+  border-top-color: transparent;
+  border-radius: 50%;
+  transition: opacity 0.2s linear;
+  opacity: 0;
+  animation: ${spin} 1s linear infinite;
+
+  ${({ $visible }) => $visible && `opacity: 1;`}
+`
+
 interface Props {
   formatPath: ({ width }: { width: number }) => string
   aspectRatio?: number
@@ -33,9 +61,15 @@ export const ResponsiveImage: React.FC<Props> = ({
   const imageElement = useRef<HTMLImageElement>(null)
   const [imageWidth, setImageWidth] = useState(0)
   const [hasLoaded, setHasLoaded] = useState(false)
+  const [showLoader, setShowLoader] = useState(false)
+  const loadedRef = useRef(hasLoaded)
+  loadedRef.current = hasLoaded
 
   useLayoutEffect(() => {
     setHasLoaded(false)
+    setTimeout(() => {
+      if (!loadedRef.current) setShowLoader(true)
+    }, 500)
   }, [formatPath])
 
   const calculateWidth = () => {
@@ -59,6 +93,11 @@ export const ResponsiveImage: React.FC<Props> = ({
     }
   }, [])
 
+  const onLoad = () => {
+    setHasLoaded(true)
+    setShowLoader(false)
+  }
+
   return (
     <StyledWrapper
       ref={imageWrapperElement}
@@ -71,12 +110,13 @@ export const ResponsiveImage: React.FC<Props> = ({
           : {}
       }
     >
+      <StyledLoader $visible={showLoader} aria-hidden />
       {imageWidth !== 0 && (
         <StyledImage
           ref={imageElement}
           src={formatPath({ width: imageWidth })}
           $hasLoaded={hasLoaded}
-          onLoad={() => setHasLoaded(true)}
+          onLoad={onLoad}
           {...props}
         />
       )}

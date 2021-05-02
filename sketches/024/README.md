@@ -7,6 +7,7 @@ cutNoiseSeeds: [akk, zbx, sms, frz]
 accentColor: '#ad2de2'
 
 pieces: 225
+timeToSolve: 1:26:10
 ---
 
 # 024

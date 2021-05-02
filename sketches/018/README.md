@@ -7,6 +7,7 @@ cutNoiseSeeds: ['fdn', 'bay', 'xlt', 'ire']
 accentColor: '#dd4583'
 
 pieces: 256
+timeToSolve: 1:21:50
 ---
 
 # 018

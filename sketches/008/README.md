@@ -7,6 +7,7 @@ cutNoiseSeeds: ['qps', 'jrl', 'yww', 'wji']
 accentColor: '#682AFF'
 
 pieces: 225
+timeToSolve: 48:05
 ---
 
 # 008

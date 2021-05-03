@@ -10,7 +10,7 @@
 
 # production
 /build
-/public/sketches
+/src/.temp
 
 # misc
 .DS_Store

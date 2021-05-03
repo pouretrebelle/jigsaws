@@ -23,7 +23,7 @@ type Res = NodeJS.WritableStream & {
 const handler = async (req: Req, res: Res) => {
   res.setHeader('content-type', 'image/png')
 
-  const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } = await import(`../../../../sketches/${req.query.sketch || '001'}/index.ts`)
+  const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } = await import(`.temp/sketches/${req.query.sketch || '001'}/index.ts`)
 
   const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
   const queryDesignSeeds = req.query.designSeeds ? req.query.designSeeds.split(',') : []

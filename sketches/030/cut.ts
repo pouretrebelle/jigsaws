@@ -9,6 +9,8 @@ export enum Seeds {
   FlipY,
 }
 
+const INSET = 5
+
 const tweakDist = (
   m: number,
   alt: number,
@@ -49,8 +51,8 @@ class Point extends Vector2 {
     height,
   }: PointType) {
     super()
-    this.x = tweakDist(x, y, columns, simplexX) * width
-    this.y = tweakDist(y, x, rows, simplexY) * height
+    this.x = INSET + tweakDist(x, y, columns, simplexX) * (width - INSET * 2)
+    this.y = INSET + tweakDist(y, x, rows, simplexY) * (height - INSET * 2)
   }
 }
 
@@ -186,11 +188,19 @@ export const cut = (cutAttrs: Cut) => {
   // top left half of SW -> NE
   for (let y = 0; y <= columns; y++) {
     c.beginPath()
+    const connectToEdge = y > 0 && y < rows
+    if (connectToEdge) {
+      const edgePoint = squares[0][y - 1].sw.start
+      c.moveTo(0, edgePoint.y)
+      c.lineTo(edgePoint.x, edgePoint.y)
+    }
     for (let len = 0; len < y; len++) {
       const square = squares[len][y - len - 1]
-      const moveTo = len === 0
-      square.sw.draw(c, moveTo)
-      square.ne.draw(c, moveTo)
+      square.sw.draw(c, y === rows)
+      square.ne.draw(c, y === rows)
+    }
+    if (connectToEdge) {
+      c.lineTo(squares[y - 1][0].ne.end.x, 0)
     }
     c.stroke()
   }
@@ -198,11 +208,19 @@ export const cut = (cutAttrs: Cut) => {
   // bottom right half of SW -> NE
   for (let x = 0; x < columns; x++) {
     c.beginPath()
+    const connectToEdge = x > 0 && x < columns
+    if (connectToEdge) {
+      const edgePoint = squares[columns - x][rows - 1].sw.start
+      c.moveTo(edgePoint.x, height)
+      c.lineTo(edgePoint.x, edgePoint.y)
+    }
     for (let len = 0; len < x; len++) {
       const square = squares[rows - x + len][rows - len - 1]
-      const moveTo = len === 0
-      square.sw.draw(c, moveTo)
-      square.ne.draw(c, moveTo)
+      square.sw.draw(c, false)
+      square.ne.draw(c, false)
+    }
+    if (connectToEdge) {
+      c.lineTo(width, squares[columns - 1][rows - x].ne.end.y)
     }
     c.stroke()
   }

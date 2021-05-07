@@ -35,13 +35,30 @@ const StyledInner = styled.span`
   vertical-align: bottom;
 `
 
+const StyledIcon = styled.svg`
+  width: 0.6em;
+  height: 0.6em;
+  stroke: currentColor;
+  fill: transparent;
+  vertical-align: unset;
+  margin-right: 0.2em;
+`
+
 type Props = Pick<SketchContent, 'designNoiseSeeds' | 'cutNoiseSeeds'>
 
 export const SketchVariant = ({ designNoiseSeeds, cutNoiseSeeds }: Props) => {
   const identifier = `${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}`
   return (
     <StyledSketchVariant title={identifier} aria-hidden>
-      <StyledInner>&#9913;{identifier}</StyledInner>
+      <StyledInner>
+        <StyledIcon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7 7">
+          <path
+            d="M.5 3.50012h6M2 .901978L5 6.09813M2 6.09814L5 .901992"
+            strokeLinecap="round"
+          />
+        </StyledIcon>
+        {identifier}
+      </StyledInner>
     </StyledSketchVariant>
   )
 }

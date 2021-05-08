@@ -61,7 +61,7 @@ const addToCurves = (
   p1: Vector2,
   p2: Vector2,
   flip: boolean,
-  moveTo: boolean
+  moveTo: boolean,
 ) => {
   const tVmult = 0.2 // push of t towards other side of piece
   const tVdiv = 0.6 // push of p1c and p2c away from other side of piece
@@ -122,43 +122,27 @@ class PointConnection {
     let neverMoveTo = false
     const cStart = moveTo ? c.moveTo.bind(c) : c.lineTo.bind(c)
 
-    if (this.ordinal === Ordinal.sw && (this.isLeftEdge || this.isBottomEdge)) {
-      neverMoveTo = true
-      if (this.isLeftEdge && this.isBottomEdge) {
-        cStart(this.start.x - INSET, this.start.y + INSET)
-      }
-      else if (this.isLeftEdge) {
+    if (this.ordinal === Ordinal.sw) {
+      if (this.isLeftEdge && !this.isBottomEdge) {
+        neverMoveTo = true
         cStart(0, this.start.y)
+        c.lineTo(this.start.x, this.start.y)
       }
-      else {
+      if (!this.isLeftEdge && this.isBottomEdge) {
+        neverMoveTo = true
         cStart(this.start.x, this.start.y + INSET)
+        c.lineTo(this.start.x, this.start.y)
       }
-
-      c.lineTo(this.start.x, this.start.y)
-    }
-
-    if (this.ordinal === Ordinal.nw && this.isLeftEdge && this.isTopEdge) {
-      neverMoveTo = true
-      cStart(this.start.x - INSET, this.start.y - INSET)
-      c.lineTo(this.start.x, this.start.y)
     }
 
     // piece edge
     addToCurves(c, this.start, this.end, this.flip, !neverMoveTo && moveTo)
 
-    if (this.ordinal === Ordinal.se && this.isRightEdge && this.isBottomEdge) {
-      c.lineTo(this.end.x + INSET, this.end.y + INSET)
-    }
-
-    if (this.ordinal === Ordinal.ne && (this.isRightEdge || this.isTopEdge)) {
-      if (this.isRightEdge && this.isTopEdge) {
-        // top right corner
-        c.lineTo(this.end.x + INSET, this.end.y - INSET)
-      }
-      else if (this.isRightEdge) {
+    if (this.ordinal === Ordinal.ne) {
+      if (this.isRightEdge && !this.isTopEdge) {
         c.lineTo(this.end.x + INSET, this.end.y)
       }
-      else {
+      if (!this.isRightEdge && this.isTopEdge) {
         c.lineTo(this.end.x, this.end.y - INSET)
       }
     }
@@ -171,6 +155,13 @@ class PointConnection {
 
 const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
   const cornerPoints = [] as Point[][]
+
+  const ordinalCorners = {
+    [Ordinal.nw]: new Vector2(0, 0),
+    [Ordinal.se]: new Vector2(width, height),
+    [Ordinal.sw]: new Vector2(0, height),
+    [Ordinal.ne]: new Vector2(width, 0),
+  }
 
   for (let x = 0; x < columns + 1; x++) {
     if (!cornerPoints[x]) cornerPoints.push([])
@@ -217,7 +208,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         y,
         nw: new PointConnection({
           ordinal: Ordinal.nw,
-          start: topLeft,
+          start: (isTopEdge && isLeftEdge) ? ordinalCorners[Ordinal.nw] : topLeft,
           end: middle,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isLeftEdge,
@@ -226,14 +217,14 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         se: new PointConnection({
           ordinal: Ordinal.se,
           start: middle,
-          end: bottomRight,
+          end: (isRightEdge && isBottomEdge) ? ordinalCorners[Ordinal.se] : bottomRight,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isRightEdge,
           isBottomEdge,
         }),
         sw: new PointConnection({
           ordinal: Ordinal.sw,
-          start: bottomLeft,
+          start: (isLeftEdge && isBottomEdge) ? ordinalCorners[Ordinal.sw] : bottomLeft,
           end: middle,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isLeftEdge,
@@ -242,7 +233,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         ne: new PointConnection({
           ordinal: Ordinal.ne,
           start: middle,
-          end: topRight,
+          end: (isRightEdge && isTopEdge) ? ordinalCorners[Ordinal.ne] : topRight,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isRightEdge,
           isTopEdge,

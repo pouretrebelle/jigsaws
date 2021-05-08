@@ -5,8 +5,7 @@ import Vector2 from 'utils/Vector2'
 export enum Seeds {
   SwayX,
   SwayY,
-  FlipX,
-  FlipY,
+  Flip,
 }
 
 const INSET = 5
@@ -228,6 +227,8 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
       const isRightEdge = x === columns - 1
       const isBottomEdge = y === rows - 1
 
+      const getFlip = (addX: number, addY: number): boolean => simplex[Seeds.Flip].noise2D(22 + 15 * (x * 2 + addX), 33 + 15 * (y * 2 + addY)) < 0
+
       squares[x][y] = {
         x,
         y,
@@ -235,7 +236,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
           ordinal: Ordinal.nw,
           outer: (isTopEdge && isLeftEdge) ? ordinalCorners[Ordinal.nw] : topLeft,
           inner,
-          flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+          flip: getFlip(0, 0),
           isLeftEdge,
           isTopEdge,
         }),
@@ -243,7 +244,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
           ordinal: Ordinal.se,
           outer: (isRightEdge && isBottomEdge) ? ordinalCorners[Ordinal.se] : bottomRight,
           inner,
-          flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+          flip: getFlip(1, 1),
           isRightEdge,
           isBottomEdge,
         }),
@@ -251,7 +252,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
           ordinal: Ordinal.sw,
           outer: (isLeftEdge && isBottomEdge) ? ordinalCorners[Ordinal.sw] : bottomLeft,
           inner,
-          flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+          flip: getFlip(0, 1),
           isLeftEdge,
           isBottomEdge,
         }),
@@ -259,7 +260,7 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
           ordinal: Ordinal.ne,
           outer: (isRightEdge && isTopEdge) ? ordinalCorners[Ordinal.ne] : topRight,
           inner,
-          flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
+          flip: getFlip(1, 0),
           isRightEdge,
           isTopEdge,
         }),

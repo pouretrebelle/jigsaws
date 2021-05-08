@@ -84,8 +84,8 @@ const addToCurves = (
 }
 
 interface PointConnection {
-  drawIn: (c: CanvasRenderingContext2D, moveTo: boolean) => void
-  drawOut: (c: CanvasRenderingContext2D, moveTo: boolean) => void
+  drawIn: (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => void
+  drawOut: (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => void
 }
 
 enum Ordinal {
@@ -118,11 +118,11 @@ class PointConnection {
     Object.assign(this, props)
   }
 
-  drawIn = (c: CanvasRenderingContext2D, moveTo: boolean) => {
+  drawIn = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
     let lineToStart = false
     const cStart = moveTo ? c.moveTo.bind(c) : c.lineTo.bind(c)
 
-    if (this.ordinal === Ordinal.sw) {
+    if (this.ordinal === Ordinal.sw && drawEdgeLines) {
       if (this.isLeftEdge && !this.isBottomEdge) {
         lineToStart = true
         cStart(this.start.x - INSET, this.start.y)
@@ -133,7 +133,7 @@ class PointConnection {
       }
     }
 
-    if (this.ordinal === Ordinal.ne) {
+    if (this.ordinal === Ordinal.ne && drawEdgeLines) {
       if (this.isRightEdge && !this.isTopEdge) {
         lineToStart = true
         cStart(this.start.x + INSET, this.start.y)
@@ -152,10 +152,10 @@ class PointConnection {
     addToCurves(c, this.start, this.end, this.flip, !lineToStart && moveTo)
   }
 
-  drawOut = (c: CanvasRenderingContext2D, moveTo: boolean) => {
+  drawOut = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
     addToCurves(c, this.end, this.start, !this.flip, moveTo)
 
-    if (this.ordinal === Ordinal.sw) {
+    if (this.ordinal === Ordinal.sw && drawEdgeLines) {
       if (this.isLeftEdge && !this.isBottomEdge) {
         c.lineTo(this.start.x - INSET, this.start.y)
       }
@@ -164,7 +164,7 @@ class PointConnection {
       }
     }
 
-    if (this.ordinal === Ordinal.ne) {
+    if (this.ordinal === Ordinal.ne && drawEdgeLines) {
       if (this.isRightEdge && !this.isTopEdge) {
         c.lineTo(this.start.x + INSET, this.start.y)
       }
@@ -287,8 +287,8 @@ export const cut = (cutAttrs: Cut) => {
     c.beginPath()
     for (let len = 0; len < y; len++) {
       const square = squares[len][y - len - 1]
-      square.sw.drawIn(c, len === 0)
-      square.ne.drawOut(c, false)
+      square.sw.drawIn(c, len === 0, true)
+      square.ne.drawOut(c, false, true)
     }
     c.stroke()
   }
@@ -298,8 +298,8 @@ export const cut = (cutAttrs: Cut) => {
     c.beginPath()
     for (let len = 0; len < x; len++) {
       const square = squares[rows - x + len][rows - len - 1]
-      square.sw.drawIn(c, len === 0)
-      square.ne.drawOut(c, false)
+      square.sw.drawIn(c, len === 0, true)
+      square.ne.drawOut(c, false, true)
     }
     c.stroke()
   }
@@ -309,8 +309,8 @@ export const cut = (cutAttrs: Cut) => {
     c.beginPath()
     for (let len = 0; len < y; len++) {
       const square = squares[len][rows - y + len]
-      square.nw.drawIn(c, len === 0)
-      square.se.drawOut(c, false)
+      square.nw.drawIn(c, len === 0, true)
+      square.se.drawOut(c, false, true)
     }
     c.stroke()
   }
@@ -320,8 +320,8 @@ export const cut = (cutAttrs: Cut) => {
     c.beginPath()
     for (let len = 0; len < x; len++) {
       const square = squares[columns - x + len][len]
-      square.nw.drawIn(c, len === 0)
-      square.se.drawOut(c, false)
+      square.nw.drawIn(c, len === 0, true)
+      square.se.drawOut(c, false, true)
     }
     c.stroke()
   }
@@ -336,10 +336,10 @@ export const cutPieces = (cutAttrs: Cut) => {
   for (let x = 0; x < rows - 1; x++) {
     for (let y = 0; y < columns; y++) {
       c.beginPath()
-      squares[x][y].ne.drawOut(c, true)
-      squares[x + 1][y].nw.drawIn(c, false)
-      squares[x + 1][y].sw.drawOut(c, false)
-      squares[x][y].se.drawIn(c, false)
+      squares[x][y].ne.drawOut(c, true, false)
+      squares[x + 1][y].nw.drawIn(c, false, false)
+      squares[x + 1][y].sw.drawOut(c, false, false)
+      squares[x][y].se.drawIn(c, false, false)
       c.stroke()
     }
   }
@@ -348,10 +348,10 @@ export const cutPieces = (cutAttrs: Cut) => {
   for (let x = 0; x < rows; x++) {
     for (let y = 0; y < columns - 1; y++) {
       c.beginPath()
-      squares[x][y].sw.drawIn(c, true)
-      squares[x][y].se.drawOut(c, false)
-      squares[x][y + 1].ne.drawIn(c, false)
-      squares[x][y + 1].nw.drawOut(c, false)
+      squares[x][y].sw.drawIn(c, true, false)
+      squares[x][y].se.drawOut(c, false, false)
+      squares[x][y + 1].ne.drawIn(c, false, false)
+      squares[x][y + 1].nw.drawOut(c, false, false)
       c.stroke()
     }
   }
@@ -360,16 +360,18 @@ export const cutPieces = (cutAttrs: Cut) => {
   for (let y = 1; y < rows - 1; y++) {
     c.beginPath()
     const leftSquare = squares[0][y]
-    leftSquare.nw.drawIn(c, true)
-    leftSquare.sw.drawOut(c, false)
-    c.lineTo(leftSquare.nw.start.x, leftSquare.nw.start.y)
+    leftSquare.sw.drawIn(c, true, true)
+    leftSquare.nw.drawOut(c, false, false)
+    c.lineTo(leftSquare.nw.start.x - INSET, leftSquare.nw.start.y)
+    c.closePath()
     c.stroke()
 
     c.beginPath()
     const rightSquare = squares[columns - 1][y]
-    rightSquare.ne.drawIn(c, true)
-    rightSquare.se.drawOut(c, false)
-    c.lineTo(rightSquare.ne.end.x, rightSquare.ne.end.y)
+    rightSquare.ne.drawIn(c, true, true)
+    rightSquare.se.drawOut(c, false, false)
+    c.lineTo(rightSquare.se.start.x + INSET, rightSquare.se.start.y)
+    c.closePath()
     c.stroke()
   }
 
@@ -377,57 +379,75 @@ export const cutPieces = (cutAttrs: Cut) => {
   for (let x = 1; x < columns - 1; x++) {
     c.beginPath()
     const topSquare = squares[x][0]
-    topSquare.nw.drawIn(c, true)
-    topSquare.ne.drawOut(c, false)
-    c.lineTo(topSquare.nw.start.x, topSquare.nw.start.y)
+    topSquare.ne.drawIn(c, true, true)
+    topSquare.nw.drawOut(c, false, false)
+    c.lineTo(topSquare.nw.start.x, topSquare.nw.start.y - INSET)
+    c.closePath()
     c.stroke()
 
     c.beginPath()
     const bottomSquare = squares[x][rows - 1]
-    bottomSquare.sw.drawIn(c, true)
-    bottomSquare.se.drawOut(c, false)
-    c.lineTo(bottomSquare.sw.start.x, bottomSquare.sw.start.y)
+    bottomSquare.sw.drawIn(c, true, true)
+    bottomSquare.se.drawOut(c, false, false)
+    c.lineTo(bottomSquare.se.start.x, bottomSquare.se.start.y + INSET)
+    c.closePath()
     c.stroke()
   }
 
   // top left corner
   const topLeftSquare = squares[0][0]
   c.beginPath()
-  c.moveTo(topLeftSquare.nw.start.x, topLeftSquare.nw.start.y)
-  c.lineTo(topLeftSquare.ne.end.x, topLeftSquare.ne.end.y)
-  topLeftSquare.ne.drawIn(c, false)
-  topLeftSquare.sw.drawOut(c, false)
-  c.lineTo(topLeftSquare.nw.start.x, topLeftSquare.nw.start.y)
+  topLeftSquare.sw.drawIn(c, true, true)
+  topLeftSquare.nw.drawOut(c, false, false)
+  c.closePath()
+  c.stroke()
+  c.beginPath()
+  topLeftSquare.ne.drawIn(c, true, true)
+  topLeftSquare.nw.drawOut(c, false, false)
+  c.closePath()
   c.stroke()
 
   // top right corner
   const topRightSquare = squares[columns - 1][0]
   c.beginPath()
-  c.moveTo(topRightSquare.ne.end.x, topRightSquare.ne.end.y)
-  c.lineTo(topRightSquare.se.end.x, topRightSquare.se.end.y)
-  topRightSquare.se.drawIn(c, false)
-  topRightSquare.nw.drawOut(c, false)
-  c.lineTo(topRightSquare.ne.end.x, topRightSquare.ne.end.y)
+  topRightSquare.nw.drawIn(c, true, false)
+  topRightSquare.ne.drawOut(c, false, false)
+  c.lineTo(topRightSquare.nw.start.x, topRightSquare.nw.start.y - INSET)
+  c.closePath()
+  c.stroke()
+  c.beginPath()
+  topRightSquare.se.drawIn(c, true, false)
+  topRightSquare.ne.drawOut(c, false, false)
+  c.lineTo(topRightSquare.se.start.x + INSET, topRightSquare.se.start.y)
+  c.closePath()
   c.stroke()
 
   // bottom right corner
   const bottomRightSquare = squares[columns - 1][rows - 1]
   c.beginPath()
-  c.moveTo(bottomRightSquare.se.end.x, bottomRightSquare.se.end.y)
-  c.lineTo(bottomRightSquare.sw.start.x, bottomRightSquare.sw.start.y)
-  bottomRightSquare.sw.drawIn(c, false)
-  bottomRightSquare.ne.drawOut(c, false)
-  c.lineTo(bottomRightSquare.se.end.x, bottomRightSquare.se.end.y)
+  bottomRightSquare.ne.drawIn(c, true, true)
+  bottomRightSquare.se.drawOut(c, false, false)
+  c.closePath()
+  c.stroke()
+  c.beginPath()
+  bottomRightSquare.sw.drawIn(c, true, true)
+  bottomRightSquare.se.drawOut(c, false, false)
+  c.closePath()
   c.stroke()
 
-  // top right corner
+  // bottom left corner
   const bottomLeftSquare = squares[0][rows - 1]
   c.beginPath()
-  c.moveTo(bottomLeftSquare.sw.start.x, bottomLeftSquare.sw.start.y)
-  c.lineTo(bottomLeftSquare.se.end.x, bottomLeftSquare.se.end.y)
-  bottomLeftSquare.se.drawIn(c, false)
-  bottomLeftSquare.nw.drawOut(c, false)
-  c.lineTo(bottomLeftSquare.sw.start.x, bottomLeftSquare.sw.start.y)
+  bottomLeftSquare.nw.drawIn(c, true, false)
+  bottomLeftSquare.sw.drawOut(c, false, false)
+  c.lineTo(bottomLeftSquare.nw.start.x - INSET, bottomLeftSquare.nw.start.y)
+  c.closePath()
+  c.stroke()
+  c.beginPath()
+  bottomLeftSquare.se.drawIn(c, true, false)
+  bottomLeftSquare.sw.drawOut(c, false, false)
+  c.lineTo(bottomLeftSquare.se.start.x, bottomLeftSquare.se.start.y + INSET)
+  c.closePath()
   c.stroke()
 }
 

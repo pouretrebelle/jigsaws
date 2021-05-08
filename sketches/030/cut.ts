@@ -1,5 +1,6 @@
 import SimplexNoise from 'simplex-noise'
 import { Cut } from 'types'
+import { map } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 
 export enum Seeds {
@@ -9,6 +10,7 @@ export enum Seeds {
 }
 
 const INSET = 5
+const CORNER_LEAN = 0.7
 
 const tweakDist = (
   m: number,
@@ -61,21 +63,32 @@ const addToCurves = (
   p2: Vector2,
   flip: boolean,
   moveTo: boolean,
+  tabPosition: number = 0.5,
 ) => {
   const tVmult = 0.2 // push of t towards other side of piece
   const tVdiv = 0.6 // push of p1c and p2c away from other side of piece
   const tWidth = 0.7 // how far t1 and t2 are from the canter
-  const pWidth = 0.8 // how far p1x and p2c are from the center
+  const pWidth = 0.3 // how far p1x and p2c are from the center
 
-  const midPoint = p1.plusNew(p2).multiplyEq(0.5)
-  const pV = p2.minusNew(p1) // vector from p1 to p2
-  const tV = pV.multiplyNew(tVmult).rotate(flip ? 90 : -90, true) // perpinnericular to pV
-  const t = midPoint.plusNew(tV) // top point of divet
+  const tabCenteredWidth = 1 - 2 * Math.abs(0.5 - tabPosition)
+  const tabWidthRatio = tabCenteredWidth / 1
+  const halfTabWidthRatio = (0.5 + tabWidthRatio / 2)
+  const tabPoint = new Vector2(
+    map(tabPosition, 0, 1, p1.x, p2.x),
+    map(tabPosition, 0, 1, p1.y, p2.y),
+  )
+  const pV = p2.minusNew(p1).multiplyEq(tabCenteredWidth) // vector between p1 and p2 of tab width
+  const pVi = p2.minusNew(p1).multiplyEq(1 - tabCenteredWidth) // vector between p1 and p2 of non-tab width
+  const tV = pV.multiplyNew(tVmult / halfTabWidthRatio).rotate(flip ? 90 : -90, true) // perpendicular to pV
+  const t = tabPoint.plusNew(tV) // top point of divet
 
-  const p1c = p1.plusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
-  const t1 = t.minusNew(pV.multiplyNew(tWidth / 2))
-  const t2 = t.plusNew(pV.multiplyNew(tWidth / 2))
-  const p2c = p2.minusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
+  const longSide = pV.multiplyNew(pWidth).plusEq(pVi.multiplyEq(0.3))
+  const shortSide = pV.multiplyNew(pWidth)
+
+  const p1c = tabPoint.plusNew(tabPosition > 0.5 ? longSide : shortSide).minusEq(tV.multiplyNew(tabPosition > 0.5 ? tVdiv / tabWidthRatio : tVdiv))
+  const t1 = t.minusNew(pV.multiplyNew(tWidth / (2 * (tabPosition > 0.5 ? halfTabWidthRatio : 1))))
+  const t2 = t.plusNew(pV.multiplyNew(tWidth / (2 * (tabPosition < 0.5 ? halfTabWidthRatio : 1))))
+  const p2c = tabPoint.minusNew(tabPosition < 0.5 ? longSide : shortSide).minusEq(tV.multiplyNew((tabPosition < 0.5 ? tVdiv / tabWidthRatio : tVdiv)))
 
   if (moveTo) c.moveTo(p1.x, p1.y)
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
@@ -112,9 +125,16 @@ class PointConnection {
   isRightEdge?: boolean
   isTopEdge?: boolean
   isBottomEdge?: boolean
+  isCorner: boolean
 
-  constructor(props: Omit<PointConnection, 'drawIn' | 'drawOut'>) {
+  constructor(props: Omit<PointConnection, 'drawIn' | 'drawOut' | 'isCorner'>) {
     Object.assign(this, props)
+
+    let edgeCount = 0
+    if (props.isTopEdge || props.isBottomEdge) edgeCount++
+    if (props.isLeftEdge || props.isRightEdge) edgeCount++
+
+    this.isCorner = edgeCount === 2
   }
 
   drawIn = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
@@ -148,11 +168,11 @@ class PointConnection {
     }
 
     // piece edge
-    addToCurves(c, this.outer, this.inner, this.flip, !lineToOuter && moveTo)
+    addToCurves(c, this.outer, this.inner, this.flip, !lineToOuter && moveTo, this.isCorner ? CORNER_LEAN : 0.5)
   }
 
   drawOut = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
-    addToCurves(c, this.inner, this.outer, !this.flip, moveTo)
+    addToCurves(c, this.inner, this.outer, !this.flip, moveTo, this.isCorner ? (1 - CORNER_LEAN) : 0.5)
 
     if (this.ordinal === Ordinal.sw && drawEdgeLines) {
       if (this.isLeftEdge && !this.isBottomEdge) {

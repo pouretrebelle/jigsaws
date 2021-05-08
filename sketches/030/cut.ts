@@ -70,7 +70,7 @@ const addToCurves = (
 
   const midPoint = p1.plusNew(p2).multiplyEq(0.5)
   const pV = p2.minusNew(p1) // vector from p1 to p2
-  const tV = pV.multiplyNew(tVmult).rotate(flip ? 90 : -90, true) // perpendicular to pV
+  const tV = pV.multiplyNew(tVmult).rotate(flip ? 90 : -90, true) // perpinnericular to pV
   const t = midPoint.plusNew(tV) // top point of divet
 
   const p1c = p1.plusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
@@ -106,8 +106,8 @@ interface Square {
 
 class PointConnection {
   ordinal!: Ordinal
-  start!: Point
-  end!: Point
+  outer!: Point
+  inner!: Point
   flip!: boolean
   isLeftEdge?: boolean
   isRightEdge?: boolean
@@ -119,57 +119,57 @@ class PointConnection {
   }
 
   drawIn = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
-    let lineToStart = false
+    let lineToOuter = false
     const cStart = moveTo ? c.moveTo.bind(c) : c.lineTo.bind(c)
 
     if (this.ordinal === Ordinal.sw && drawEdgeLines) {
       if (this.isLeftEdge && !this.isBottomEdge) {
-        lineToStart = true
-        cStart(this.start.x - INSET, this.start.y)
+        lineToOuter = true
+        cStart(this.outer.x - INSET, this.outer.y)
       }
       if (!this.isLeftEdge && this.isBottomEdge) {
-        lineToStart = true
-        cStart(this.start.x, this.start.y + INSET)
+        lineToOuter = true
+        cStart(this.outer.x, this.outer.y + INSET)
       }
     }
 
     if (this.ordinal === Ordinal.ne && drawEdgeLines) {
       if (this.isRightEdge && !this.isTopEdge) {
-        lineToStart = true
-        cStart(this.start.x + INSET, this.start.y)
+        lineToOuter = true
+        cStart(this.outer.x + INSET, this.outer.y)
       }
       if (!this.isRightEdge && this.isTopEdge) {
-        lineToStart = true
-        cStart(this.start.x, this.start.y - INSET)
+        lineToOuter = true
+        cStart(this.outer.x, this.outer.y - INSET)
       }
     }
 
-    if (lineToStart) {
-      c.lineTo(this.start.x, this.start.y)
+    if (lineToOuter) {
+      c.lineTo(this.outer.x, this.outer.y)
     }
 
     // piece edge
-    addToCurves(c, this.start, this.end, this.flip, !lineToStart && moveTo)
+    addToCurves(c, this.outer, this.inner, this.flip, !lineToOuter && moveTo)
   }
 
   drawOut = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
-    addToCurves(c, this.end, this.start, !this.flip, moveTo)
+    addToCurves(c, this.inner, this.outer, !this.flip, moveTo)
 
     if (this.ordinal === Ordinal.sw && drawEdgeLines) {
       if (this.isLeftEdge && !this.isBottomEdge) {
-        c.lineTo(this.start.x - INSET, this.start.y)
+        c.lineTo(this.outer.x - INSET, this.outer.y)
       }
       if (!this.isLeftEdge && this.isBottomEdge) {
-        c.lineTo(this.start.x, this.start.y + INSET)
+        c.lineTo(this.outer.x, this.outer.y + INSET)
       }
     }
 
     if (this.ordinal === Ordinal.ne && drawEdgeLines) {
       if (this.isRightEdge && !this.isTopEdge) {
-        c.lineTo(this.start.x + INSET, this.start.y)
+        c.lineTo(this.outer.x + INSET, this.outer.y)
       }
       if (!this.isRightEdge && this.isTopEdge) {
-        c.lineTo(this.start.x, this.start.y - INSET)
+        c.lineTo(this.outer.x, this.outer.y - INSET)
       }
     }
   }
@@ -210,9 +210,9 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
       const bottomLeft = cornerPoints[x][y + 1]
       const bottomRight = cornerPoints[x + 1][y + 1]
 
-      // the end of each point connection is the centre of each square
+      // the inner of each point connection is the centre of each square
       // drawing methods are based on whether the direction is going towards or away from the centre
-      const end = new Point({
+      const inner = new Point({
         x: x + 0.5,
         y: y + 0.5,
         rows,
@@ -233,32 +233,32 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         y,
         nw: new PointConnection({
           ordinal: Ordinal.nw,
-          start: (isTopEdge && isLeftEdge) ? ordinalCorners[Ordinal.nw] : topLeft,
-          end,
+          outer: (isTopEdge && isLeftEdge) ? ordinalCorners[Ordinal.nw] : topLeft,
+          inner,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isLeftEdge,
           isTopEdge,
         }),
         se: new PointConnection({
           ordinal: Ordinal.se,
-          start: (isRightEdge && isBottomEdge) ? ordinalCorners[Ordinal.se] : bottomRight,
-          end,
+          outer: (isRightEdge && isBottomEdge) ? ordinalCorners[Ordinal.se] : bottomRight,
+          inner,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isRightEdge,
           isBottomEdge,
         }),
         sw: new PointConnection({
           ordinal: Ordinal.sw,
-          start: (isLeftEdge && isBottomEdge) ? ordinalCorners[Ordinal.sw] : bottomLeft,
-          end,
+          outer: (isLeftEdge && isBottomEdge) ? ordinalCorners[Ordinal.sw] : bottomLeft,
+          inner,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isLeftEdge,
           isBottomEdge,
         }),
         ne: new PointConnection({
           ordinal: Ordinal.ne,
-          start: (isRightEdge && isTopEdge) ? ordinalCorners[Ordinal.ne] : topRight,
-          end,
+          outer: (isRightEdge && isTopEdge) ? ordinalCorners[Ordinal.ne] : topRight,
+          inner,
           flip: simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           isRightEdge,
           isTopEdge,
@@ -362,7 +362,7 @@ export const cutPieces = (cutAttrs: Cut) => {
     const leftSquare = squares[0][y]
     leftSquare.sw.drawIn(c, true, true)
     leftSquare.nw.drawOut(c, false, false)
-    c.lineTo(leftSquare.nw.start.x - INSET, leftSquare.nw.start.y)
+    c.lineTo(leftSquare.nw.outer.x - INSET, leftSquare.nw.outer.y)
     c.closePath()
     c.stroke()
 
@@ -370,7 +370,7 @@ export const cutPieces = (cutAttrs: Cut) => {
     const rightSquare = squares[columns - 1][y]
     rightSquare.ne.drawIn(c, true, true)
     rightSquare.se.drawOut(c, false, false)
-    c.lineTo(rightSquare.se.start.x + INSET, rightSquare.se.start.y)
+    c.lineTo(rightSquare.se.outer.x + INSET, rightSquare.se.outer.y)
     c.closePath()
     c.stroke()
   }
@@ -381,7 +381,7 @@ export const cutPieces = (cutAttrs: Cut) => {
     const topSquare = squares[x][0]
     topSquare.ne.drawIn(c, true, true)
     topSquare.nw.drawOut(c, false, false)
-    c.lineTo(topSquare.nw.start.x, topSquare.nw.start.y - INSET)
+    c.lineTo(topSquare.nw.outer.x, topSquare.nw.outer.y - INSET)
     c.closePath()
     c.stroke()
 
@@ -389,7 +389,7 @@ export const cutPieces = (cutAttrs: Cut) => {
     const bottomSquare = squares[x][rows - 1]
     bottomSquare.sw.drawIn(c, true, true)
     bottomSquare.se.drawOut(c, false, false)
-    c.lineTo(bottomSquare.se.start.x, bottomSquare.se.start.y + INSET)
+    c.lineTo(bottomSquare.se.outer.x, bottomSquare.se.outer.y + INSET)
     c.closePath()
     c.stroke()
   }
@@ -412,13 +412,13 @@ export const cutPieces = (cutAttrs: Cut) => {
   c.beginPath()
   topRightSquare.nw.drawIn(c, true, false)
   topRightSquare.ne.drawOut(c, false, false)
-  c.lineTo(topRightSquare.nw.start.x, topRightSquare.nw.start.y - INSET)
+  c.lineTo(topRightSquare.nw.outer.x, topRightSquare.nw.outer.y - INSET)
   c.closePath()
   c.stroke()
   c.beginPath()
   topRightSquare.se.drawIn(c, true, false)
   topRightSquare.ne.drawOut(c, false, false)
-  c.lineTo(topRightSquare.se.start.x + INSET, topRightSquare.se.start.y)
+  c.lineTo(topRightSquare.se.outer.x + INSET, topRightSquare.se.outer.y)
   c.closePath()
   c.stroke()
 
@@ -440,13 +440,13 @@ export const cutPieces = (cutAttrs: Cut) => {
   c.beginPath()
   bottomLeftSquare.nw.drawIn(c, true, false)
   bottomLeftSquare.sw.drawOut(c, false, false)
-  c.lineTo(bottomLeftSquare.nw.start.x - INSET, bottomLeftSquare.nw.start.y)
+  c.lineTo(bottomLeftSquare.nw.outer.x - INSET, bottomLeftSquare.nw.outer.y)
   c.closePath()
   c.stroke()
   c.beginPath()
   bottomLeftSquare.se.drawIn(c, true, false)
   bottomLeftSquare.sw.drawOut(c, false, false)
-  c.lineTo(bottomLeftSquare.se.start.x, bottomLeftSquare.se.start.y + INSET)
+  c.lineTo(bottomLeftSquare.se.outer.x, bottomLeftSquare.se.outer.y + INSET)
   c.closePath()
   c.stroke()
 }

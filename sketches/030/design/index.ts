@@ -1,179 +1,100 @@
-import SimplexNoise from 'simplex-noise'
 import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO, LAYERS } from './constants'
 
 export enum Seeds {
   Shape,
   Color,
 }
 
-interface Shape {
-  c: CanvasRenderingContext2D
-  x: number
-  y: number
-  w: number
-  h: number
-  gap: number
-  simplex: SimplexNoise
-  noiseStart: number
-}
+class Point {
+  x!: number
+  y!: number
+  visible!: boolean
+  notStart: boolean
 
-const shapes = {
-  blank: {
-    weight: 7,
-    draw: () => { }
-  },
-  pill: {
-    weight: 3,
-    draw: ({ c, x, y, w, h, gap, simplex }: Shape) => {
-      const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 2)
-      c.rotate(rotate * Math.PI / 2)
-      c.beginPath()
-      c.arc(0, (h + gap) / 2, (w - gap) / 2, 0, Math.PI)
-      c.arc(0, -(h + gap) / 2, (w - gap) / 2, Math.PI, Math.PI * 2)
-      c.fill()
-    },
-  },
-  heart: {
-    weight: 5,
-    draw: ({ c, x, y, w, h, gap, simplex }: Shape) => {
-      const rotate = Math.floor(randomFromNoise(simplex.noise2D(100 + x, 100 + y)) * 5)
-      c.rotate(rotate * Math.PI / 2)
-      c.beginPath()
-      c.arc(0, (h + gap) / 2, (w - gap) / 2, 0, Math.PI)
-      c.lineTo(-(w - gap) / 2, (h - gap) / 2)
-      c.arc(-(w + gap) / 2, 0, (w - gap) / 2, Math.PI * 0.5, Math.PI * 1.5)
-      c.lineTo((w - gap) / 2, -(h - gap) / 2)
-      c.fill()
-    },
-  },
-}
-const shapeKeys = Object.keys(shapes)
-const shapeTotalWeights = shapeKeys.reduce(
-  (prev, curr) => (prev + shapes[curr as keyof typeof shapes].weight), 0
-)
-
-const getShape = ({ x, y, simplex, noiseStart }: Pick<Shape, 'x' | 'y' | 'simplex' | 'noiseStart'>) => {
-  const shapeRand = randomFromNoise(simplex.noise3D(0.555 + x * 0.01, 0.444 + y * 0.01, 0.333 + noiseStart * 0.05)) * shapeTotalWeights
-  let shapeKey = shapeKeys[0] as keyof typeof shapes
-  shapeKeys.reduce(
-    (prev, curr) => {
-      if (prev < shapeRand) shapeKey = curr as keyof typeof shapes
-      return (prev + shapes[curr as keyof typeof shapes].weight)
-    }, 0
-  )
-  return shapeKey
-}
-
-const drawShape = (shape: keyof typeof shapes, args: Shape) => {
-  const { c, x, y, w, h } = args
-
-  c.save()
-  c.translate(x + w / 2, y + h / 2)
-  { shapes[shape].draw(args) }
-  c.restore()
+  constructor(props: { x: number; y: number; visible: boolean }) {
+    Object.assign(this, props)
+    this.notStart = false
+  }
 }
 
 export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
   const hues: number[] = []
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < LAYERS; i++) {
     hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5.25 + i, 3.33)) * 360))
   }
   c.save()
 
-  c.fillStyle = hsl(hues[0], 40, 30)
+  c.fillStyle = hsl(hues[0], 40, 20)
   c.fillRect(0, 0, width, height)
 
-  const cellWidth = (width - bleed * 2) / (GRID_COLUMNS + GRID_GAP_RATIO)
-  const cellHeight = (height - bleed * 2) / (GRID_ROWS + GRID_GAP_RATIO)
+  const cellWidth = (width - bleed * 2) / (GRID_COLUMNS - 1 + GRID_GAP_RATIO)
+  const cellHeight = (height - bleed * 2) / (GRID_ROWS - 1 + GRID_GAP_RATIO)
   const gridGap = cellWidth * GRID_GAP_RATIO
   const gridBleed = bleed + gridGap / 2
 
+  const drawLines = (
+    gridOffset: number,
+    gridMultiplier: number,
+    lineWidth: number,
+    noiseOffset: number
+  ) => {
+    c.lineWidth = lineWidth
+
+    for (let layer = 0; layer < LAYERS; layer++) {
+      // shift back half a unit every layer
+      if (layer > 0) gridOffset -= 0.5 * gridMultiplier
+
+      const crossPoints = [] as Point[][]
+      for (let col = 0; col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier; col++) {
+        if (!crossPoints[col]) crossPoints.push([])
+        for (let row = 0; row < (GRID_ROWS - gridOffset * 2) / gridMultiplier; row++) {
+          const x = col * cellWidth * gridMultiplier + gridBleed + cellWidth * gridOffset
+          const y = row * cellHeight * gridMultiplier + gridBleed + cellHeight * gridOffset
+          crossPoints[col][row] = new Point({
+            x,
+            y,
+            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * 2, x * 0.005, y * 0.008) > 0.2
+          })
+        }
+      }
+
+      for (let col = 0; col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier; col++) {
+        for (let row = 0; row < (GRID_ROWS - gridOffset * 2) / gridMultiplier; row++) {
+          const point = crossPoints[col][row]
+          if (point.visible && !point.notStart) {
+
+            let length = 1
+            while (crossPoints[col][row + length] && crossPoints[col][row + length].visible) {
+              crossPoints[col][row + length].notStart = true
+              length++
+            }
+
+            const a = map(simplex[Seeds.Color].noise3D(20 * layer + noiseOffset, point.x * 0.002, point.y * 0.001), -0.6, 0.6, 0.1, 0.8)
+            c.strokeStyle = hsla(hues[layer], 70, 50, a)
+
+            c.beginPath()
+            c.moveTo(point.x + cellWidth / 2, point.y + cellHeight / 2)
+            c.lineTo(point.x + cellWidth / 2, point.y + (length - 0.5) * cellHeight)
+            c.stroke()
+          }
+        }
+      }
+    }
+
+  }
+
+  c.lineCap = 'round'
   c.globalCompositeOperation = 'screen'
-  for (let col = -1; col < GRID_COLUMNS + 1; col += 3) {
-    for (let row = -1; row < GRID_ROWS + 1; row += 3) {
-      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
-      c.fillStyle = hsla(hues[1], 80, 50, a)
-
-      const x = col * cellWidth + gridBleed
-      const y = row * cellHeight + gridBleed
-      const shape = getShape({
-        x,
-        y,
-        simplex: simplex[Seeds.Shape],
-        noiseStart
-      })
-      drawShape(shape, {
-        c,
-        x,
-        y,
-        w: cellWidth * 3,
-        h: cellHeight * 3,
-        gap: gridGap,
-        simplex: simplex[Seeds.Shape],
-        noiseStart,
-      })
-    }
-  }
-
-  c.globalCompositeOperation = 'multiply'
-  for (let col = -0.5; col < GRID_COLUMNS + 0.5; col += 2) {
-    for (let row = -0.5; row < GRID_ROWS + 0.5; row += 2) {
-      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
-      c.fillStyle = hsla(hues[2], 80, 50, a)
-
-      // this layer doesn't add the line gap between shapes because it's on a half-grid
-      const x = col * cellWidth + gridBleed - gridGap / 2
-      const y = row * cellHeight + gridBleed - gridGap / 2
-      const shape = getShape({
-        x,
-        y,
-        simplex: simplex[Seeds.Shape],
-        noiseStart: noiseStart + 1, // different start to first layer
-      })
-      drawShape(shape, {
-        c,
-        x,
-        y,
-        w: cellWidth * 2 + gridGap,
-        h: cellHeight * 2 + gridGap,
-        gap: gridGap,
-        simplex: simplex[Seeds.Shape],
-        noiseStart: noiseStart + 1, // different start to first layer
-      })
-    }
-  }
-
-  c.globalCompositeOperation = 'screen'
-  for (let col = 0; col < GRID_COLUMNS; col++) {
-    for (let row = 0; row < GRID_ROWS; row++) {
-      const x = col * cellWidth + gridBleed
-      const y = row * cellHeight + gridBleed
-      const shape = getShape({
-        x,
-        y,
-        simplex: simplex[Seeds.Shape],
-        noiseStart: noiseStart + 2, // different start to first layer
-      })
-
-      const a = map(simplex[Seeds.Color].noise2D(col * 7, row * 7), -0.6, 0.6, 0.5, 1)
-      c.fillStyle = hsla(shape === 'pill' ? hues[3] : hues[4], 70, 50, a)
-
-      drawShape(shape, {
-        c,
-        x,
-        y,
-        w: cellWidth,
-        gap: gridGap,
-        h: cellHeight,
-        simplex: simplex[Seeds.Shape],
-        noiseStart: noiseStart + 2, // different start to first layer
-      })
-    }
-  }
+  c.globalAlpha = 0.4
+  drawLines(-1, 3, cellWidth * 3 - gridGap, 123)
+  c.globalAlpha = 0.6
+  drawLines(-0.5, 2, cellWidth * 2 - gridGap, 234)
+  c.globalAlpha = 1
+  drawLines(0, 1, cellWidth - gridGap, 345)
 
   c.restore()
 }

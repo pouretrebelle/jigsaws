@@ -451,4 +451,4 @@ export const cutPieces = (cutAttrs: Cut) => {
   c.stroke()
 }
 
-export const countPieces = ({ columns, rows }: Cut) => columns * rows * 2 + columns + rows - 4
+export const countPieces = ({ columns, rows }: Cut) => columns * rows * 2 + columns + rows

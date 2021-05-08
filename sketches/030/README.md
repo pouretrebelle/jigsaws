@@ -1,12 +1,12 @@
 ---
 datePublished: 2021-05-21
-youTubeLink: https://youtu.be/6R9jJntkmtQ
+youTubeLink: later
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [mpe, uka]
+cutNoiseSeeds: [oln, tau, uis]
 accentColor: 'fuchsia'
 
-pieces: 100
+pieces: 264
 timeToSolve: 1
 ---
 

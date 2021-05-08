@@ -43,7 +43,7 @@ export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
 
 export const drawCut = (
   { c, lineWidth, state }: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>,
-  cutPieces: boolean = false
+  cutPieces: boolean = true
 ) => {
   if (!state.sketch) return
 

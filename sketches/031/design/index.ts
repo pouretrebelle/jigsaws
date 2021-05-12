@@ -1,6 +1,6 @@
 import { Design } from 'types'
-import { hsl, hsla } from 'utils/colorUtils'
-import { map, randomFromNoise } from 'utils/numberUtils'
+import { hsl } from 'utils/colorUtils'
+import { randomFromNoise } from 'utils/numberUtils'
 
 import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO, LAYERS } from './constants'
 
@@ -13,11 +13,9 @@ class Point {
   x!: number
   y!: number
   visible!: boolean
-  notStart: boolean
 
   constructor(props: { x: number; y: number; visible: boolean }) {
     Object.assign(this, props)
-    this.notStart = false
   }
 }
 
@@ -28,7 +26,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   }
   c.save()
 
-  c.fillStyle = hsl(hues[0], 40, 20)
+  c.fillStyle = hsl(hues[0], 40, 30)
   c.fillRect(0, 0, width, height)
 
   const cellWidth = (width - bleed * 2) / (GRID_COLUMNS - 1 + GRID_GAP_RATIO)
@@ -57,7 +55,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
           crossPoints[col][row] = new Point({
             x,
             y,
-            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * 2, x * 0.005, y * 0.008) > 0.2
+            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * 2 * gridMultiplier, x * 0.005, y * 0.005) > 0.3
           })
         }
       }
@@ -65,21 +63,20 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       for (let col = 0; col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier; col++) {
         for (let row = 0; row < (GRID_ROWS - gridOffset * 2) / gridMultiplier; row++) {
           const point = crossPoints[col][row]
-          if (point.visible && !point.notStart) {
+          if (point.visible) {
 
             let length = 1
             while (crossPoints[col][row + length] && crossPoints[col][row + length].visible) {
-              crossPoints[col][row + length].notStart = true
               length++
             }
 
-            const a = map(simplex[Seeds.Color].noise3D(20 * layer + noiseOffset, point.x * 0.002, point.y * 0.001), -0.6, 0.6, 0.1, 0.8)
-            c.strokeStyle = hsla(hues[layer], 70, 50, a)
-
-            c.beginPath()
-            c.moveTo(point.x + cellWidth / 2, point.y + cellHeight / 2)
-            c.lineTo(point.x + cellWidth / 2, point.y + (length - 0.5) * cellHeight)
-            c.stroke()
+            if (length > 0) {
+              c.strokeStyle = hsl(hues[layer], 70, 50)
+              c.beginPath()
+              c.moveTo(point.x + cellWidth / 2 * gridMultiplier, point.y + cellHeight / 2 * gridMultiplier)
+              c.lineTo(point.x + cellWidth / 2 * gridMultiplier, point.y + (length - 0.5) * cellHeight * gridMultiplier)
+              c.stroke()
+            }
           }
         }
       }
@@ -88,12 +85,13 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   }
 
   c.lineCap = 'round'
-  c.globalCompositeOperation = 'screen'
-  c.globalAlpha = 0.4
+  c.globalCompositeOperation = 'multiply'
+  c.globalAlpha = 0.3
   drawLines(-1, 3, cellWidth * 3 - gridGap, 123)
-  c.globalAlpha = 0.6
+  c.globalAlpha = 0.2
   drawLines(-0.5, 2, cellWidth * 2 - gridGap, 234)
-  c.globalAlpha = 1
+  c.globalCompositeOperation = 'screen'
+  c.globalAlpha = 0.15
   drawLines(0, 1, cellWidth - gridGap, 345)
 
   c.restore()

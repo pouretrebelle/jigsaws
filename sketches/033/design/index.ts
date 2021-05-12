@@ -13,9 +13,11 @@ class Point {
   x!: number
   y!: number
   visible!: boolean
+  notStart: boolean
 
   constructor(props: { x: number; y: number; visible: boolean }) {
     Object.assign(this, props)
+    this.notStart = false
   }
 }
 
@@ -26,7 +28,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   }
   c.save()
 
-  c.fillStyle = hsl(hues[0], 50, 50)
+  c.fillStyle = hsl(hues[0], 40, 30)
   c.fillRect(0, 0, width, height)
 
   const cellWidth = (width - bleed * 2) / (GRID_COLUMNS - 1 + GRID_GAP_RATIO)
@@ -55,7 +57,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
           crossPoints[col][row] = new Point({
             x,
             y,
-            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * gridMultiplier, x * 0.002, y * 0.01) > 0.3
+            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * gridMultiplier, x * 0.002, y * 0.004) > 0.3
           })
         }
       }
@@ -65,16 +67,17 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
           const point = crossPoints[col][row]
           if (point.visible) {
 
-            let length = 1
-            while (crossPoints[col][row + length] && crossPoints[col][row + length].visible) {
-              length++
+            let lineHeight = 1
+            while (crossPoints[col][row + lineHeight] && crossPoints[col][row + lineHeight].visible) {
+              crossPoints[col][row + lineHeight].notStart = true
+              lineHeight++
             }
 
-            if (length > 0) {
-              c.strokeStyle = hsl(hues[layer % COLORS], 70, 50)
+            if (lineHeight > 0 && !point.notStart) {
+              c.strokeStyle = hsl(hues[layer % COLORS], 70, 60)
               c.beginPath()
               c.moveTo(point.x + cellWidth / 2 * gridMultiplier, point.y + cellHeight / 2 * gridMultiplier)
-              c.lineTo(point.x + cellWidth / 2 * gridMultiplier, point.y + (length - 0.5) * cellHeight * gridMultiplier)
+              c.lineTo(point.x + cellWidth / 2 * gridMultiplier, point.y + (lineHeight - 0.5) * cellHeight * gridMultiplier)
               c.stroke()
             }
           }
@@ -85,16 +88,15 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   }
 
   c.lineCap = 'round'
-  c.globalCompositeOperation = 'multiply'
-  c.globalAlpha = 0.2
-  drawLines(-2, 4, cellWidth * 4 - gridGap, 12)
+
   c.globalAlpha = 0.3
+
+  c.globalCompositeOperation = 'multiply'
   drawLines(-1, 3, cellWidth * 3 - gridGap, 123)
-  c.globalAlpha = 0.4
   drawLines(-0.5, 2, cellWidth * 2 - gridGap, 234)
+
   c.globalCompositeOperation = 'screen'
-  c.globalAlpha = 0.2
-  drawLines(0, 1, cellWidth - gridGap, 345)
+  drawLines(-1, 1, cellWidth - gridGap, 345)
 
   c.restore()
 }

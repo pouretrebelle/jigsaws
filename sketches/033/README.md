@@ -2,11 +2,11 @@
 datePublished: 2021-06-11
 youTubeLink: later
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [xoi, lfe]
+cutNoiseSeeds: [sdk, brg, tmp]
 accentColor: 'fuchsia'
 
-pieces: 100
+pieces: 312
 timeToSolve: 1
 ---
 

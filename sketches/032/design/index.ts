@@ -2,7 +2,7 @@ import { Design } from 'types'
 import { hsl } from 'utils/colorUtils'
 import { randomFromNoise } from 'utils/numberUtils'
 
-import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO, LAYERS } from './constants'
+import { GRID_COLUMNS, GRID_ROWS, GRID_GAP_RATIO, LAYERS, COLORS } from './constants'
 
 export enum Seeds {
   Shape,
@@ -21,12 +21,12 @@ class Point {
 
 export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
   const hues: number[] = []
-  for (let i = 0; i < LAYERS; i++) {
+  for (let i = 0; i < COLORS; i++) {
     hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5.25 + i, 3.33)) * 360))
   }
   c.save()
 
-  c.fillStyle = hsl(hues[0], 40, 30)
+  c.fillStyle = hsl(hues[0], 50, 50)
   c.fillRect(0, 0, width, height)
 
   const cellWidth = (width - bleed * 2) / (GRID_COLUMNS - 1 + GRID_GAP_RATIO)
@@ -55,7 +55,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
           crossPoints[col][row] = new Point({
             x,
             y,
-            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * 2 * gridMultiplier, x * 0.005, y * 0.005) > 0.3
+            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * gridMultiplier, x * 0.002, y * 0.01) > 0.3
           })
         }
       }
@@ -71,7 +71,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
             }
 
             if (length > 0) {
-              c.strokeStyle = hsl(hues[layer], 70, 50)
+              c.strokeStyle = hsl(hues[layer % COLORS], 70, 50)
               c.beginPath()
               c.moveTo(point.x + cellWidth / 2 * gridMultiplier, point.y + cellHeight / 2 * gridMultiplier)
               c.lineTo(point.x + cellWidth / 2 * gridMultiplier, point.y + (length - 0.5) * cellHeight * gridMultiplier)
@@ -86,12 +86,14 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
   c.lineCap = 'round'
   c.globalCompositeOperation = 'multiply'
+  c.globalAlpha = 0.2
+  drawLines(-2, 4, cellWidth * 4 - gridGap, 12)
   c.globalAlpha = 0.3
   drawLines(-1, 3, cellWidth * 3 - gridGap, 123)
-  c.globalAlpha = 0.2
+  c.globalAlpha = 0.4
   drawLines(-0.5, 2, cellWidth * 2 - gridGap, 234)
   c.globalCompositeOperation = 'screen'
-  c.globalAlpha = 0.15
+  c.globalAlpha = 0.2
   drawLines(0, 1, cellWidth - gridGap, 345)
 
   c.restore()

@@ -29,7 +29,7 @@
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "babel-eslint": "10.1.0",
-    "canvas": "^2.7.0",
+    "canvas": "^2.8.0",
     "canvas2svg": "^1.0.16",
     "chroma-js": "^2.1.0",
     "delaunator": "^4.0.1",

@@ -1,1 +1,1 @@
-export const BACKGROUND = 'fuchsia'
+export const BACKGROUND = 'black'

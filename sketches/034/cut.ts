@@ -41,6 +41,11 @@ interface PointType {
   height: number
 }
 
+interface Hole {
+  row: number
+  column: number
+}
+
 class Point extends Vector2 {
   constructor({
     x,
@@ -91,8 +96,15 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-const getCrossPoints = ({ width, columns, height, rows, simplex }: Cut): Point[][] => {
+const getCutData = ({ width, columns, height, rows, simplex }: Cut): { crossPoints: Point[][], holes: Hole[] } => {
   const crossPoints: Point[][] = []
+
+  let holes: Hole[] = []
+  for (let i = 0; i < HOLE_COUNT; i++) {
+    const row = Math.floor(1 + randomFromNoise(simplex[Seeds.Holes].noise2D(i * 2, Math.PI)) * (rows - 2))
+    const column = Math.floor(1 + randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, i * 2)) * (columns - 2))
+    holes.push({ row, column })
+  }
 
   for (let x = 0; x < columns + 1; x++) {
     if (!crossPoints[x]) crossPoints.push([])
@@ -110,7 +122,7 @@ const getCrossPoints = ({ width, columns, height, rows, simplex }: Cut): Point[]
     }
   }
 
-  return crossPoints
+  return { crossPoints, holes }
 }
 
 export const cut = (cutArgs: Cut) => {
@@ -124,17 +136,7 @@ export const cut = (cutArgs: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
-  let holes: {
-    row: number
-    column: number
-  }[] = []
-  for (let i = 0; i < HOLE_COUNT; i++) {
-    const row = Math.floor(1 + randomFromNoise(simplex[Seeds.Holes].noise2D(i * 2, Math.PI)) * (rows - 2))
-    const column = Math.floor(1 + randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, i * 2)) * (columns - 2))
-    holes.push({ row, column })
-  }
-
-  const crossPoints = getCrossPoints(cutArgs)
+  const { crossPoints, holes } = getCutData(cutArgs)
 
   // vertical
   for (let x = 0; x < columns; x++) {
@@ -181,7 +183,7 @@ export const cut = (cutArgs: Cut) => {
 
 export const cutPieces = (cutArgs: Cut) => {
   const { c, width, columns, height, rows, simplex } = cutArgs
-  const crossPoints = getCrossPoints(cutArgs)
+  const { crossPoints } = getCutData(cutArgs)
 
   for (let x = 0; x < columns + 1; x++) {
     if (!crossPoints[x]) crossPoints.push([])

@@ -66,6 +66,7 @@
     "file-loader": "^6.2.0",
     "html-loader": "^1.3.2",
     "html-webpack-plugin": "^4.5.1",
+    "prettier": "^2.3.0",
     "pug-html-loader": "^1.1.5",
     "ts-loader": "^8.0.17",
     "webpack-cli": "^4.5.0",

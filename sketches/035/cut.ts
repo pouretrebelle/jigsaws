@@ -44,6 +44,8 @@ interface PointType {
 interface Hole {
   row: number
   column: number
+  rowSpan: number
+  columnSpan: number
 }
 
 class Point extends Vector2 {
@@ -109,20 +111,22 @@ const getCutData = ({
   let holeI = 0
   while (holes.length < HOLE_COUNT) {
     holeI++
+    const rowSpan = 2
+    const columnSpan = 2
     const row = Math.floor(
-      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * rows
+      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * (rows - rowSpan + 1)
     )
     const column = Math.floor(
       randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
-      columns
+      (columns - columnSpan + 1)
     )
     if (
       !holes.some(
         (hole) =>
-          Math.abs(hole.row - row) <= 1 && Math.abs(hole.column - column) <= 1
+          Math.abs(hole.row - row) <= hole.rowSpan && Math.abs(hole.column - column) <= hole.columnSpan
       )
     ) {
-      holes.push({ row, column })
+      holes.push({ row, column, rowSpan, columnSpan })
     }
   }
 
@@ -143,22 +147,26 @@ const getCutData = ({
   }
 
   // Make the holes rectangular by averaging each edge's position
-  holes.forEach(({ row, column }) => {
-    const left = (crossPoints[column][row].x + crossPoints[column][row + 1].x) / 2
-    crossPoints[column][row].x = left
-    crossPoints[column][row + 1].x = left
+  holes.forEach(({ row, column, rowSpan, columnSpan }) => {
+    const left = (crossPoints[column][row].x + crossPoints[column][row + rowSpan].x) / 2
+    for (let y = row; y <= row + rowSpan; y++) {
+      crossPoints[column][y].x = left
+    }
 
-    const right = (crossPoints[column + 1][row].x + crossPoints[column + 1][row + 1].x) / 2
-    crossPoints[column + 1][row].x = right
-    crossPoints[column + 1][row + 1].x = right
+    const right = (crossPoints[column + columnSpan][row].x + crossPoints[column + columnSpan][row + rowSpan].x) / 2
+    for (let y = row; y <= row + rowSpan; y++) {
+      crossPoints[column + columnSpan][y].x = right
+    }
 
-    const top = (crossPoints[column][row].y + crossPoints[column + 1][row].y) / 2
-    crossPoints[column][row].y = top
-    crossPoints[column + 1][row].y = top
+    const top = (crossPoints[column][row].y + crossPoints[column + columnSpan][row].y) / 2
+    for (let x = column; x <= column + columnSpan; x++) {
+      crossPoints[x][row].y = top
+    }
 
-    const bottom = (crossPoints[column][row + 1].y + crossPoints[column + 1][row + 1].y) / 2
-    crossPoints[column][row + 1].y = bottom
-    crossPoints[column + 1][row + 1].y = bottom
+    const bottom = (crossPoints[column][row + rowSpan].y + crossPoints[column + columnSpan][row + rowSpan].y) / 2
+    for (let x = column; x <= column + columnSpan; x++) {
+      crossPoints[x][row + rowSpan].y = bottom
+    }
   })
 
   return { crossPoints, holes }
@@ -192,7 +200,7 @@ export const cut = (cutArgs: Cut) => {
           simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           true,
           holes.some(
-            ({ row, column }) => (column === x || column - 1 === x) && row === y
+            ({ row, column, rowSpan, columnSpan }) => (column - 1 === x || column - 1 + columnSpan === x) && (y >= row) && (y < row + rowSpan)
           )
         )
       }
@@ -215,7 +223,7 @@ export const cut = (cutArgs: Cut) => {
           simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
           true,
           holes.some(
-            ({ row, column }) => column === x && (row === y || row - 1 === y)
+            ({ row, column, rowSpan, columnSpan }) => (row - 1 === y || row - 1 + rowSpan === y) && (x >= column) && (x < column + columnSpan)
           )
         )
       }

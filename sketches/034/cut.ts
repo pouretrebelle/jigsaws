@@ -25,7 +25,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -96,14 +96,34 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-const getCutData = ({ width, columns, height, rows, simplex }: Cut): { crossPoints: Point[][], holes: Hole[] } => {
+const getCutData = ({
+  width,
+  columns,
+  height,
+  rows,
+  simplex,
+}: Cut): { crossPoints: Point[][]; holes: Hole[] } => {
   const crossPoints: Point[][] = []
 
   let holes: Hole[] = []
-  for (let i = 0; i < HOLE_COUNT; i++) {
-    const row = Math.floor(1 + randomFromNoise(simplex[Seeds.Holes].noise2D(i * 2, Math.PI)) * (rows - 2))
-    const column = Math.floor(1 + randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, i * 2)) * (columns - 2))
-    holes.push({ row, column })
+  let holeI = 0
+  while (holes.length < HOLE_COUNT) {
+    holeI++
+    const row = Math.floor(
+      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * rows
+    )
+    const column = Math.floor(
+      randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
+        columns
+    )
+    if (
+      !holes.some(
+        (hole) =>
+          Math.abs(hole.row - row) <= 1 && Math.abs(hole.column - column) <= 1
+      )
+    ) {
+      holes.push({ row, column })
+    }
   }
 
   for (let x = 0; x < columns + 1; x++) {
@@ -152,7 +172,9 @@ export const cut = (cutArgs: Cut) => {
           corner,
           simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           true,
-          holes.some(({ row, column }) => (column === x || column - 1 === x) && row === y)
+          holes.some(
+            ({ row, column }) => (column === x || column - 1 === x) && row === y
+          )
         )
       }
     }
@@ -173,7 +195,9 @@ export const cut = (cutArgs: Cut) => {
           corner,
           simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
           true,
-          holes.some(({ row, column }) => (column === x) && (row === y || row - 1 === y))
+          holes.some(
+            ({ row, column }) => column === x && (row === y || row - 1 === y)
+          )
         )
       }
     }

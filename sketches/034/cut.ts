@@ -91,7 +91,31 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
+const getCrossPoints = ({ width, columns, height, rows, simplex }: Cut): Point[][] => {
+  const crossPoints: Point[][] = []
+
+  for (let x = 0; x < columns + 1; x++) {
+    if (!crossPoints[x]) crossPoints.push([])
+    for (let y = 0; y < rows + 1; y++) {
+      crossPoints[x][y] = new Point({
+        x,
+        y,
+        rows,
+        columns,
+        simplexX: simplex[Seeds.SwayX],
+        simplexY: simplex[Seeds.SwayY],
+        width,
+        height,
+      })
+    }
+  }
+
+  return crossPoints
+}
+
+export const cut = (cutArgs: Cut) => {
+  const { c, width, columns, height, rows, simplex } = cutArgs
+
   c.beginPath()
   c.moveTo(0, 0)
   c.lineTo(width, 0)
@@ -110,23 +134,7 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
     holes.push({ row, column })
   }
 
-  const crossPoints = [] as Point[][]
-
-  for (let x = 0; x < columns + 1; x++) {
-    if (!crossPoints[x]) crossPoints.push([])
-    for (let y = 0; y < rows + 1; y++) {
-      crossPoints[x][y] = new Point({
-        x,
-        y,
-        rows,
-        columns,
-        simplexX: simplex[Seeds.SwayX],
-        simplexY: simplex[Seeds.SwayY],
-        width,
-        height,
-      })
-    }
-  }
+  const crossPoints = getCrossPoints(cutArgs)
 
   // vertical
   for (let x = 0; x < columns; x++) {
@@ -171,15 +179,9 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   }
 }
 
-export const cutPieces = ({
-  c,
-  width,
-  columns,
-  height,
-  rows,
-  simplex,
-}: Cut) => {
-  const crossPoints = [] as Point[][]
+export const cutPieces = (cutArgs: Cut) => {
+  const { c, width, columns, height, rows, simplex } = cutArgs
+  const crossPoints = getCrossPoints(cutArgs)
 
   for (let x = 0; x < columns + 1; x++) {
     if (!crossPoints[x]) crossPoints.push([])

@@ -28,15 +28,15 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   for (let layerI = 0; layerI < LAYERS; layerI++) {
     c.save()
 
-    for (let y = bleed - gridUnitHeight; y < height; y += gridUnitHeight) {
-      for (let x = bleed - gridUnitWidth; x < width; x += gridUnitWidth) {
+    for (let y = bleed - gridUnitHeight * (layerI + 2) / 2; y < height; y += gridUnitHeight) {
+      for (let x = bleed - gridUnitWidth * (layerI + 2) / 2; x < width; x += gridUnitWidth) {
         c.fillStyle = hsla(hues[layerI + 1], 50, 50, FILL_OPACITY)
         c.strokeStyle = hsla(hues[layerI + 1], 50, 50, STROKE_OPACITY)
 
         const loops = Math.floor(
           map(
             simplex[Seeds.Position].noise3D(4.321 + x * GRID_FIDELITY + layerI * 10, 5.432 + y * GRID_FIDELITY + layerI * 10, noiseStart * 0.5),
-            0,
+            -0.2,
             1,
             0,
             8,
@@ -76,7 +76,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
         const altLoops = Math.floor(
           map(
             simplex[Seeds.Position].noise3D(104.321 + x * GRID_FIDELITY + layerI * 10, 105.432 + y * GRID_FIDELITY + layerI * 10, noiseStart * 0.5),
-            0,
+            -0.2,
             1,
             0,
             8,

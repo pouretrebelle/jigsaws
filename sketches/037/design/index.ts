@@ -2,7 +2,7 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { LAYERS, GRID_ROWS, GRID_COLUMNS, GRID_FIDELITY, FILL_OPACITY } from './constants'
+import { LAYERS, GRID_ROWS, GRID_COLUMNS, GRID_FIDELITY, STROKE_OPACITY, LINE_WIDTH, INTERNAL_BLEED, ROSETTE_ROTATION, ROSETTE_SCALE } from './constants'
 
 export enum Seeds {
   Color,
@@ -20,17 +20,18 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   }
   c.save()
 
-  c.fillStyle = hsl(hues[0], 20, 50)
+  c.fillStyle = hsl(hues[0], 40, 50)
   c.fillRect(0, 0, width, height)
+  c.lineWidth = LINE_WIDTH
 
-  const gridUnitWidth = (width - bleed * 2) / GRID_COLUMNS
-  const gridUnitHeight = (height - bleed * 2) / GRID_ROWS
+  const gridUnitWidth = (width - bleed * 2 - INTERNAL_BLEED * 2) / GRID_COLUMNS
+  const gridUnitHeight = (height - bleed * 2 - INTERNAL_BLEED * 2) / GRID_ROWS
   for (let layerI = 0; layerI < LAYERS; layerI++) {
     c.save()
 
-    for (let y = bleed - gridUnitHeight * (layerI + 2) / 2; y < height; y += gridUnitHeight) {
-      for (let x = bleed - gridUnitWidth * (layerI + 2) / 2; x < width; x += gridUnitWidth) {
-        c.fillStyle = hsla(hues[layerI + 1], 50, 50, FILL_OPACITY)
+    for (let y = bleed + INTERNAL_BLEED - gridUnitHeight * (layerI + 2) / 2; y < height; y += gridUnitHeight) {
+      for (let x = bleed + INTERNAL_BLEED - gridUnitWidth * (layerI + 2) / 2; x < width; x += gridUnitWidth) {
+        c.strokeStyle = hsla(hues[layerI + 1], 50, 50, STROKE_OPACITY)
 
         const loops = Math.floor(
           map(
@@ -47,23 +48,18 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
         c.translate(x + gridUnitWidth, y + gridUnitHeight)
         c.save()
-        c.rotate(Math.PI / 4)
-
-        const ROTATION = Math.PI / 16
-        const SCALE = 0.85
 
         c.globalCompositeOperation = 'screen'
 
         for (let i = 0; i < loops; i++) {
-          c.fillRect(
+          c.strokeRect(
             -gridUnitWidth / 2,
             -gridUnitHeight / 2,
             gridUnitWidth,
             gridUnitHeight,
           )
-          c.rotate(ROTATION)
-          c.lineWidth *= 1 / SCALE
-          c.scale(SCALE, SCALE)
+          c.rotate(ROSETTE_ROTATION)
+          c.scale(ROSETTE_SCALE, ROSETTE_SCALE)
         }
 
         c.restore()
@@ -79,21 +75,19 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
           )
         )
 
-        c.rotate(Math.PI / 4)
         c.translate(gridUnitWidth / 2, gridUnitHeight / 2)
 
         c.globalCompositeOperation = 'multiply'
 
         for (let i = 0; i < altLoops; i++) {
-          c.fillRect(
+          c.strokeRect(
             -gridUnitWidth / 2,
             -gridUnitHeight / 2,
             gridUnitWidth,
             gridUnitHeight,
           )
-          c.rotate(-ROTATION)
-          c.lineWidth *= 1 / SCALE
-          c.scale(SCALE, SCALE)
+          c.rotate(-ROSETTE_ROTATION)
+          c.scale(ROSETTE_SCALE, ROSETTE_SCALE)
         }
 
 

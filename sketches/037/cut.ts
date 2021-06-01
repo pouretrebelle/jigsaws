@@ -8,10 +8,8 @@ export enum Seeds {
   SwayY,
   FlipX,
   FlipY,
-  Holes,
+  Lines,
 }
-
-const HOLE_COUNT = 7
 
 const tweakDist = (
   m: number,
@@ -104,37 +102,15 @@ const getCutData = ({
   height,
   rows,
   simplex,
-}: Cut): { crossPoints: Point[][]; holes: Hole[] } => {
+}: Cut): { crossPoints: Point[][]; lines: boolean[][] } => {
   const crossPoints: Point[][] = []
+  const lines: boolean[][] = []
 
-  let holes: Hole[] = []
-  let holeI = 0
-  while (holes.length < HOLE_COUNT) {
-    holeI++
-    const rowSpan = Math.floor(map(randomFromNoise(simplex[Seeds.Holes].noise2D(123.45, holeI * 2)), 0, 1, 1, 5))
-    const columnSpan = Math.floor(map(randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, 123.45)), 0, 1, 1, 5))
-    const row = 1 + Math.floor(
-      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * (rows - rowSpan - 1)
-    )
-    const column = 1 + Math.floor(
-      randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
-      (columns - columnSpan - 1)
-    )
-    if (
-      !holes.some(
-        (hole) =>
-          // top left
-          (row >= hole.row - 1 && row <= hole.row + hole.rowSpan && column >= hole.column - 1 && column <= hole.column + hole.columnSpan) ||
-          // top right
-          (row + rowSpan >= hole.row - 1 && row + rowSpan <= hole.row + hole.rowSpan && column >= hole.column - 1 && column <= hole.column + hole.columnSpan) ||
-          // bottom left
-          (row >= hole.row - 1 && row <= hole.row + hole.rowSpan && column + columnSpan >= hole.column - 1 && column + columnSpan <= hole.column + hole.columnSpan) ||
-          // bottom right
-          (row + rowSpan >= hole.row - 1 && row + rowSpan <= hole.row + hole.rowSpan && column + columnSpan >= hole.column - 1 && column + columnSpan <= hole.column + hole.columnSpan)
-      )
-      && rowSpan + columnSpan > 3
-    ) {
-      holes.push({ row, column, rowSpan, columnSpan })
+  for (let x = 0; x < columns; x++) {
+    if (!lines[x]) lines.push([])
+    for (let y = 0; y < rows; y++) {
+      lines[x][y] = simplex[Seeds.Lines].noise2D(321.234 + x * 0.15, 678.123 + y * 0.7) >
+      map(Math.abs(x + 0.5 - columns / 2) / (columns / 2), 0.5, 1, 0.3, 0.9, true)
     }
   }
 
@@ -154,30 +130,7 @@ const getCutData = ({
     }
   }
 
-  // Make the holes rectangular by averaging each edge's position
-  holes.forEach(({ row, column, rowSpan, columnSpan }) => {
-    const left = (crossPoints[column][row].x + crossPoints[column][row + rowSpan].x) / 2
-    for (let y = row; y <= row + rowSpan; y++) {
-      crossPoints[column][y].x = left
-    }
-
-    const right = (crossPoints[column + columnSpan][row].x + crossPoints[column + columnSpan][row + rowSpan].x) / 2
-    for (let y = row; y <= row + rowSpan; y++) {
-      crossPoints[column + columnSpan][y].x = right
-    }
-
-    const top = (crossPoints[column][row].y + crossPoints[column + columnSpan][row].y) / 2
-    for (let x = column; x <= column + columnSpan; x++) {
-      crossPoints[x][row].y = top
-    }
-
-    const bottom = (crossPoints[column][row + rowSpan].y + crossPoints[column + columnSpan][row + rowSpan].y) / 2
-    for (let x = column; x <= column + columnSpan; x++) {
-      crossPoints[x][row + rowSpan].y = bottom
-    }
-  })
-
-  return { crossPoints, holes }
+  return { crossPoints, lines }
 }
 
 export const cut = (cutArgs: Cut) => {
@@ -191,7 +144,7 @@ export const cut = (cutArgs: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
-  const { crossPoints, holes } = getCutData(cutArgs)
+  const { crossPoints, lines } = getCutData(cutArgs)
 
   // vertical
   for (let x = 0; x < columns; x++) {
@@ -207,9 +160,7 @@ export const cut = (cutArgs: Cut) => {
           corner,
           simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           true,
-          holes.some(
-            ({ row, column, rowSpan, columnSpan }) => (column - 1 === x || column - 1 + columnSpan === x) && (y >= row) && (y < row + rowSpan)
-          )
+          false
         )
       }
     }
@@ -230,9 +181,7 @@ export const cut = (cutArgs: Cut) => {
           corner,
           simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
           true,
-          holes.some(
-            ({ row, column, rowSpan, columnSpan }) => (row - 1 === y || row - 1 + rowSpan === y) && (x >= column) && (x < column + columnSpan)
-          )
+          lines[x][y],
         )
       }
     }

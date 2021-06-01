@@ -2,11 +2,12 @@
 datePublished: 2021-07-02
 youTubeLink: undefined
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [csw, hkd]
+cutNoiseSeeds: [kde, lss, gxc, itl, ikk]
+
 accentColor: 'fuchsia'
 
-pieces: 1
+pieces: 196
 timeToSolve: 1
 ---
 

@@ -1,6 +1,6 @@
 import SimplexNoise from 'simplex-noise'
 import { Cut } from 'types'
-import { randomFromNoise } from 'utils/numberUtils'
+import { map, randomFromNoise } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 
 export enum Seeds {
@@ -111,20 +111,28 @@ const getCutData = ({
   let holeI = 0
   while (holes.length < HOLE_COUNT) {
     holeI++
-    const rowSpan = 2
-    const columnSpan = 2
-    const row = Math.floor(
-      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * (rows - rowSpan + 1)
+    const rowSpan = Math.floor(map(randomFromNoise(simplex[Seeds.Holes].noise2D(123.45, holeI * 2)), 0, 1, 1, 5))
+    const columnSpan = Math.floor(map(randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, 123.45)), 0, 1, 1, 5))
+    const row = 1 + Math.floor(
+      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * (rows - rowSpan - 1)
     )
-    const column = Math.floor(
+    const column = 1 + Math.floor(
       randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
-      (columns - columnSpan + 1)
+      (columns - columnSpan - 1)
     )
     if (
       !holes.some(
         (hole) =>
-          Math.abs(hole.row - row) <= hole.rowSpan && Math.abs(hole.column - column) <= hole.columnSpan
+          // top left
+          (row >= hole.row - 1 && row <= hole.row + hole.rowSpan && column >= hole.column - 1 && column <= hole.column + hole.columnSpan) ||
+          // top right
+          (row + rowSpan >= hole.row - 1 && row + rowSpan <= hole.row + hole.rowSpan && column >= hole.column - 1 && column <= hole.column + hole.columnSpan) ||
+          // bottom left
+          (row >= hole.row - 1 && row <= hole.row + hole.rowSpan && column + columnSpan >= hole.column - 1 && column + columnSpan <= hole.column + hole.columnSpan) ||
+          // bottom right
+          (row + rowSpan >= hole.row - 1 && row + rowSpan <= hole.row + hole.rowSpan && column + columnSpan >= hole.column - 1 && column + columnSpan <= hole.column + hole.columnSpan)
       )
+      && rowSpan + columnSpan > 3
     ) {
       holes.push({ row, column, rowSpan, columnSpan })
     }

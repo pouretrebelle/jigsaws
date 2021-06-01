@@ -2,12 +2,11 @@
 datePublished: 2021-07-09
 youTubeLink: undefined
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
-
+designNoiseSeeds: [cfz, ngc]
+cutNoiseSeeds: [vri, zwz, okd, moj, iuq]
 accentColor: 'fuchsia'
 
-pieces: 1
+pieces: 225
 timeToSolve: 1
 ---
 

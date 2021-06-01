@@ -1,6 +1,10 @@
-export const LAYERS = 3
-export const FILL_OPACITY = 0.3
-export const GRID_ROWS = 4
-export const GRID_COLUMNS = 4
+export const LAYERS = 4
+export const LINE_WIDTH = 4
+export const INTERNAL_BLEED = 6
+export const STROKE_OPACITY = 0.8
+export const GRID_ROWS = 3
+export const GRID_COLUMNS = 3
 export const GRID_FIDELITY = 0.005
-export const BACKGROUND = 'hsl(332, 20%, 50%)'
+export const ROSETTE_ROTATION = Math.PI / 8
+export const ROSETTE_SCALE = 0.76
+export const BACKGROUND = 'hsl(22, 40%, 50%)'

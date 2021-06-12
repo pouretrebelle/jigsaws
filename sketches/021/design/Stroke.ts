@@ -1,9 +1,6 @@
 import Vector2 from 'utils/Vector2'
 
-import {
-  DISTANCE_BETWEEN_RIBS,
-  RIB_WEIGHT,
-} from './constants'
+import { DISTANCE_BETWEEN_RIBS, RIB_WEIGHT } from './constants'
 
 interface StrokeConstructor {
   i: number
@@ -67,8 +64,8 @@ class Stroke {
       temp.rotate(angle as number)
 
       c.beginPath()
-      c.moveTo(x + temp.x * this.size / 2, y + temp.y * this.size / 2)
-      c.lineTo(x - temp.x * this.size / 2, y - temp.y * this.size / 2)
+      c.moveTo(x + (temp.x * this.size) / 2, y + (temp.y * this.size) / 2)
+      c.lineTo(x - (temp.x * this.size) / 2, y - (temp.y * this.size) / 2)
       c.lineTo(x + temp.y * RIB_WEIGHT, y - temp.x * RIB_WEIGHT)
       c.fill()
     })

@@ -15,16 +15,7 @@ export const BRISTLE_MAX_WEIGHT = 10
 export const BRISTLE_LIGHTNESS_VARIANCE = 10
 
 export const BACKGROUND = '#991900'
-export const HUES = [
-  10,
-  150,
-  170,
-  190,
-  225,
-  270,
-  320,
-  335,
-]
+export const HUES = [10, 150, 170, 190, 225, 270, 320, 335]
 export const LAYER_COUNT = 5
 export const LAYER_LOOP_COUNT = 1
 export const LAYER_SHIFT = 0.01

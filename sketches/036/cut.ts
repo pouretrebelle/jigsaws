@@ -25,7 +25,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -111,28 +111,61 @@ const getCutData = ({
   let holeI = 0
   while (holes.length < HOLE_COUNT) {
     holeI++
-    const rowSpan = Math.floor(map(randomFromNoise(simplex[Seeds.Holes].noise2D(123.45, holeI * 2)), 0, 1, 1, 5))
-    const columnSpan = Math.floor(map(randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, 123.45)), 0, 1, 1, 5))
-    const row = 1 + Math.floor(
-      randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) * (rows - rowSpan - 1)
+    const rowSpan = Math.floor(
+      map(
+        randomFromNoise(simplex[Seeds.Holes].noise2D(123.45, holeI * 2)),
+        0,
+        1,
+        1,
+        5
+      )
     )
-    const column = 1 + Math.floor(
-      randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
-      (columns - columnSpan - 1)
+    const columnSpan = Math.floor(
+      map(
+        randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, 123.45)),
+        0,
+        1,
+        1,
+        5
+      )
     )
+    const row =
+      1 +
+      Math.floor(
+        randomFromNoise(simplex[Seeds.Holes].noise2D(holeI * 2, Math.PI)) *
+          (rows - rowSpan - 1)
+      )
+    const column =
+      1 +
+      Math.floor(
+        randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
+          (columns - columnSpan - 1)
+      )
     if (
       !holes.some(
         (hole) =>
           // top left
-          (row >= hole.row - 1 && row <= hole.row + hole.rowSpan && column >= hole.column - 1 && column <= hole.column + hole.columnSpan) ||
+          (row >= hole.row - 1 &&
+            row <= hole.row + hole.rowSpan &&
+            column >= hole.column - 1 &&
+            column <= hole.column + hole.columnSpan) ||
           // top right
-          (row + rowSpan >= hole.row - 1 && row + rowSpan <= hole.row + hole.rowSpan && column >= hole.column - 1 && column <= hole.column + hole.columnSpan) ||
+          (row + rowSpan >= hole.row - 1 &&
+            row + rowSpan <= hole.row + hole.rowSpan &&
+            column >= hole.column - 1 &&
+            column <= hole.column + hole.columnSpan) ||
           // bottom left
-          (row >= hole.row - 1 && row <= hole.row + hole.rowSpan && column + columnSpan >= hole.column - 1 && column + columnSpan <= hole.column + hole.columnSpan) ||
+          (row >= hole.row - 1 &&
+            row <= hole.row + hole.rowSpan &&
+            column + columnSpan >= hole.column - 1 &&
+            column + columnSpan <= hole.column + hole.columnSpan) ||
           // bottom right
-          (row + rowSpan >= hole.row - 1 && row + rowSpan <= hole.row + hole.rowSpan && column + columnSpan >= hole.column - 1 && column + columnSpan <= hole.column + hole.columnSpan)
-      )
-      && rowSpan + columnSpan > 3
+          (row + rowSpan >= hole.row - 1 &&
+            row + rowSpan <= hole.row + hole.rowSpan &&
+            column + columnSpan >= hole.column - 1 &&
+            column + columnSpan <= hole.column + hole.columnSpan)
+      ) &&
+      rowSpan + columnSpan > 3
     ) {
       holes.push({ row, column, rowSpan, columnSpan })
     }
@@ -156,22 +189,30 @@ const getCutData = ({
 
   // Make the holes rectangular by averaging each edge's position
   holes.forEach(({ row, column, rowSpan, columnSpan }) => {
-    const left = (crossPoints[column][row].x + crossPoints[column][row + rowSpan].x) / 2
+    const left =
+      (crossPoints[column][row].x + crossPoints[column][row + rowSpan].x) / 2
     for (let y = row; y <= row + rowSpan; y++) {
       crossPoints[column][y].x = left
     }
 
-    const right = (crossPoints[column + columnSpan][row].x + crossPoints[column + columnSpan][row + rowSpan].x) / 2
+    const right =
+      (crossPoints[column + columnSpan][row].x +
+        crossPoints[column + columnSpan][row + rowSpan].x) /
+      2
     for (let y = row; y <= row + rowSpan; y++) {
       crossPoints[column + columnSpan][y].x = right
     }
 
-    const top = (crossPoints[column][row].y + crossPoints[column + columnSpan][row].y) / 2
+    const top =
+      (crossPoints[column][row].y + crossPoints[column + columnSpan][row].y) / 2
     for (let x = column; x <= column + columnSpan; x++) {
       crossPoints[x][row].y = top
     }
 
-    const bottom = (crossPoints[column][row + rowSpan].y + crossPoints[column + columnSpan][row + rowSpan].y) / 2
+    const bottom =
+      (crossPoints[column][row + rowSpan].y +
+        crossPoints[column + columnSpan][row + rowSpan].y) /
+      2
     for (let x = column; x <= column + columnSpan; x++) {
       crossPoints[x][row + rowSpan].y = bottom
     }
@@ -208,7 +249,10 @@ export const cut = (cutArgs: Cut) => {
           simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0,
           true,
           holes.some(
-            ({ row, column, rowSpan, columnSpan }) => (column - 1 === x || column - 1 + columnSpan === x) && (y >= row) && (y < row + rowSpan)
+            ({ row, column, rowSpan, columnSpan }) =>
+              (column - 1 === x || column - 1 + columnSpan === x) &&
+              y >= row &&
+              y < row + rowSpan
           )
         )
       }
@@ -231,7 +275,10 @@ export const cut = (cutArgs: Cut) => {
           simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
           true,
           holes.some(
-            ({ row, column, rowSpan, columnSpan }) => (row - 1 === y || row - 1 + rowSpan === y) && (x >= column) && (x < column + columnSpan)
+            ({ row, column, rowSpan, columnSpan }) =>
+              (row - 1 === y || row - 1 + rowSpan === y) &&
+              x >= column &&
+              x < column + columnSpan
           )
         )
       }

@@ -50,8 +50,20 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
     const stroke = new Stroke({
       i,
-      x: map(randomFromNoise(simplex[Seeds.Position].noise2D(Math.PI, i * 5)), 0, 1, 0, width),
-      y: map(randomFromNoise(simplex[Seeds.Position].noise2D(i * 5, Math.PI)), 0, 1, 0, height),
+      x: map(
+        randomFromNoise(simplex[Seeds.Position].noise2D(Math.PI, i * 5)),
+        0,
+        1,
+        0,
+        width
+      ),
+      y: map(
+        randomFromNoise(simplex[Seeds.Position].noise2D(i * 5, Math.PI)),
+        0,
+        1,
+        0,
+        height
+      ),
       curveRandom: simplex[Seeds.Curve].noise2D(1 + i, noiseStart * 0.5),
     })
 

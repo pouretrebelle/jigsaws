@@ -15,12 +15,12 @@ import {
 } from './constants'
 
 interface BristleConstructor {
-  i: number,
-  layerI: number,
-  strokeI: number,
-  bristleSimplex: SimplexNoise,
-  colorSimplex: SimplexNoise,
-  hue: number,
+  i: number
+  layerI: number
+  strokeI: number
+  bristleSimplex: SimplexNoise
+  colorSimplex: SimplexNoise
+  hue: number
   lightness: number
 }
 
@@ -29,16 +29,40 @@ class Bristle {
   weight: number
   color: string
 
-  constructor({ i, layerI, strokeI, bristleSimplex, colorSimplex, hue: startingHue, lightness }: BristleConstructor) {
+  constructor({
+    i,
+    layerI,
+    strokeI,
+    bristleSimplex,
+    colorSimplex,
+    hue: startingHue,
+    lightness,
+  }: BristleConstructor) {
     this.pos = new Vector2(
-      randomFromNoise(bristleSimplex.noise3D(layerI - 42.33, strokeI + Math.PI, i + Math.PI)) - 0.5,
-      randomFromNoise(bristleSimplex.noise3D(layerI + 17.4, i + Math.PI, strokeI + Math.PI)) - 0.5,
+      randomFromNoise(
+        bristleSimplex.noise3D(layerI - 42.33, strokeI + Math.PI, i + Math.PI)
+      ) - 0.5,
+      randomFromNoise(
+        bristleSimplex.noise3D(layerI + 17.4, i + Math.PI, strokeI + Math.PI)
+      ) - 0.5
     )
-    this.weight = map(randomFromNoise(bristleSimplex.noise3D(layerI, strokeI, i * 20)), 0, 1, BRISTLE_MIN_WEIGHT, BRISTLE_MAX_WEIGHT)
+    this.weight = map(
+      randomFromNoise(bristleSimplex.noise3D(layerI, strokeI, i * 20)),
+      0,
+      1,
+      BRISTLE_MIN_WEIGHT,
+      BRISTLE_MAX_WEIGHT
+    )
 
-    const hue = startingHue + colorSimplex.noise2D(strokeI * STROKE_HUE_SHIFT, layerI) * STROKE_HUE_VARIANCE
+    const hue =
+      startingHue +
+      colorSimplex.noise2D(strokeI * STROKE_HUE_SHIFT, layerI) *
+        STROKE_HUE_VARIANCE
 
-    let l = lightness + colorSimplex.noise2D(layerI, strokeI * STROKE_LIGHTNESS_SHIFT) * STROKE_LIGHTNESS_VARIANCE
+    let l =
+      lightness +
+      colorSimplex.noise2D(layerI, strokeI * STROKE_LIGHTNESS_SHIFT) *
+        STROKE_LIGHTNESS_VARIANCE
 
     if (hue > 300 && l > 40) l -= 10 // pull down pinks
     if (hue < 200 && l > 50) l -= 20 // pull down greens
@@ -49,7 +73,11 @@ class Bristle {
     if (hue > 300) s -= 10 // pull down pinks
     if (hue > 220 && hue < 275 && l < 60) l += 10 // pull up blues
 
-    l += colorSimplex.noise2D(strokeI * BRISTLE_LIGHTNESS_SHIFT, i * BRISTLE_LIGHTNESS_SHIFT) * BRISTLE_LIGHTNESS_VARIANCE
+    l +=
+      colorSimplex.noise2D(
+        strokeI * BRISTLE_LIGHTNESS_SHIFT,
+        i * BRISTLE_LIGHTNESS_SHIFT
+      ) * BRISTLE_LIGHTNESS_VARIANCE
 
     l = clamp(l, 20, 90)
 

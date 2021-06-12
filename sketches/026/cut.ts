@@ -21,7 +21,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -101,7 +101,13 @@ class PointConnection {
   shouldDraw: boolean
   flip: boolean
 
-  constructor(start: Point, end: Point, condition1: boolean, condition2: boolean, flipDefault: boolean) {
+  constructor(
+    start: Point,
+    end: Point,
+    condition1: boolean,
+    condition2: boolean,
+    flipDefault: boolean
+  ) {
     this.start = start
     this.end = end
     this.shouldDraw = !condition1 || !condition2
@@ -160,10 +166,34 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
       squares[x][y] = {
         x,
         y,
-        nw: new PointConnection(topLeft, middle, y === 0, x === 0, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
-        se: new PointConnection(middle, bottomRight, x === columns - 1, y === rows - 1, simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0),
-        sw: new PointConnection(bottomLeft, middle, x === 0, y === rows - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
-        ne: new PointConnection(middle, topRight, y === 0, x === columns - 1, simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0),
+        nw: new PointConnection(
+          topLeft,
+          middle,
+          y === 0,
+          x === 0,
+          simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0
+        ),
+        se: new PointConnection(
+          middle,
+          bottomRight,
+          x === columns - 1,
+          y === rows - 1,
+          simplex[Seeds.FlipX].noise2D(x * 2, y * 2) < 0
+        ),
+        sw: new PointConnection(
+          bottomLeft,
+          middle,
+          x === 0,
+          y === rows - 1,
+          simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0
+        ),
+        ne: new PointConnection(
+          middle,
+          topRight,
+          y === 0,
+          x === columns - 1,
+          simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0
+        ),
       }
     }
   }
@@ -336,4 +366,5 @@ export const cutPieces = (cutAttrs: Cut) => {
   c.stroke()
 }
 
-export const countPieces = ({ columns, rows }: Cut) => columns * rows * 2 + columns + rows - 4
+export const countPieces = ({ columns, rows }: Cut) =>
+  columns * rows * 2 + columns + rows - 4

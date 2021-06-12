@@ -1,9 +1,6 @@
 import Vector2 from 'utils/Vector2'
 
-import {
-  DISTANCE_BETWEEN_RIBS,
-  RIB_WEIGHT,
-} from './constants'
+import { DISTANCE_BETWEEN_RIBS, RIB_WEIGHT } from './constants'
 
 interface StrokeConstructor {
   i: number

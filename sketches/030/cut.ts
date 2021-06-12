@@ -24,7 +24,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -63,7 +63,7 @@ const addToCurves = (
   p2: Vector2,
   flip: boolean,
   moveTo: boolean,
-  tabPosition: number = 0.5,
+  tabPosition: number = 0.5
 ) => {
   const tVmult = 0.2 // push of t towards other side of piece
   const tVdiv = 0.6 // push of p1c and p2c away from other side of piece
@@ -72,23 +72,33 @@ const addToCurves = (
 
   const tabCenteredWidth = 1 - 2 * Math.abs(0.5 - tabPosition)
   const tabWidthRatio = tabCenteredWidth / 1
-  const halfTabWidthRatio = (0.5 + tabWidthRatio / 2)
+  const halfTabWidthRatio = 0.5 + tabWidthRatio / 2
   const tabPoint = new Vector2(
     map(tabPosition, 0, 1, p1.x, p2.x),
-    map(tabPosition, 0, 1, p1.y, p2.y),
+    map(tabPosition, 0, 1, p1.y, p2.y)
   )
   const pV = p2.minusNew(p1).multiplyEq(tabCenteredWidth) // vector between p1 and p2 of tab width
   const pVi = p2.minusNew(p1).multiplyEq(1 - tabCenteredWidth) // vector between p1 and p2 of non-tab width
-  const tV = pV.multiplyNew(tVmult / halfTabWidthRatio).rotate(flip ? 90 : -90, true) // perpendicular to pV
+  const tV = pV
+    .multiplyNew(tVmult / halfTabWidthRatio)
+    .rotate(flip ? 90 : -90, true) // perpendicular to pV
   const t = tabPoint.plusNew(tV) // top point of divet
 
   const longSide = pV.multiplyNew(pWidth).plusEq(pVi.multiplyEq(0.3))
   const shortSide = pV.multiplyNew(pWidth)
 
-  const p1c = tabPoint.plusNew(tabPosition > 0.5 ? longSide : shortSide).minusEq(tV.multiplyNew(tabPosition > 0.5 ? tVdiv / tabWidthRatio : tVdiv))
-  const t1 = t.minusNew(pV.multiplyNew(tWidth / (2 * (tabPosition > 0.5 ? halfTabWidthRatio : 1))))
-  const t2 = t.plusNew(pV.multiplyNew(tWidth / (2 * (tabPosition < 0.5 ? halfTabWidthRatio : 1))))
-  const p2c = tabPoint.minusNew(tabPosition < 0.5 ? longSide : shortSide).minusEq(tV.multiplyNew((tabPosition < 0.5 ? tVdiv / tabWidthRatio : tVdiv)))
+  const p1c = tabPoint
+    .plusNew(tabPosition > 0.5 ? longSide : shortSide)
+    .minusEq(tV.multiplyNew(tabPosition > 0.5 ? tVdiv / tabWidthRatio : tVdiv))
+  const t1 = t.minusNew(
+    pV.multiplyNew(tWidth / (2 * (tabPosition > 0.5 ? halfTabWidthRatio : 1)))
+  )
+  const t2 = t.plusNew(
+    pV.multiplyNew(tWidth / (2 * (tabPosition < 0.5 ? halfTabWidthRatio : 1)))
+  )
+  const p2c = tabPoint
+    .minusNew(tabPosition < 0.5 ? longSide : shortSide)
+    .minusEq(tV.multiplyNew(tabPosition < 0.5 ? tVdiv / tabWidthRatio : tVdiv))
 
   if (moveTo) c.moveTo(p1.x, p1.y)
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
@@ -96,15 +106,23 @@ const addToCurves = (
 }
 
 interface PointConnection {
-  drawIn: (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => void
-  drawOut: (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => void
+  drawIn: (
+    c: CanvasRenderingContext2D,
+    moveTo: boolean,
+    drawEdgeLines: boolean
+  ) => void
+  drawOut: (
+    c: CanvasRenderingContext2D,
+    moveTo: boolean,
+    drawEdgeLines: boolean
+  ) => void
 }
 
 enum Ordinal {
   nw,
   se,
   sw,
-  ne
+  ne,
 }
 
 interface Square {
@@ -137,7 +155,11 @@ class PointConnection {
     this.isCorner = edgeCount === 2
   }
 
-  drawIn = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
+  drawIn = (
+    c: CanvasRenderingContext2D,
+    moveTo: boolean,
+    drawEdgeLines: boolean
+  ) => {
     let lineToOuter = false
     const cStart = moveTo ? c.moveTo.bind(c) : c.lineTo.bind(c)
 
@@ -168,11 +190,29 @@ class PointConnection {
     }
 
     // piece edge
-    addToCurves(c, this.outer, this.inner, this.flip, !lineToOuter && moveTo, this.isCorner ? CORNER_LEAN : 0.5)
+    addToCurves(
+      c,
+      this.outer,
+      this.inner,
+      this.flip,
+      !lineToOuter && moveTo,
+      this.isCorner ? CORNER_LEAN : 0.5
+    )
   }
 
-  drawOut = (c: CanvasRenderingContext2D, moveTo: boolean, drawEdgeLines: boolean) => {
-    addToCurves(c, this.inner, this.outer, !this.flip, moveTo, this.isCorner ? (1 - CORNER_LEAN) : 0.5)
+  drawOut = (
+    c: CanvasRenderingContext2D,
+    moveTo: boolean,
+    drawEdgeLines: boolean
+  ) => {
+    addToCurves(
+      c,
+      this.inner,
+      this.outer,
+      !this.flip,
+      moveTo,
+      this.isCorner ? 1 - CORNER_LEAN : 0.5
+    )
 
     if (this.ordinal === Ordinal.sw && drawEdgeLines) {
       if (this.isLeftEdge && !this.isBottomEdge) {
@@ -247,14 +287,18 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
       const isRightEdge = x === columns - 1
       const isBottomEdge = y === rows - 1
 
-      const getFlip = (addX: number, addY: number): boolean => simplex[Seeds.Flip].noise2D(22 + 15 * (x * 2 + addX), 33 + 15 * (y * 2 + addY)) < 0
+      const getFlip = (addX: number, addY: number): boolean =>
+        simplex[Seeds.Flip].noise2D(
+          22 + 15 * (x * 2 + addX),
+          33 + 15 * (y * 2 + addY)
+        ) < 0
 
       squares[x][y] = {
         x,
         y,
         nw: new PointConnection({
           ordinal: Ordinal.nw,
-          outer: (isTopEdge && isLeftEdge) ? ordinalCorners[Ordinal.nw] : topLeft,
+          outer: isTopEdge && isLeftEdge ? ordinalCorners[Ordinal.nw] : topLeft,
           inner,
           flip: getFlip(0, 0),
           isLeftEdge,
@@ -262,7 +306,10 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         }),
         se: new PointConnection({
           ordinal: Ordinal.se,
-          outer: (isRightEdge && isBottomEdge) ? ordinalCorners[Ordinal.se] : bottomRight,
+          outer:
+            isRightEdge && isBottomEdge
+              ? ordinalCorners[Ordinal.se]
+              : bottomRight,
           inner,
           flip: getFlip(1, 1),
           isRightEdge,
@@ -270,7 +317,10 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         }),
         sw: new PointConnection({
           ordinal: Ordinal.sw,
-          outer: (isLeftEdge && isBottomEdge) ? ordinalCorners[Ordinal.sw] : bottomLeft,
+          outer:
+            isLeftEdge && isBottomEdge
+              ? ordinalCorners[Ordinal.sw]
+              : bottomLeft,
           inner,
           flip: getFlip(0, 1),
           isLeftEdge,
@@ -278,7 +328,8 @@ const createSquares = ({ width, columns, height, rows, simplex }: Cut) => {
         }),
         ne: new PointConnection({
           ordinal: Ordinal.ne,
-          outer: (isRightEdge && isTopEdge) ? ordinalCorners[Ordinal.ne] : topRight,
+          outer:
+            isRightEdge && isTopEdge ? ordinalCorners[Ordinal.ne] : topRight,
           inner,
           flip: getFlip(1, 0),
           isRightEdge,
@@ -472,4 +523,5 @@ export const cutPieces = (cutAttrs: Cut) => {
   c.stroke()
 }
 
-export const countPieces = ({ columns, rows }: Cut) => columns * rows * 2 + columns + rows
+export const countPieces = ({ columns, rows }: Cut) =>
+  columns * rows * 2 + columns + rows

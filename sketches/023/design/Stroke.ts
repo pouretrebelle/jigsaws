@@ -2,10 +2,7 @@ import { map } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 import Bristle from './Bristle'
 
-import {
-  BRISTLE_OPACITY,
-  DISTANCE_BETWEEN_POINTS,
-} from './constants'
+import { BRISTLE_OPACITY, DISTANCE_BETWEEN_POINTS } from './constants'
 
 interface StrokeConstructor {
   i: number
@@ -60,37 +57,62 @@ class Stroke {
     this.length += DISTANCE_BETWEEN_POINTS
   }
 
-  draw({ layerC: c, tempC, width, height }: { layerC: CanvasRenderingContext2D, tempC: CanvasRenderingContext2D, width: number, height: number }) {
+  draw({
+    layerC: c,
+    tempC,
+    width,
+    height,
+  }: {
+    layerC: CanvasRenderingContext2D
+    tempC: CanvasRenderingContext2D
+    width: number
+    height: number
+  }) {
     c.save()
 
     tempC.save()
     tempC.globalAlpha = BRISTLE_OPACITY
 
     tempC.translate(width / 2, height / 2)
-    this.bristles.forEach(bristle => {
+    this.bristles.forEach((bristle) => {
       tempC.fillStyle = bristle.color
       tempC.beginPath()
-      tempC.arc(bristle.pos.x * this.size, bristle.pos.y * this.size, bristle.weight / 2, 0, Math.PI * 2)
+      tempC.arc(
+        bristle.pos.x * this.size,
+        bristle.pos.y * this.size,
+        bristle.weight / 2,
+        0,
+        Math.PI * 2
+      )
       tempC.fill()
     })
 
     this.points.forEach(({ x, y, sizeRatio }, i) => {
-
       let stampSizeRatio = sizeRatio
       // pull in the start of the stroke
-      if (i <= 20) stampSizeRatio *= Math.sin(map(i, 0, 20, Math.PI / 4, Math.PI / 2))
+      if (i <= 20)
+        stampSizeRatio *= Math.sin(map(i, 0, 20, Math.PI / 4, Math.PI / 2))
       // pull in the end of the stroke
-      if (i >= this.points.length - 20) stampSizeRatio *= Math.sin(map(i, this.points.length, this.points.length - 20, Math.PI / 4, Math.PI / 2))
+      if (i >= this.points.length - 20)
+        stampSizeRatio *= Math.sin(
+          map(
+            i,
+            this.points.length,
+            this.points.length - 20,
+            Math.PI / 4,
+            Math.PI / 2
+          )
+        )
 
       const stampWidth = width * stampSizeRatio
       const stampHeight = height * stampSizeRatio
       c.drawImage(
         tempC.canvas,
-        x - this.size - (stampWidth / 2),
-        y - this.size - (stampHeight / 2),
+        x - this.size - stampWidth / 2,
+        y - this.size - stampHeight / 2,
         stampWidth,
         stampHeight
-      );
+      )
     })
 
     tempC.restore()

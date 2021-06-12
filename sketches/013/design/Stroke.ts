@@ -105,7 +105,9 @@ class Stroke {
           map(pointLerp, 0, 1, 240, 50) + map(angleLerp, 0, 1, 50, 0),
           map(angleLerp, 0, 1, 100, 150) + map(pointLerp, 0, 1, 80, -20),
           map(lengthLerp, 0, 1, 150, 255)
-        ).saturate(1).hex()
+        )
+          .saturate(1)
+          .hex()
 
         c.fillStyle = color
 

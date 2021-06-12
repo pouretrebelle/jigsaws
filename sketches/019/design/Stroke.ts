@@ -66,7 +66,7 @@ class Stroke {
 
     this.points.forEach(({ x, y, angle }, i) => {
       temp.reset(0, RIB_WIDTH / 2)
-      temp.rotate(angle ?? this.points[1].angle as number)
+      temp.rotate(angle ?? (this.points[1].angle as number))
 
       c.beginPath()
       c.moveTo(x + temp.x, y + temp.y)
@@ -77,9 +77,7 @@ class Stroke {
     c.lineWidth = SPINE_WEIGHT
     c.beginPath()
     c.moveTo(this.points[0].x, this.points[0].y)
-    this.points.forEach(({
-      x, y,
-    }) => c.lineTo(x, y))
+    this.points.forEach(({ x, y }) => c.lineTo(x, y))
     c.stroke()
 
     c.restore()

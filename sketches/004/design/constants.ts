@@ -16,16 +16,5 @@ const getColor = (hue: number): string => {
 export const BACKGROUND_COLORS = [300, 320, 330].map(getColor)
 
 export const FOREGROUND_COLORS = [
-  145,
-  150,
-  155,
-  160,
-  170,
-  180,
-  190,
-  195,
-  200,
-  260,
-  270,
-  280,
+  145, 150, 155, 160, 170, 180, 190, 195, 200, 260, 270, 280,
 ].map(getColor)

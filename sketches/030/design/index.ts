@@ -21,10 +21,21 @@ class Point {
   }
 }
 
-export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
+export const design = ({
+  c,
+  simplex,
+  width,
+  height,
+  bleed,
+  noiseStart,
+}: Design) => {
   const hues: number[] = []
   for (let i = 0; i < LAYERS; i++) {
-    hues.push(Math.floor(randomFromNoise(simplex[Seeds.Color].noise2D(5.25 + i, 3.33)) * 360))
+    hues.push(
+      Math.floor(
+        randomFromNoise(simplex[Seeds.Color].noise2D(5.25 + i, 3.33)) * 360
+      )
+    )
   }
   c.save()
 
@@ -49,42 +60,83 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
       if (layer > 0) gridOffset -= 0.5 * gridMultiplier
 
       const crossPoints = [] as Point[][]
-      for (let col = 0; col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier; col++) {
+      for (
+        let col = 0;
+        col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier;
+        col++
+      ) {
         if (!crossPoints[col]) crossPoints.push([])
-        for (let row = 0; row < (GRID_ROWS - gridOffset * 2) / gridMultiplier; row++) {
-          const x = col * cellWidth * gridMultiplier + gridBleed + cellWidth * gridOffset
-          const y = row * cellHeight * gridMultiplier + gridBleed + cellHeight * gridOffset
+        for (
+          let row = 0;
+          row < (GRID_ROWS - gridOffset * 2) / gridMultiplier;
+          row++
+        ) {
+          const x =
+            col * cellWidth * gridMultiplier +
+            gridBleed +
+            cellWidth * gridOffset
+          const y =
+            row * cellHeight * gridMultiplier +
+            gridBleed +
+            cellHeight * gridOffset
           crossPoints[col][row] = new Point({
             x,
             y,
-            visible: simplex[Seeds.Shape].noise3D(50 * layer + noiseOffset + noiseStart * 2, x * 0.005, y * 0.008) > 0.2
+            visible:
+              simplex[Seeds.Shape].noise3D(
+                50 * layer + noiseOffset + noiseStart * 2,
+                x * 0.005,
+                y * 0.008
+              ) > 0.2,
           })
         }
       }
 
-      for (let col = 0; col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier; col++) {
-        for (let row = 0; row < (GRID_ROWS - gridOffset * 2) / gridMultiplier; row++) {
+      for (
+        let col = 0;
+        col < (GRID_COLUMNS - gridOffset * 2) / gridMultiplier;
+        col++
+      ) {
+        for (
+          let row = 0;
+          row < (GRID_ROWS - gridOffset * 2) / gridMultiplier;
+          row++
+        ) {
           const point = crossPoints[col][row]
           if (point.visible && !point.notStart) {
-
             let length = 1
-            while (crossPoints[col][row + length] && crossPoints[col][row + length].visible) {
+            while (
+              crossPoints[col][row + length] &&
+              crossPoints[col][row + length].visible
+            ) {
               crossPoints[col][row + length].notStart = true
               length++
             }
 
-            const a = map(simplex[Seeds.Color].noise3D(20 * layer + noiseOffset, point.x * 0.002, point.y * 0.001), -0.6, 0.6, 0.1, 0.8)
+            const a = map(
+              simplex[Seeds.Color].noise3D(
+                20 * layer + noiseOffset,
+                point.x * 0.002,
+                point.y * 0.001
+              ),
+              -0.6,
+              0.6,
+              0.1,
+              0.8
+            )
             c.strokeStyle = hsla(hues[layer], 70, 50, a)
 
             c.beginPath()
             c.moveTo(point.x + cellWidth / 2, point.y + cellHeight / 2)
-            c.lineTo(point.x + cellWidth / 2, point.y + (length - 0.5) * cellHeight)
+            c.lineTo(
+              point.x + cellWidth / 2,
+              point.y + (length - 0.5) * cellHeight
+            )
             c.stroke()
           }
         }
       }
     }
-
   }
 
   c.lineCap = 'round'

@@ -25,7 +25,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -114,7 +114,7 @@ const getCutData = ({
     )
     const column = Math.floor(
       randomFromNoise(simplex[Seeds.Holes].noise2D(Math.PI, holeI * 2)) *
-      columns
+        columns
     )
     if (
       !holes.some(
@@ -144,19 +144,23 @@ const getCutData = ({
 
   // Make the holes rectangular by averaging each edge's position
   holes.forEach(({ row, column }) => {
-    const left = (crossPoints[column][row].x + crossPoints[column][row + 1].x) / 2
+    const left =
+      (crossPoints[column][row].x + crossPoints[column][row + 1].x) / 2
     crossPoints[column][row].x = left
     crossPoints[column][row + 1].x = left
 
-    const right = (crossPoints[column + 1][row].x + crossPoints[column + 1][row + 1].x) / 2
+    const right =
+      (crossPoints[column + 1][row].x + crossPoints[column + 1][row + 1].x) / 2
     crossPoints[column + 1][row].x = right
     crossPoints[column + 1][row + 1].x = right
 
-    const top = (crossPoints[column][row].y + crossPoints[column + 1][row].y) / 2
+    const top =
+      (crossPoints[column][row].y + crossPoints[column + 1][row].y) / 2
     crossPoints[column][row].y = top
     crossPoints[column + 1][row].y = top
 
-    const bottom = (crossPoints[column][row + 1].y + crossPoints[column + 1][row + 1].y) / 2
+    const bottom =
+      (crossPoints[column][row + 1].y + crossPoints[column + 1][row + 1].y) / 2
     crossPoints[column][row + 1].y = bottom
     crossPoints[column + 1][row + 1].y = bottom
   })

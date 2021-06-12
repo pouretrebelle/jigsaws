@@ -20,15 +20,15 @@ export enum Seeds {
   Flow,
   Position,
   Length,
-  Color
+  Color,
 }
 
 export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   const layerHues = arrayValuesFromSimplex(
     HUES,
     simplex[Seeds.Color],
-    LAYER_COUNT
-  +1)
+    LAYER_COUNT + 1
+  )
   const background = `hsl(${layerHues.shift()}, 40%, 80%)`
   const layers = layerHues.map((hue, hueI) => {
     const l = Math.round(
@@ -74,8 +74,8 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 2, i*0.01),
-      getRandomLength(i*0.01, Math.PI + layerI * 2)
+      getRandomLength(Math.PI + layerI * 2, i * 0.01),
+      getRandomLength(i * 0.01, Math.PI + layerI * 2)
     )
 
   c.save()

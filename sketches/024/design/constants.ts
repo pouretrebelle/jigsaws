@@ -16,15 +16,7 @@ export const BRISTLE_LIGHTNESS_VARIANCE = 5
 export const BRISTLE_DENSITY = 2
 
 export const BACKGROUND = '#1414b8'
-export const HUES = [
-  190,
-  205,
-  230,
-  240,
-  270,
-  285,
-  320,
-]
+export const HUES = [190, 205, 230, 240, 270, 285, 320]
 export const LAYER_COUNT = 6
 export const LAYER_LOOP_COUNT = 10
 export const LAYER_SHIFT = 0.001

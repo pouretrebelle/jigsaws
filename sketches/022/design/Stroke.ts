@@ -1,10 +1,7 @@
 import Vector2 from 'utils/Vector2'
 import Bristle from './Bristle'
 
-import {
-  BRISTLE_OPACITY,
-  DISTANCE_BETWEEN_POINTS,
-} from './constants'
+import { BRISTLE_OPACITY, DISTANCE_BETWEEN_POINTS } from './constants'
 
 interface StrokeConstructor {
   i: number
@@ -57,22 +54,38 @@ class Stroke {
     this.length += DISTANCE_BETWEEN_POINTS
   }
 
-  draw({ layerC: c, tempC, width, height }: { layerC: CanvasRenderingContext2D, tempC: CanvasRenderingContext2D, width: number, height: number }) {
+  draw({
+    layerC: c,
+    tempC,
+    width,
+    height,
+  }: {
+    layerC: CanvasRenderingContext2D
+    tempC: CanvasRenderingContext2D
+    width: number
+    height: number
+  }) {
     c.save()
 
     tempC.save()
     tempC.globalAlpha = BRISTLE_OPACITY
 
     tempC.translate(this.size, this.size)
-    this.bristles.forEach(bristle => {
+    this.bristles.forEach((bristle) => {
       tempC.fillStyle = bristle.color
       tempC.beginPath()
-      tempC.arc(bristle.pos.x * this.size, bristle.pos.y * this.size, bristle.weight/2, 0, Math.PI * 2)
+      tempC.arc(
+        bristle.pos.x * this.size,
+        bristle.pos.y * this.size,
+        bristle.weight / 2,
+        0,
+        Math.PI * 2
+      )
       tempC.fill()
     })
 
     this.points.forEach(({ x, y }, i) => {
-      c.drawImage(tempC.canvas, x - this.size, y - this.size, width, height);
+      c.drawImage(tempC.canvas, x - this.size, y - this.size, width, height)
     })
 
     tempC.restore()

@@ -23,7 +23,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -109,8 +109,16 @@ const getCutData = ({
   for (let x = 0; x < columns; x++) {
     if (!lines[x]) lines.push([])
     for (let y = 0; y < rows; y++) {
-      lines[x][y] = simplex[Seeds.Lines].noise2D(321.234 + x * 0.15, 678.123 + y * 0.7) >
-      map(Math.abs(x + 0.5 - columns / 2) / (columns / 2), 0.5, 1, 0.3, 0.9, true)
+      lines[x][y] =
+        simplex[Seeds.Lines].noise2D(321.234 + x * 0.15, 678.123 + y * 0.7) >
+        map(
+          Math.abs(x + 0.5 - columns / 2) / (columns / 2),
+          0.5,
+          1,
+          0.3,
+          0.9,
+          true
+        )
     }
   }
 
@@ -181,7 +189,7 @@ export const cut = (cutArgs: Cut) => {
           corner,
           simplex[Seeds.FlipY].noise2D(x * 2, y * 2) < 0,
           true,
-          lines[x][y],
+          lines[x][y]
         )
       }
     }

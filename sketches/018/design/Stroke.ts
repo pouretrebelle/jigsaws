@@ -61,7 +61,8 @@ class Stroke {
       angle: this.vel.angle(),
     })
 
-    if (this.length > MIN_LENGTH) this.STROKE_THICKNESS += STROKE_THICKNESS_INCREMENT
+    if (this.length > MIN_LENGTH)
+      this.STROKE_THICKNESS += STROKE_THICKNESS_INCREMENT
 
     this.length += DISTANCE_PER_FRAME
   }
@@ -79,7 +80,8 @@ class Stroke {
         temp.y -= point.y
         return (
           temp.magnitude() <
-          AVOIDANCE_THRESHOLD + (this.STROKE_THICKNESS + stroke.STROKE_THICKNESS) / 2
+          AVOIDANCE_THRESHOLD +
+            (this.STROKE_THICKNESS + stroke.STROKE_THICKNESS) / 2
         )
       })
     })
@@ -130,21 +132,40 @@ class Stroke {
         temp.normalise()
         const angleDiff = angle - this.points[2].angle
         let nextPos = { x, y }
-        for (let dist = 0; dist <= strokeThickness; dist += DISTANCE_PER_FRAME) {
+        for (
+          let dist = 0;
+          dist <= strokeThickness;
+          dist += DISTANCE_PER_FRAME
+        ) {
           c.lineWidth = SPINE_WEIGHT
           c.beginPath()
 
           temp.rotate(angleDiff)
-          nextPos = { x: nextPos.x + temp.x * DISTANCE_PER_FRAME, y: nextPos.y + temp.y * DISTANCE_PER_FRAME }
+          nextPos = {
+            x: nextPos.x + temp.x * DISTANCE_PER_FRAME,
+            y: nextPos.y + temp.y * DISTANCE_PER_FRAME,
+          }
           c.moveTo(nextPos.x, nextPos.y)
-          c.lineTo(nextPos.x + temp.x * DISTANCE_PER_FRAME, nextPos.y + temp.y * DISTANCE_PER_FRAME);
+          c.lineTo(
+            nextPos.x + temp.x * DISTANCE_PER_FRAME,
+            nextPos.y + temp.y * DISTANCE_PER_FRAME
+          )
           c.stroke()
 
           c.lineWidth = LINE_WEIGHT
-          const thisStrokeThickness = Math.sqrt(Math.pow(strokeThickness, 2) * (1 - Math.pow((dist / strokeThickness), 2)))
+          const thisStrokeThickness = Math.sqrt(
+            Math.pow(strokeThickness, 2) *
+              (1 - Math.pow(dist / strokeThickness, 2))
+          )
           c.beginPath()
-          c.moveTo(nextPos.x + temp.y * thisStrokeThickness, nextPos.y - temp.x * thisStrokeThickness)
-          c.lineTo(nextPos.x - temp.y * thisStrokeThickness, nextPos.y + temp.x * thisStrokeThickness)
+          c.moveTo(
+            nextPos.x + temp.y * thisStrokeThickness,
+            nextPos.y - temp.x * thisStrokeThickness
+          )
+          c.lineTo(
+            nextPos.x - temp.y * thisStrokeThickness,
+            nextPos.y + temp.x * thisStrokeThickness
+          )
           c.stroke()
         }
       }
@@ -155,21 +176,40 @@ class Stroke {
         temp.normalise()
         const angleDiff = angle - this.points[this.points.length - 3].angle
         let nextPos = { x, y }
-        for (let dist = 0; dist <= strokeThickness; dist += DISTANCE_PER_FRAME) {
+        for (
+          let dist = 0;
+          dist <= strokeThickness;
+          dist += DISTANCE_PER_FRAME
+        ) {
           c.lineWidth = SPINE_WEIGHT
           c.beginPath()
 
           temp.rotate(angleDiff)
-          nextPos = { x: nextPos.x + temp.x * DISTANCE_PER_FRAME, y: nextPos.y + temp.y * DISTANCE_PER_FRAME }
+          nextPos = {
+            x: nextPos.x + temp.x * DISTANCE_PER_FRAME,
+            y: nextPos.y + temp.y * DISTANCE_PER_FRAME,
+          }
           c.moveTo(nextPos.x, nextPos.y)
-          c.lineTo(nextPos.x + temp.x * DISTANCE_PER_FRAME, nextPos.y + temp.y * DISTANCE_PER_FRAME);
+          c.lineTo(
+            nextPos.x + temp.x * DISTANCE_PER_FRAME,
+            nextPos.y + temp.y * DISTANCE_PER_FRAME
+          )
           c.stroke()
 
           c.lineWidth = LINE_WEIGHT
-          const thisStrokeThickness = Math.sqrt(Math.pow(strokeThickness, 2) * (1 - Math.pow((dist / strokeThickness), 2)))
+          const thisStrokeThickness = Math.sqrt(
+            Math.pow(strokeThickness, 2) *
+              (1 - Math.pow(dist / strokeThickness, 2))
+          )
           c.beginPath()
-          c.moveTo(nextPos.x + temp.y * thisStrokeThickness, nextPos.y - temp.x * thisStrokeThickness)
-          c.lineTo(nextPos.x - temp.y * thisStrokeThickness, nextPos.y + temp.x * thisStrokeThickness)
+          c.moveTo(
+            nextPos.x + temp.y * thisStrokeThickness,
+            nextPos.y - temp.x * thisStrokeThickness
+          )
+          c.lineTo(
+            nextPos.x - temp.y * thisStrokeThickness,
+            nextPos.y + temp.x * thisStrokeThickness
+          )
           c.stroke()
         }
       }
@@ -178,9 +218,7 @@ class Stroke {
     c.lineWidth = SPINE_WEIGHT
     c.beginPath()
     c.moveTo(this.points[0].x, this.points[0].y)
-    this.points.slice(1).forEach(({
-      x, y,
-    }) => c.lineTo(x, y))
+    this.points.slice(1).forEach(({ x, y }) => c.lineTo(x, y))
     c.stroke()
 
     c.restore()

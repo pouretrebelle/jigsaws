@@ -31,7 +31,9 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
   const layers = layerHues.map((hue, hueI) => {
     let l = Math.round(
       map(
-        randomFromNoise(simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI * 5)),
+        randomFromNoise(
+          simplex[Seeds.Color].noise2D(Math.PI, Math.PI + hueI * 5)
+        ),
         0,
         1,
         20,
@@ -56,11 +58,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     const noiseY = map(stroke.pos.y, 0, height, 0, FLOW_FIDELITY, true)
 
     return map(
-      simplex[Seeds.Flow].noise3D(
-        noiseX,
-        noiseY,
-        noiseStart * 0.02
-      ),
+      simplex[Seeds.Flow].noise3D(noiseX, noiseY, noiseStart * 0.02),
       -1,
       1,
       -Math.PI,
@@ -73,8 +71,14 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   const getRandomPos = (i: number, layerI: number): Vector2 =>
     new Vector2(
-      getRandomLength(Math.PI + layerI * 10, Math.PI + i * SPINE_SEPARATION_FIDELITY),
-      getRandomLength(Math.PI + i * SPINE_SEPARATION_FIDELITY, Math.PI + layerI * 10)
+      getRandomLength(
+        Math.PI + layerI * 10,
+        Math.PI + i * SPINE_SEPARATION_FIDELITY
+      ),
+      getRandomLength(
+        Math.PI + i * SPINE_SEPARATION_FIDELITY,
+        Math.PI + layerI * 10
+      )
     )
 
   c.save()

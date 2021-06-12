@@ -9,14 +9,5 @@ export const RIB_WEIGHT = 5
 export const STROKE_OPACITY = 0.5
 
 export const BACKGROUND = 'hsl(225, 40%, 45%)'
-export const HUES = [
-  15,
-  20,
-  75,
-  160,
-  180,
-  225,
-  320,
-  335,
-]
+export const HUES = [15, 20, 75, 160, 180, 225, 320, 335]
 export const LAYER_COUNT = 8

@@ -2,14 +2,27 @@ import { Design } from 'types'
 import { hsl, hsla } from 'utils/colorUtils'
 import { map, randomFromNoise } from 'utils/numberUtils'
 
-import { LAYERS, GRID_ROWS, GRID_COLUMNS, GRID_FIDELITY, FILL_OPACITY } from './constants'
+import {
+  LAYERS,
+  GRID_ROWS,
+  GRID_COLUMNS,
+  GRID_FIDELITY,
+  FILL_OPACITY,
+} from './constants'
 
 export enum Seeds {
   Color,
   Position,
 }
 
-export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design) => {
+export const design = ({
+  c,
+  simplex,
+  width,
+  height,
+  bleed,
+  noiseStart,
+}: Design) => {
   const hues: number[] = []
   for (let i = 0; i < LAYERS + 1; i++) {
     hues.push(
@@ -28,13 +41,25 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
   for (let layerI = 0; layerI < LAYERS; layerI++) {
     c.save()
 
-    for (let y = bleed - gridUnitHeight * (layerI + 2) / 2; y < height; y += gridUnitHeight) {
-      for (let x = bleed - gridUnitWidth * (layerI + 2) / 2; x < width; x += gridUnitWidth) {
+    for (
+      let y = bleed - (gridUnitHeight * (layerI + 2)) / 2;
+      y < height;
+      y += gridUnitHeight
+    ) {
+      for (
+        let x = bleed - (gridUnitWidth * (layerI + 2)) / 2;
+        x < width;
+        x += gridUnitWidth
+      ) {
         c.fillStyle = hsla(hues[layerI + 1], 50, 50, FILL_OPACITY)
 
         const loops = Math.floor(
           map(
-            simplex[Seeds.Position].noise3D(4.321 + x * GRID_FIDELITY + layerI * 10, 5.432 + y * GRID_FIDELITY + layerI * 10, noiseStart * 0.5),
+            simplex[Seeds.Position].noise3D(
+              4.321 + x * GRID_FIDELITY + layerI * 10,
+              5.432 + y * GRID_FIDELITY + layerI * 10,
+              noiseStart * 0.5
+            ),
             0.2,
             1,
             0,
@@ -59,7 +84,7 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
             -gridUnitWidth / 2,
             -gridUnitHeight / 2,
             gridUnitWidth,
-            gridUnitHeight,
+            gridUnitHeight
           )
           c.rotate(ROTATION)
           c.lineWidth *= 1 / SCALE
@@ -70,7 +95,11 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
 
         const altLoops = Math.floor(
           map(
-            simplex[Seeds.Position].noise3D(104.321 + x * GRID_FIDELITY + layerI * 10, 105.432 + y * GRID_FIDELITY + layerI * 10, noiseStart * 0.5),
+            simplex[Seeds.Position].noise3D(
+              104.321 + x * GRID_FIDELITY + layerI * 10,
+              105.432 + y * GRID_FIDELITY + layerI * 10,
+              noiseStart * 0.5
+            ),
             0.2,
             1,
             0,
@@ -89,13 +118,12 @@ export const design = ({ c, simplex, width, height, bleed, noiseStart }: Design)
             -gridUnitWidth / 2,
             -gridUnitHeight / 2,
             gridUnitWidth,
-            gridUnitHeight,
+            gridUnitHeight
           )
           c.rotate(-ROTATION)
           c.lineWidth *= 1 / SCALE
           c.scale(SCALE, SCALE)
         }
-
 
         c.restore()
       }

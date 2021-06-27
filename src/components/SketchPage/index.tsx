@@ -2,6 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import dayjs from 'dayjs'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+dayjs.extend(advancedFormat)
 
 import { SketchContent } from 'types'
 import { Button } from 'components/Button'
@@ -195,6 +198,7 @@ interface Props extends SketchContent {
 
 export const SketchPage = ({
   id,
+  datePublished,
   youTubeLink,
   appLink,
   imagePath,
@@ -216,6 +220,7 @@ export const SketchPage = ({
       </Link>
     </>
   )
+  const dayjsDatePublished = dayjs(datePublished)
 
   return (
     <StyledGrid>
@@ -261,7 +266,10 @@ export const SketchPage = ({
           }}
         />
         <StyledMeta>
-          {pieces} pieces &bull; Solved in {timeToSolve}
+          {pieces} pieces &bull; Solved in {timeToSolve} &bull; Published on{' '}
+          <time dateTime={dayjsDatePublished.format('YYYY-MM-DD')}>
+            {dayjsDatePublished.format('Do MMMM ′YY')}
+          </time>
         </StyledMeta>
       </StyledDetails>
 

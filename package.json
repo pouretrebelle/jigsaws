@@ -32,6 +32,7 @@
     "canvas": "^2.8.0",
     "canvas2svg": "^1.0.16",
     "chroma-js": "^2.1.0",
+    "dayjs": "^1.10.5",
     "delaunator": "^4.0.1",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.2.0",

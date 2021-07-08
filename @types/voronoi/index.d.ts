@@ -20,6 +20,7 @@ declare module 'voronoi' {
     rSite: Site
     va: Vertex
     vb: Vertex
+    [key: string]: any
   }
 
   export interface HalfEdge {

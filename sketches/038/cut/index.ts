@@ -1,7 +1,8 @@
 import SimplexNoise from 'simplex-noise'
-import Voronoi, { Diagram } from 'voronoi'
+import Voronoi, { Diagram, Edge } from 'voronoi'
 import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
+import { getNextContinuingEdge, getStartingEdge } from './utils'
 
 export enum Seeds {
   SwayX,
@@ -12,7 +13,7 @@ export enum Seeds {
 const MIN_TAB_SIZE = 8
 const MAX_TAB_SIZE = 12
 
-const voronoi = new Voronoi();
+const voronoi = new Voronoi()
 let diagram: Diagram
 
 const tweakDist = (
@@ -28,7 +29,7 @@ const tweakDist = (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.4 +
         simplex.noise2D(m * 0.4, alt * 0.4) * 0.2) *
-      edgeAvoidanceScalar) /
+        edgeAvoidanceScalar) /
     rows
   )
 }
@@ -118,6 +119,20 @@ const drawEdge = (
 export const cut = (cutArgs: Cut) => {
   const { c, width, columns, height, rows, simplex } = cutArgs
 
+  const drawVoronoiEdge = (edge: Edge, moveTo: boolean, reverse: boolean) => {
+    const { lSite, rSite, va, vb } = edge
+    const points = [new Vector2(va.x, va.y), new Vector2(vb.x, vb.y)]
+    if (reverse) points.reverse()
+
+    const edgeLength = points[0].dist(points[1])
+    const flip =
+      simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) >
+      0
+
+    drawEdge(c, points[0], points[1], flip, moveTo, edgeLength < MIN_TAB_SIZE)
+    edge.drawn = true
+  }
+
   c.beginPath()
   c.moveTo(0, 0)
   c.lineTo(width, 0)
@@ -130,38 +145,56 @@ export const cut = (cutArgs: Cut) => {
 
   for (let x = 0.5; x < columns; x++) {
     for (let y = 0.5; y < rows; y++) {
-      sites.push(new Point({
-        x,
-        y,
-        rows,
-        columns,
-        simplexX: simplex[Seeds.SwayX],
-        simplexY: simplex[Seeds.SwayY],
-        width,
-        height,
-      }))
+      sites.push(
+        new Point({
+          x,
+          y,
+          rows,
+          columns,
+          simplexX: simplex[Seeds.SwayX],
+          simplexY: simplex[Seeds.SwayY],
+          width,
+          height,
+        })
+      )
     }
   }
 
-  voronoi.recycle(diagram);
-  const bbox = { xl: 0, xr: width, yt: 0, yb: height };
-  diagram = voronoi.compute(sites, bbox);
+  voronoi.recycle(diagram)
+  const bbox = { xl: 0, xr: width, yt: 0, yb: height }
+  diagram = voronoi.compute(sites, bbox)
 
-  c.beginPath()
-  diagram.edges.forEach(({ lSite, rSite, va, vb }) => {
-    // don't draw edges
-    if (!lSite || !rSite) return
-
-    const p1 = new Vector2(va.x, va.y)
-    const p2 = new Vector2(vb.x, vb.y)
-
-    const edgeLength = p1.dist(p2)
-    const flip = simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
-
-    drawEdge(c, p1, p2, flip, true, edgeLength < MIN_TAB_SIZE)
+  // mark jigsaw edges as already drawn
+  diagram.edges.forEach((edge, i) => {
+    diagram.edges[i].drawn = !edge.lSite || !edge.rSite
   })
-  c.stroke()
+
+  // keep track of undrawn for performance
+  let undrawnEdges: Edge[] = diagram.edges
+  const updateUndrawnEdges = () =>
+    (undrawnEdges = undrawnEdges.filter(({ drawn }) => !drawn))
+  updateUndrawnEdges()
+
+  let startingEdge = getStartingEdge(undrawnEdges)
+  while (startingEdge) {
+    c.beginPath()
+
+    drawVoronoiEdge(startingEdge.edge, true, startingEdge.reverse)
+
+    updateUndrawnEdges()
+
+    let nextEdge = getNextContinuingEdge(
+      { edge: startingEdge.edge, reverse: startingEdge.reverse },
+      undrawnEdges
+    )
+    while (nextEdge) {
+      drawVoronoiEdge(nextEdge.edge, false, nextEdge.reverse)
+      nextEdge = getNextContinuingEdge(nextEdge, undrawnEdges)
+    }
+
+    c.stroke()
+    startingEdge = getStartingEdge(undrawnEdges)
+  }
 }
 
-export const cutPieces = (cutArgs: Cut) => {
-}
+export const cutPieces = (cutArgs: Cut) => {}

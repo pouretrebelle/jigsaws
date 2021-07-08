@@ -3,5 +3,8 @@
     "pages/api/preview/[sketch].ts": {
       "includeFiles": "sketches/**"
     }
+  },
+  "github": {
+    "silent": true
   }
 }

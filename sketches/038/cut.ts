@@ -9,7 +9,8 @@ export enum Seeds {
   Flip,
 }
 
-const MIN_EDGE_LENGTH_FOR_TAB = 15
+const MIN_TAB_SIZE = 8
+const MAX_TAB_SIZE = 12
 
 const voronoi = new Voronoi();
 let diagram: Diagram
@@ -59,7 +60,7 @@ class Point extends Vector2 {
   }
 }
 
-const addToCurves = (
+const drawEdge = (
   c: CanvasRenderingContext2D,
   p1: Vector2,
   p2: Vector2,
@@ -73,23 +74,44 @@ const addToCurves = (
     return c.lineTo(p2.x, p2.y)
   }
 
-  const tVmult = 0.25 // push of t towards other side of piece
-  const tWidth = 0.7 // how far t1 and t2 are from the center
-  const pWidth = 0.8 // how far p1c and p2c are from the p1 and p2
-  const pAng = Math.atan(1/8) // how far p1c and p2c lean back from tab
+  const dist = p1.dist(p2)
+  const needsWings = dist > MAX_TAB_SIZE
+  const flipMult = flip ? -1 : 1
 
-  const midPoint = p1.plusNew(p2).multiplyEq(0.5)
-  const pV = p2.minusNew(p1) // vector from p1 to p2
-  const tV = pV.multiplyNew(tVmult).rotate(flip ? 90 : -90, true) // perpendicular to pV
+  const tVmult = 0.4 * flipMult // push of t towards other side of piece
+  const tWidth = 1.1 // how far t1 and t2 are from the center
+  const pWidth = 0.85 // how far p1c and p2c are from the p1s and p2s
+  const pAng = Math.atan(1 / 8) * flipMult // how far p1c and p2c lean back from tab
+
+  // the starting points of this tabs
+  let p1s = p1.clone()
+  let p2s = p2.clone()
+
+  if (needsWings) {
+    const pVUnit = p2.minusNew(p1).normalise()
+    const wingDist = (dist - MAX_TAB_SIZE) / 2 / Math.cos(pAng)
+    p1s.plusEq(pVUnit.multiplyNew(wingDist).rotate(pAng))
+    p2s.minusEq(pVUnit.multiplyNew(wingDist).rotate(-pAng))
+
+    c.lineTo(p1s.x, p1s.y)
+  }
+
+  const midPoint = p1s.plusNew(p2s).multiplyEq(0.5)
+  const pV = p2s.minusNew(p1s) // vector from p1s to p2s
+  const tV = pV.multiplyNew(tVmult).rotate(-90, true) // perpendicular to pV
   const t = midPoint.plusNew(tV) // top point of tab
 
-  const p1c = p1.plusNew(pV.multiplyNew(pWidth).rotate(flip ? -pAng : pAng))
+  const p1c = p1s.plusNew(pV.multiplyNew(pWidth).rotate(pAng))
   const t1 = t.minusNew(pV.multiplyNew(tWidth / 2))
   const t2 = t.plusNew(pV.multiplyNew(tWidth / 2))
-  const p2c = p2.minusNew(pV.multiplyNew(pWidth).rotate(flip ? pAng : -pAng))
+  const p2c = p2s.minusNew(pV.multiplyNew(pWidth).rotate(-pAng))
 
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
-  c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
+  c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2s.x, p2s.y)
+
+  if (needsWings) {
+    c.lineTo(p2.x, p2.y)
+  }
 }
 
 export const cut = (cutArgs: Cut) => {
@@ -135,7 +157,7 @@ export const cut = (cutArgs: Cut) => {
     const edgeLength = p1.dist(p2)
     const flip = simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
 
-    addToCurves(c, p1, p2, flip, true, edgeLength < MIN_EDGE_LENGTH_FOR_TAB)
+    drawEdge(c, p1, p2, flip, true, edgeLength < MIN_TAB_SIZE)
   })
   c.stroke()
 }

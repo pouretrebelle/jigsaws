@@ -62,14 +62,29 @@ class Point extends Vector2 {
   }
 }
 
-const drawEdge = (
-  c: CanvasRenderingContext2D,
-  p1: Vector2,
-  p2: Vector2,
-  flip: boolean,
-  moveTo: boolean,
-  straight?: boolean
-) => {
+const drawEdge = ({
+  c,
+  simplex,
+  edge,
+  moveTo,
+  reverse,
+}: {
+  c: CanvasRenderingContext2D
+  simplex: SimplexNoise
+  edge: Edge
+  moveTo: boolean
+  reverse: boolean
+}) => {
+  const { lSite, rSite, va, vb } = edge
+  edge.drawn = true
+  const points = [new Vector2(va.x, va.y), new Vector2(vb.x, vb.y)]
+  if (reverse) points.reverse()
+  const p1 = points[0]
+  const p2 = points[1]
+
+  const flip = simplex.noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
+  const straight = points[0].dist(points[1]) < MIN_TAB_SIZE
+
   if (moveTo) c.moveTo(p1.x, p1.y)
 
   if (straight) {
@@ -119,20 +134,6 @@ const drawEdge = (
 export const cut = (cutArgs: Cut) => {
   const { c, width, columns, height, rows, simplex } = cutArgs
 
-  const drawVoronoiEdge = (edge: Edge, moveTo: boolean, reverse: boolean) => {
-    const { lSite, rSite, va, vb } = edge
-    const points = [new Vector2(va.x, va.y), new Vector2(vb.x, vb.y)]
-    if (reverse) points.reverse()
-
-    const edgeLength = points[0].dist(points[1])
-    const flip =
-      simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) >
-      0
-
-    drawEdge(c, points[0], points[1], flip, moveTo, edgeLength < MIN_TAB_SIZE)
-    edge.drawn = true
-  }
-
   c.beginPath()
   c.moveTo(0, 0)
   c.lineTo(width, 0)
@@ -179,7 +180,13 @@ export const cut = (cutArgs: Cut) => {
   while (startingEdge) {
     c.beginPath()
 
-    drawVoronoiEdge(startingEdge.edge, true, startingEdge.reverse)
+    drawEdge({
+      c,
+      simplex: simplex[Seeds.Flip],
+      edge: startingEdge.edge,
+      moveTo: true,
+      reverse: startingEdge.reverse,
+    })
 
     updateUndrawnEdges()
 
@@ -188,7 +195,13 @@ export const cut = (cutArgs: Cut) => {
       undrawnEdges
     )
     while (nextEdge) {
-      drawVoronoiEdge(nextEdge.edge, false, nextEdge.reverse)
+      drawEdge({
+        c,
+        simplex: simplex[Seeds.Flip],
+        edge: nextEdge.edge,
+        moveTo: false,
+        reverse: nextEdge.reverse,
+      })
       nextEdge = getNextContinuingEdge(nextEdge, undrawnEdges)
     }
 

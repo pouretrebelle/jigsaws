@@ -74,19 +74,19 @@ const addToCurves = (
   }
 
   const tVmult = 0.25 // push of t towards other side of piece
-  const tVdiv = 0.4 // push of p1c and p2c away from other side of piece
-  const tWidth = 0.7 // how far t1 and t2 are from the canter
-  const pWidth = 0.8 // how far p1x and p2c are from the center
+  const tWidth = 0.7 // how far t1 and t2 are from the center
+  const pWidth = 0.8 // how far p1c and p2c are from the p1 and p2
+  const pAng = Math.atan(1/8) // how far p1c and p2c lean back from tab
 
   const midPoint = p1.plusNew(p2).multiplyEq(0.5)
   const pV = p2.minusNew(p1) // vector from p1 to p2
   const tV = pV.multiplyNew(tVmult).rotate(flip ? 90 : -90, true) // perpendicular to pV
-  const t = midPoint.plusNew(tV) // top point of divet
+  const t = midPoint.plusNew(tV) // top point of tab
 
-  const p1c = p1.plusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
+  const p1c = p1.plusNew(pV.multiplyNew(pWidth).rotate(flip ? -pAng : pAng))
   const t1 = t.minusNew(pV.multiplyNew(tWidth / 2))
   const t2 = t.plusNew(pV.multiplyNew(tWidth / 2))
-  const p2c = p2.minusNew(pV.multiplyNew(pWidth)).minusEq(tV.multiplyNew(tVdiv))
+  const p2c = p2.minusNew(pV.multiplyNew(pWidth).rotate(flip ? pAng : -pAng))
 
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)

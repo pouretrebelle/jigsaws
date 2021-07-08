@@ -1,4 +1,5 @@
 import SimplexNoise from 'simplex-noise'
+import Voronoi, { Diagram } from 'voronoi'
 import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
 
@@ -7,6 +8,9 @@ export enum Seeds {
   SwayY,
   Flip,
 }
+
+const voronoi = new Voronoi();
+let diagram: Diagram
 
 const tweakDist = (
   m: number,
@@ -18,8 +22,8 @@ const tweakDist = (
     1 - Math.pow(Math.abs((m - rows / 2) / (rows / 2)), 5)
   return (
     (m +
-      (simplex.noise2D(m * 0.15, alt * 0.15) * 0.2 +
-        simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
+      (simplex.noise2D(m * 0.15, alt * 0.15) * 0.4 +
+        simplex.noise2D(m * 0.4, alt * 0.4) * 0.2) *
       edgeAvoidanceScalar) /
     rows
   )
@@ -95,6 +99,34 @@ export const cut = (cutArgs: Cut) => {
   c.lineTo(width, height)
   c.lineTo(0, height)
   c.lineTo(0, 0)
+  c.stroke()
+
+  const sites: Point[] = []
+
+  for (let x = 0.5; x < columns; x++) {
+    for (let y = 0.5; y < rows; y++) {
+      sites.push(new Point({
+        x,
+        y,
+        rows,
+        columns,
+        simplexX: simplex[Seeds.SwayX],
+        simplexY: simplex[Seeds.SwayY],
+        width,
+        height,
+      }))
+    }
+  }
+
+  voronoi.recycle(diagram);
+  const bbox = { xl: 0, xr: width, yt: 0, yb: height };
+  diagram = voronoi.compute(sites, bbox);
+
+  c.beginPath()
+  diagram.edges.forEach(({ va, vb }) => {
+    c.moveTo(va.x, va.y)
+    c.lineTo(vb.x, vb.y)
+  })
   c.stroke()
 }
 

@@ -131,17 +131,13 @@ const drawEdge = ({
   }
 }
 
-export const cut = (cutArgs: Cut) => {
-  const { c, width, columns, height, rows, simplex } = cutArgs
-
-  c.beginPath()
-  c.moveTo(0, 0)
-  c.lineTo(width, 0)
-  c.lineTo(width, height)
-  c.lineTo(0, height)
-  c.lineTo(0, 0)
-  c.stroke()
-
+const getCutData = ({
+  width,
+  columns,
+  height,
+  rows,
+  simplex,
+}: Cut): Diagram => {
   const sites: Point[] = []
 
   for (let x = 0.5; x < columns; x++) {
@@ -163,7 +159,21 @@ export const cut = (cutArgs: Cut) => {
 
   voronoi.recycle(diagram)
   const bbox = { xl: 0, xr: width, yt: 0, yb: height }
-  diagram = voronoi.compute(sites, bbox)
+  return voronoi.compute(sites, bbox)
+}
+
+export const cut = (cutArgs: Cut) => {
+  const { c, width, height, simplex } = cutArgs
+
+  c.beginPath()
+  c.moveTo(0, 0)
+  c.lineTo(width, 0)
+  c.lineTo(width, height)
+  c.lineTo(0, height)
+  c.lineTo(0, 0)
+  c.stroke()
+
+  const diagram = getCutData(cutArgs)
 
   // mark jigsaw edges as already drawn
   diagram.edges.forEach((edge, i) => {

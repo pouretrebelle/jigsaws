@@ -9,6 +9,8 @@ export enum Seeds {
   Flip,
 }
 
+const MIN_EDGE_LENGTH_FOR_TAB = 15
+
 const voronoi = new Voronoi();
 let diagram: Diagram
 
@@ -123,9 +125,17 @@ export const cut = (cutArgs: Cut) => {
   diagram = voronoi.compute(sites, bbox);
 
   c.beginPath()
-  diagram.edges.forEach(({ va, vb }) => {
-    c.moveTo(va.x, va.y)
-    c.lineTo(vb.x, vb.y)
+  diagram.edges.forEach(({ lSite, rSite, va, vb }) => {
+    // don't draw edges
+    if (!lSite || !rSite) return
+
+    const p1 = new Vector2(va.x, va.y)
+    const p2 = new Vector2(vb.x, vb.y)
+
+    const edgeLength = p1.dist(p2)
+    const flip = simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
+
+    addToCurves(c, p1, p2, flip, true, edgeLength < MIN_EDGE_LENGTH_FOR_TAB)
   })
   c.stroke()
 }

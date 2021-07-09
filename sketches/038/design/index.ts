@@ -25,28 +25,31 @@ export const design = ({
 }: Design) => {
   c.save()
 
-  const hues: number[] = []
+  const triangleData: {
+    color: string
+    triangles: {
+      name: keyof typeof TRIANGLES
+      middle: [number, number]
+    }[]
+  }[] = []
+
   for (let i = 0; i < COLOR_COUNT; i++) {
-    hues.push(
-      Math.floor(
-        randomFromNoise(simplex[Seeds.Color].noise2D(235.25 + i, 123.33)) * 360
-      )
+    const h = Math.floor(
+      randomFromNoise(simplex[Seeds.Color].noise2D(235.25 + i, 123.33)) * 360
     )
+    triangleData.push({ color: hsl(h, 50, 50), triangles: [] })
   }
-  const colors = hues.map((h) => hsl(h, 50, 50))
 
   const drawTriangle = (
-    colorIndex: number,
-    m: { x: number; y: number },
+    color: string,
+    [x, y]: [number, number],
     corners: [[number, number], [number, number]]
   ) => {
-    c.fillStyle = colors[colorIndex]
-    c.strokeStyle = colors[colorIndex]
+    c.fillStyle = color
+    c.strokeStyle = color
     c.beginPath()
-    c.moveTo(m.x, m.y)
-    corners.forEach(([cX, cY]) =>
-      c.lineTo(m.x + (cX * w) / 2, m.y + (cY * h) / 2)
-    )
+    c.moveTo(x, y)
+    corners.forEach(([cX, cY]) => c.lineTo(x + (cX * w) / 2, y + (cY * h) / 2))
     c.closePath()
     c.fill()
     c.stroke()
@@ -64,30 +67,36 @@ export const design = ({
       ) +
         1) /
         2) *
-        colors.length
+        COLOR_COUNT
     )
 
   for (let col = 0; col < GRID_COLUMNS; col++) {
     for (let row = 0; row < GRID_ROWS; row++) {
-      let x = w * col
-      let y = h * row
-
-      const m = { x: x + w / 2, y: y + h / 2 }
+      const x = w * col
+      const y = h * row
+      const middle: [number, number] = [x + w / 2, y + h / 2]
 
       const getPos = ([uX, uY]: [number, number]): [number, number] => [
         (col + 0.5 + uX / 2) * w,
         (row + 0.5 + uY / 2) * h,
       ]
 
-      Object.values(TRIANGLES).map(({ corners, sampleDir, comparisonDirs }) => {
+      Object.entries(TRIANGLES).map(([name, { sampleDir, comparisonDirs }]) => {
         const compareA = getColorIndex(getPos(comparisonDirs[0]))
         const compareB = getColorIndex(getPos(comparisonDirs[1]))
         const colorIndex =
           compareA === compareB ? compareA : getColorIndex(getPos(sampleDir))
-        drawTriangle(colorIndex, m, corners)
+
+        triangleData[colorIndex].triangles.push({ name, middle })
       })
     }
   }
+
+  triangleData.forEach(({ color, triangles }) => {
+    triangles.forEach(({ name, middle }) =>
+      drawTriangle(color, middle, TRIANGLES[name].corners)
+    )
+  })
 
   c.restore()
 }

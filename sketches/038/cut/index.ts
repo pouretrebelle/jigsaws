@@ -82,8 +82,11 @@ const drawEdge = ({
   const p1 = points[0]
   const p2 = points[1]
 
-  const flip = simplex.noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
-  const straight = points[0].dist(points[1]) < MIN_TAB_SIZE
+  const straight = points[0].dist(points[1]) < MIN_TAB_SIZE || !lSite || !rSite
+  let flip = straight
+    ? false
+    : simplex.noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
+  if (reverse) flip = !flip
 
   if (moveTo) c.moveTo(p1.x, p1.y)
 
@@ -220,4 +223,35 @@ export const cut = (cutArgs: Cut) => {
   }
 }
 
-export const cutPieces = (cutArgs: Cut) => {}
+export const cutPieces = (cutArgs: Cut) => {
+  const { c, simplex } = cutArgs
+
+  const diagram = getCutData(cutArgs)
+
+  diagram.cells.forEach((cell) => {
+    c.beginPath()
+
+    cell.halfedges.forEach((halfEdge, i) => {
+      const edgeAngle = Math.atan2(
+        halfEdge.edge.vb.y - halfEdge.edge.va.y,
+        halfEdge.edge.vb.x - halfEdge.edge.va.x
+      )
+      // we don't know if the points of the edge are going in the direction of the halfedge
+      // the half edge angle is perpendicular to the edge, going counterclockwise
+      // so we have to add half a PI to orient it
+      // it might be either side of 0, so we add 2PI and modulus 2PI
+      // and allow a 0.01 buffer
+      const reverse =
+        (edgeAngle - halfEdge.angle + Math.PI * 2.5 + 0.01) % (Math.PI * 2) >
+        0.02
+      drawEdge({
+        c,
+        simplex: simplex[Seeds.Flip],
+        edge: halfEdge.edge,
+        moveTo: i === 0,
+        reverse,
+      })
+    })
+    c.stroke()
+  })
+}

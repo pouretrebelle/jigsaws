@@ -19,4 +19,5 @@ Showcase and development environment for generative art jigsaw puzzles.
 ## :construction_worker: Being good
 
 - We use [Typescript](https://www.typescriptlang.org/) for type checking
-- We use [Prettier](https://prettier.io/) for consistent code styling, set it up for your editor with [these instructions](https://prettier.io/docs/en/editors.html) to run on file save
+- We use [Jest](https://jestjs.io/) for unit tests
+- We use [Prettier](https://prettier.io/) for consistent code styling with a [Husky](https://typicode.github.io/husky/) pre-commit hook

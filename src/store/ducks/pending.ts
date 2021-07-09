@@ -6,35 +6,33 @@ interface Payload {
   action: ActionType
 }
 
-export const reducer: React.Reducer<
-  State,
-  { type: string; payload: Payload }
-> = (state, action) => {
-  switch (action.type) {
-    case ActionType.AddPending: {
-      const pending = [...new Set([...state.pending, action.payload.action])]
+export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
+  (state, action) => {
+    switch (action.type) {
+      case ActionType.AddPending: {
+        const pending = [...new Set([...state.pending, action.payload.action])]
 
-      return {
-        ...state,
-        pending,
+        return {
+          ...state,
+          pending,
+        }
       }
-    }
 
-    case ActionType.RemovePending: {
-      const pending = state.pending.filter(
-        (pendingAction: ActionType) => pendingAction !== action.payload.action
-      )
+      case ActionType.RemovePending: {
+        const pending = state.pending.filter(
+          (pendingAction: ActionType) => pendingAction !== action.payload.action
+        )
 
-      return {
-        ...state,
-        pending,
+        return {
+          ...state,
+          pending,
+        }
       }
-    }
 
-    default:
-      return state
+      default:
+        return state
+    }
   }
-}
 
 export const addPending = (action: ActionType) => ({
   type: ActionType.AddPending,

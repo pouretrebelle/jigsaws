@@ -31,7 +31,7 @@ export const SketchCard = ({
         // imagePath={imagePath.solveEnd}
         // aspectRatio={1}
         imagePath={imagePath.solveMiddle}
-        aspectRatio={9/16}
+        aspectRatio={9 / 16}
       />
     </StyledLink>
   </Link>

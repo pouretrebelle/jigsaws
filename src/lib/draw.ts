@@ -25,13 +25,8 @@ export const drawBackground = ({ canvas, c, state }: DrawArgs) => {
 export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
   if (!state.sketch) return
 
-  const {
-    bleedWidth,
-    bleedHeight,
-    rows,
-    columns,
-    bleed,
-  } = state.sketch.settings
+  const { bleedWidth, bleedHeight, rows, columns, bleed } =
+    state.sketch.settings
 
   const simplex = state.designNoiseSeeds.map((seed) => new SimplexNoise(seed))
 

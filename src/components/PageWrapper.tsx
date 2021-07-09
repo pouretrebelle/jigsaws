@@ -23,7 +23,8 @@ export const PageWrapper: React.FC<Props> = ({
   children,
 }) => {
   let faviconUrl = '/api/favicon.svg'
-  if (accentColorRgb) faviconUrl += `?color=rgb(${accentColorRgb.replace(/ /g, '')})`
+  if (accentColorRgb)
+    faviconUrl += `?color=rgb(${accentColorRgb.replace(/ /g, '')})`
 
   return (
     <StyledWrapper
@@ -32,9 +33,7 @@ export const PageWrapper: React.FC<Props> = ({
       }
     >
       <Favicon accentColorRgb={accentColorRgb} />
-      <Header>
-        {title || 'Abstract Puzzles'}
-      </Header>
+      <Header>{title || 'Abstract Puzzles'}</Header>
 
       {children}
 

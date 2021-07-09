@@ -34,26 +34,25 @@ const exportActions = {
   },
 }
 
-export const exportSketch = (part: ExportPart) => async (
-  dispatch: React.Dispatch<Action>,
-  state: State
-) => {
-  const { actionType, exportFunction } = exportActions[part]
+export const exportSketch =
+  (part: ExportPart) =>
+  async (dispatch: React.Dispatch<Action>, state: State) => {
+    const { actionType, exportFunction } = exportActions[part]
 
-  if (!actionType) return
+    if (!actionType) return
 
-  dispatch(addPending(actionType))
+    dispatch(addPending(actionType))
 
-  // reset noise start
-  if (actionType !== ActionType.ExportCut) {
-    dispatch(updateNoiseStart(0))
+    // reset noise start
+    if (actionType !== ActionType.ExportCut) {
+      dispatch(updateNoiseStart(0))
+    }
+
+    await new Promise<void>((resolve) => {
+      setTimeout(() => resolve(), 100)
+    })
+
+    exportFunction(state)
+
+    dispatch(removePending(actionType))
   }
-
-  await new Promise<void>((resolve) => {
-    setTimeout(() => resolve(), 100)
-  })
-
-  exportFunction(state)
-
-  dispatch(removePending(actionType))
-}

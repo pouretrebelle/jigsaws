@@ -6,15 +6,15 @@ import { makeRandomSeed } from 'lib/seeds'
 
 interface Req {
   query: {
-    sketch?: string,
-    width?: string,
-    designSeeds?: string,
-    cutSeeds?: string,
+    sketch?: string
+    width?: string
+    designSeeds?: string
+    cutSeeds?: string
   }
 }
 
 type Res = NodeJS.WritableStream & {
-  setHeader: (arg0: string, arg1: string) => void;
+  setHeader: (arg0: string, arg1: string) => void
   status: (arg0: number) => Res
   send: (arg0: string) => void
   pipe: (arg0: any) => void
@@ -23,10 +23,13 @@ type Res = NodeJS.WritableStream & {
 const handler = async (req: Req, res: Res) => {
   res.setHeader('content-type', 'image/png')
 
-  const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } = await import(`.temp/sketches/${req.query.sketch || '001'}/index.ts`)
+  const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } =
+    await import(`.temp/sketches/${req.query.sketch || '001'}/index.ts`)
 
   const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
-  const queryDesignSeeds = req.query.designSeeds ? req.query.designSeeds.split(',') : []
+  const queryDesignSeeds = req.query.designSeeds
+    ? req.query.designSeeds.split(',')
+    : []
   const queryCutSeeds = req.query.cutSeeds ? req.query.cutSeeds.split(',') : []
 
   const canvas = createCanvas(canvasWidth, canvasWidth)
@@ -36,9 +39,11 @@ const handler = async (req: Req, res: Res) => {
   const designWidth = canvasWidth - canvasBleed * 2
   const designCanvas = createCanvas(designWidth, designWidth)
   const designC = designCanvas.getContext('2d') as CanvasRenderingContext2D
-  const designSeeds = Object.keys(DesignNoiseSeeds).map((_, i) => queryDesignSeeds[i] || makeRandomSeed())
+  const designSeeds = Object.keys(DesignNoiseSeeds).map(
+    (_, i) => queryDesignSeeds[i] || makeRandomSeed()
+  )
 
-  const designScale = designWidth / (settings.width)
+  const designScale = designWidth / settings.width
 
   designC.save()
   designC.scale(designScale, designScale)
@@ -53,7 +58,7 @@ const handler = async (req: Req, res: Res) => {
     c: designC,
     createCanvas,
     seed: designSeeds,
-    simplex: designSeeds.map(seed => new SimplexNoise(seed)),
+    simplex: designSeeds.map((seed) => new SimplexNoise(seed)),
     noiseStart: 0,
     ...settings,
     width: settings.width ? settings.width + settings.bleed * 2 : undefined,
@@ -61,7 +66,9 @@ const handler = async (req: Req, res: Res) => {
   } as Design)
   designC.restore()
 
-  const cutSeeds = Object.keys(CutNoiseSeeds).map((_, i) => queryCutSeeds[i] || makeRandomSeed())
+  const cutSeeds = Object.keys(CutNoiseSeeds).map(
+    (_, i) => queryCutSeeds[i] || makeRandomSeed()
+  )
 
   designC.strokeStyle = 'black'
   designC.lineWidth = 0.5 / designScale
@@ -71,12 +78,11 @@ const handler = async (req: Req, res: Res) => {
   cut({
     c: designC,
     seed: cutSeeds,
-    simplex: cutSeeds.map(seed => new SimplexNoise(seed)),
+    simplex: cutSeeds.map((seed) => new SimplexNoise(seed)),
     noiseStart: 0,
-    ...settings
+    ...settings,
   } as Cut)
   designC.restore()
-
 
   c.fillStyle = '#111'
   c.fillRect(0, 0, canvasWidth, canvasWidth)

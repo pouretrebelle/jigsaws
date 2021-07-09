@@ -54,13 +54,10 @@ const Canvas: React.FC = () => {
     x: 0,
     y: 0,
   })
-  const [wrapperBoundingBox, setWrapperBoundingBox] = useState<DOMRect | null>(
-    null
-  )
-  const [
-    { width: canvasWidth, height: canvasHeight },
-    setCanvasDimensions,
-  ] = useState({ width: 0, height: 0 })
+  const [wrapperBoundingBox, setWrapperBoundingBox] =
+    useState<DOMRect | null>(null)
+  const [{ width: canvasWidth, height: canvasHeight }, setCanvasDimensions] =
+    useState({ width: 0, height: 0 })
   const canvasElement = useRef<HTMLCanvasElement>(null)
   const wrapperElement = useRef<HTMLDivElement>(null)
 

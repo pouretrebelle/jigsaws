@@ -4,13 +4,14 @@ import toString from 'remark-stringify'
 import strip from 'strip-markdown'
 
 // Finds 3 digit numbers on their own and link them to the site root
-export const wrapSketchLinks = (string: string) => string.replace(/([\s.,;?!(])([0-9]{3})([\s.,;?!)])/g, (_, before, id, after) => `${before}[${id}](/${id})${after}`)
+export const wrapSketchLinks = (string: string) =>
+  string.replace(
+    /([\s.,;?!(])([0-9]{3})([\s.,;?!)])/g,
+    (_, before, id, after) => `${before}[${id}](/${id})${after}`
+  )
 
 export const getExcerpt = (string: string) => {
-  const processor = unified()
-    .use(markdown)
-    .use(strip)
-    .use(toString)
+  const processor = unified().use(markdown).use(strip).use(toString)
 
   const content = processor.processSync(string).toString()
   const description = content.split('\n\n').slice(2)

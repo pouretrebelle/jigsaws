@@ -9,7 +9,9 @@ export const makeRandomSeed = (): string =>
 export const makeRandomSeedArray = (length: number): string[] =>
   Array.from({ length }, makeRandomSeed)
 
-export const setLocalStorageSeeds = (sketch: Pick<SketchContent, 'cutNoiseSeeds' | 'designNoiseSeeds'>) => {
+export const setLocalStorageSeeds = (
+  sketch: Pick<SketchContent, 'cutNoiseSeeds' | 'designNoiseSeeds'>
+) => {
   localStorage.setItem('cutNoiseSeeds', JSON.stringify(sketch.cutNoiseSeeds))
   localStorage.setItem(
     'designNoiseSeeds',

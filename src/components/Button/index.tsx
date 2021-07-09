@@ -32,7 +32,9 @@ const StyledButton = styled.a<{
     box-shadow: 0 0 0 0 rgba(var(--color-accent), 0.3);
   }
 
-  ${({ disabled }) => disabled && `
+  ${({ disabled }) =>
+    disabled &&
+    `
     pointer-events: none;
     --color-accent: 200, 200, 200;
     opacity: 0.5;

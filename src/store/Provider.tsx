@@ -9,9 +9,9 @@ const combinedReducers: React.Reducer<State, Action> = (state, action) =>
     state
   )
 
-const augmentDispatch = (dispatch: React.Dispatch<Action>, state: State) => (
-  input: Thunk | Action
-) => (input instanceof Function ? input(dispatch, state) : dispatch(input))
+const augmentDispatch =
+  (dispatch: React.Dispatch<Action>, state: State) => (input: Thunk | Action) =>
+    input instanceof Function ? input(dispatch, state) : dispatch(input)
 
 interface Props {
   sketchId: string
@@ -19,9 +19,13 @@ interface Props {
 }
 
 type Context = [State, AugmentedDispatch]
-export const SketchContext = createContext(([{}] as unknown) as Context)
+export const SketchContext = createContext([{}] as unknown as Context)
 
-export const SketchProvider: React.FC<Props> = ({ children, sketchId, sketchIds }) => {
+export const SketchProvider: React.FC<Props> = ({
+  children,
+  sketchId,
+  sketchIds,
+}) => {
   const [state, dispatch] = useReducer(combinedReducers, getInitialState())
 
   const value = [

@@ -9,29 +9,27 @@ interface Payload {
   value?: string
 }
 
-export const reducer: React.Reducer<
-  State,
-  { type: string; payload: Payload }
-> = (state, action) => {
-  if (action.type !== ActionType.UpdateSeed) return state
+export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
+  (state, action) => {
+    if (action.type !== ActionType.UpdateSeed) return state
 
-  const { layer, index, value } = action.payload
-  const storeKey = layer === Layer.Cut ? 'cutNoiseSeeds' : 'designNoiseSeeds'
+    const { layer, index, value } = action.payload
+    const storeKey = layer === Layer.Cut ? 'cutNoiseSeeds' : 'designNoiseSeeds'
 
-  let seeds = [...state[storeKey]]
-  if (index !== undefined) {
-    seeds[index] = value || makeRandomSeed()
-  } else {
-    seeds = makeRandomSeedArray(seeds.length)
+    let seeds = [...state[storeKey]]
+    if (index !== undefined) {
+      seeds[index] = value || makeRandomSeed()
+    } else {
+      seeds = makeRandomSeedArray(seeds.length)
+    }
+
+    localStorage.setItem(storeKey, JSON.stringify(seeds))
+
+    return {
+      ...state,
+      [storeKey]: seeds,
+    }
   }
-
-  localStorage.setItem(storeKey, JSON.stringify(seeds))
-
-  return {
-    ...state,
-    [storeKey]: seeds,
-  }
-}
 
 export const updateSeed = (layer: Layer, index?: number, value?: string) => ({
   type: ActionType.UpdateSeed,

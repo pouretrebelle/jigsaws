@@ -27,11 +27,6 @@ jobs:
       - run:
           name: Lint
           command: npm run lint
-      - store_artifacts:
-          path: lint-results.xml
-          prefix: tests
-      - store_test_results:
-          path: lint-results.xml
   type-check:
     docker:
       - image: circleci/node:14.15
@@ -42,11 +37,16 @@ jobs:
       - run:
           name: Type check
           command: npm run type-check
-      - store_artifacts:
-          path: type-check-results.xml
-          prefix: tests
-      - store_test_results:
-          path: type-check-results.xml
+  test:
+    docker:
+      - image: circleci/node:14.15
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Test
+          command: npm run test
 
 workflows:
   version: 2.1
@@ -57,5 +57,8 @@ workflows:
           requires:
             - setup
       - type-check:
+          requires:
+            - setup
+      - test:
           requires:
             - setup

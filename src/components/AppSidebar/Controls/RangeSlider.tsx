@@ -20,7 +20,14 @@ const StyledRangeInput = styled.input`
   cursor: pointer;
 `
 
-const RangeSlider: React.FC<Props> = ({ label, value, min, max, step, onChange }) => (
+const RangeSlider: React.FC<Props> = ({
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}) => (
   <StyledLabel>
     {label}
 

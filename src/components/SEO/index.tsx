@@ -35,7 +35,9 @@ export const SEO: React.FC<Props> = ({
 
       <meta
         property="og:url"
-        content={`https://${process.env.NEXT_PUBLIC_URL || 'example.com'}${router.asPath}`}
+        content={`https://${process.env.NEXT_PUBLIC_URL || 'example.com'}${
+          router.asPath
+        }`}
       />
       <meta property="og:type" content="website" />
       <meta property="og:title" content={fullTitle} />

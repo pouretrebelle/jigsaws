@@ -5,8 +5,12 @@ interface Req {
 }
 
 interface Res {
-  setHeader: (arg0: string, arg1: string) => void;
-  status: (arg0: number) => { (): any; new(): any; send: { (arg0: string): void; new(): any } }
+  setHeader: (arg0: string, arg1: string) => void
+  status: (arg0: number) => {
+    (): any
+    new (): any
+    send: { (arg0: string): void; new (): any }
+  }
 }
 
 const handler = (req: Req, res: Res) => {

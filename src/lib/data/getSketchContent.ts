@@ -11,9 +11,22 @@ const getRgb = (color: string): string => chroma(color).rgb().join(', ')
 
 export const getSketchContent = (sketchId: string): SketchContent | null => {
   try {
-    const file = fs.readFileSync(`sketches/${sketchId}/README.md`, 'utf8');
-    const { content, data: { datePublished, youTubeLink, pieces, timeToSolve, accentColor = COLOR.ACCENT, designNoiseSeeds, cutNoiseSeeds, } } = matter(file)
-    const canvas = `${sketchId}_${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}.png`
+    const file = fs.readFileSync(`sketches/${sketchId}/README.md`, 'utf8')
+    const {
+      content,
+      data: {
+        datePublished,
+        youTubeLink,
+        pieces,
+        timeToSolve,
+        accentColor = COLOR.ACCENT,
+        designNoiseSeeds,
+        cutNoiseSeeds,
+      },
+    } = matter(file)
+    const canvas = `${sketchId}_${designNoiseSeeds.join(
+      '-'
+    )}_${cutNoiseSeeds.join('-')}.png`
 
     return {
       id: sketchId,
@@ -34,10 +47,9 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
         solveMiddle: youTubeLink ? `${sketchId}_solve_middle.jpg` : canvas,
         solveEnd: youTubeLink ? `${sketchId}_solve_end.jpg` : canvas,
         canvas,
-      }
+      },
     }
-  }
-  catch (err) {
+  } catch (err) {
     console.error(`Cannot get content of sketch ${sketchId}`)
     return null
   }

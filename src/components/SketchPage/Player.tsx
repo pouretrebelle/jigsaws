@@ -74,10 +74,7 @@ export const Player: React.FC<Props> = ({ youTubeLink, imagePath, id }) => {
   }, [id])
 
   const image = (
-    <CloudinaryImage
-      imagePath={imagePath.solveStart}
-      aspectRatio={0.5625}
-    />
+    <CloudinaryImage imagePath={imagePath.solveStart} aspectRatio={0.5625} />
   )
 
   if (!youTubeLink) return image

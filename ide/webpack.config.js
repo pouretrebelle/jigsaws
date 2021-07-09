@@ -24,7 +24,7 @@ module.exports = (env, argv) => ({
     port: 4001,
   },
   node: {
-    fs: 'empty'
+    fs: 'empty',
   },
   module: {
     rules: [
@@ -36,16 +36,17 @@ module.exports = (env, argv) => ({
             loader: 'babel-loader',
             options: {
               configFile: './ide/.babelrc',
-            }
+            },
           },
           {
             loader: 'ts-loader',
             options: {
               compilerOptions: {
-                noEmit: false
-              }
-            }
-          }]
+                noEmit: false,
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.pug?$/,

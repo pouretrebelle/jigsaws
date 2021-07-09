@@ -54,11 +54,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const sketchIndex = sketches.findIndex(({ id }) => id === sketchId)
   const sketch = sketches[sketchIndex]
 
-  let prevSketchLink = null, nextSketchLink = null
+  let prevSketchLink = null,
+    nextSketchLink = null
   if (sketchIndex !== sketches.length - 1)
     prevSketchLink = sketches[sketchIndex + 1].pageLink
-  if (sketchIndex > 0)
-    nextSketchLink = sketches[sketchIndex - 1].pageLink
+  if (sketchIndex > 0) nextSketchLink = sketches[sketchIndex - 1].pageLink
 
   return {
     props: {

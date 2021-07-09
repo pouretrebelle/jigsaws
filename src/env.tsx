@@ -21,7 +21,7 @@ interface State {
   trackEvent: TrackEvent
 }
 
-export const EnvContext = createContext(({} as unknown) as State)
+export const EnvContext = createContext({} as unknown as State)
 
 export const EnvProvider: React.FC<Props> = ({
   env,

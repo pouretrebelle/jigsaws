@@ -1,6 +1,4 @@
-import SimplexNoise from 'simplex-noise'
 import { Design } from 'types'
-import { arrayValueFromRandom, indexOfUniqueValue } from 'utils/arrayUtils'
 import { hsl } from 'utils/colorUtils'
 import { randomFromNoise } from 'utils/numberUtils'
 import {
@@ -50,58 +48,112 @@ export const design = ({
         colors.length
     )
 
-  const getColorIndexSquare = (col: number, row: number): number[] => {
-    return [
-      getColorIndex(col, row),
-      getColorIndex(col + 1, row),
-      getColorIndex(col + 1, row + 1),
-      getColorIndex(col, row + 1),
-    ]
-  }
-
   const w = width / GRID_ROWS
   const h = height / GRID_COLUMNS
-  const buffer = 0.1
+  c.lineWidth = 0.1
+
   for (let col = 0; col < GRID_COLUMNS; col++) {
     for (let row = 0; row < GRID_ROWS; row++) {
       let x = w * col
       let y = h * row
 
-      const colorIndexes = getColorIndexSquare(col, row)
-      const uniqueColorIndexes = [...new Set(colorIndexes)]
-      const [nw, ne, se, sw] = colorIndexes
+      const m = { x: x + w / 2, y: y + h / 2 }
+      const t = { x: x + w / 2, y: y }
+      const r = { x: x + w, y: y + h / 2 }
+      const b = { x: x + w / 2, y: y + h }
+      const l = { x: x, y: y + h / 2 }
+      const tl = { x: x, y: y }
+      const tr = { x: x + w, y: y }
+      const br = { x: x + w, y: y + h }
+      const bl = { x: x, y: y + h }
 
-      const tl = { x: x - buffer, y: y - buffer }
-      const tr = { x: x + w + buffer, y: y - buffer }
-      const br = { x: x + w + buffer, y: y + h + buffer }
-      const bl = { x: x - buffer, y: y + h + buffer }
-
-      const drawTriangle = (...corners: { x: number; y: number }[]) => {
+      const drawTriangle = (
+        colorIndex: number,
+        corners: { x: number; y: number }[]
+      ) => {
+        c.fillStyle = colors[colorIndex]
+        c.strokeStyle = colors[colorIndex]
         c.beginPath()
         corners.forEach(({ x, y }, i) => c[i === 0 ? 'moveTo' : 'lineTo'](x, y))
         c.fill()
+        c.stroke()
       }
 
-      if (
-        (nw === ne && sw === se) ||
-        (nw === sw && ne === se) ||
-        uniqueColorIndexes.length !== 2
-      ) {
-        c.fillStyle = colors[Math.max(...uniqueColorIndexes)]
-        c.fillRect(tl.x, tl.y, w + buffer * 2, h + buffer * 2)
-      } else if (nw !== se) {
-        c.fillStyle = colors[se]
-        drawTriangle(tr, br, bl)
-
-        c.fillStyle = colors[nw]
-        drawTriangle(tl, tr, bl)
-      } else if (ne !== sw) {
-        c.fillStyle = colors[sw]
-        drawTriangle(tl, br, bl)
-
-        c.fillStyle = colors[ne]
-        drawTriangle(tl, tr, br)
+      type P = {
+        x: number
+        y: number
       }
+      type U = [number, number]
+      interface Triangle {
+        corners: [P, P]
+        main: U
+        compare: [U, U]
+      }
+
+      const uN: U = [0, -1]
+      const uE: U = [1, 0]
+      const uS: U = [0, 1]
+      const uW: U = [-1, 0]
+
+      const triangles: Record<string, Triangle> = {
+        nne: {
+          corners: [t, tr],
+          main: uN,
+          compare: [uE, [1, -2]],
+        },
+        ene: {
+          corners: [tr, r],
+          main: uE,
+          compare: [uN, [2, -1]],
+        },
+        ese: {
+          corners: [r, br],
+          main: uE,
+          compare: [uS, [2, 1]],
+        },
+        sse: {
+          corners: [br, b],
+          main: uS,
+          compare: [uE, [1, 2]],
+        },
+        ssw: {
+          corners: [b, bl],
+          main: uS,
+          compare: [uW, [-1, 2]],
+        },
+        wsw: {
+          corners: [bl, l],
+          main: uW,
+          compare: [uS, [-2, 1]],
+        },
+        wnw: {
+          corners: [l, tl],
+          main: uW,
+          compare: [uN, [-2, -1]],
+        },
+        nnw: {
+          corners: [tl, t],
+          main: uN,
+          compare: [uW, [-1, -2]],
+        },
+      }
+
+      c.fillStyle = colors[getColorIndex(col + 0.5, row + 0.5)]
+      c.fillRect(tl.x, tl.y, w, h)
+
+      const getPos = ([uX, uY]: [number, number]): [number, number] => [
+        col + 0.5 + uX / 2,
+        row + 0.5 + uY / 2,
+      ]
+
+      Object.values(triangles).map(({ corners, main, compare }: Triangle) => {
+        const colorIndex =
+          getColorIndex(...getPos(compare[0])) ===
+          getColorIndex(...getPos(compare[1]))
+            ? getColorIndex(...getPos(compare[0]))
+            : getColorIndex(...getPos(main))
+        drawTriangle(colorIndex, [m, ...corners])
+      })
     }
   }
 

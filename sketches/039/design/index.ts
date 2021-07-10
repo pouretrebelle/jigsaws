@@ -26,12 +26,10 @@ export const design = ({
 }: Design) => {
   c.save()
 
-  const triangleData: {
-    color: string
-    triangles: {
-      name: keyof typeof TRIANGLES
-      middle: [number, number]
-    }[]
+  const triangles: {
+    colorIndex: number
+    name: keyof typeof TRIANGLES
+    middle: [number, number]
   }[] = []
 
   const colors = getContrastingColorScale(
@@ -39,9 +37,6 @@ export const design = ({
     simplex[Seeds.Color],
     COLOR_COUNT
   )
-  for (let i = 0; i < COLOR_COUNT; i++) {
-    triangleData.push({ color: colors[i], triangles: [] })
-  }
 
   const drawTriangle = (
     color: string,
@@ -97,16 +92,16 @@ export const design = ({
         const colorIndex =
           compareA === compareB ? compareA : getColorIndex(getPos(sampleDir))
 
-        triangleData[colorIndex].triangles.push({ name, middle })
+        triangles.push({ name, middle, colorIndex })
       })
     }
   }
 
-  triangleData.forEach(({ color, triangles }) => {
-    triangles.forEach(({ name, middle }) =>
-      drawTriangle(color, middle, TRIANGLES[name].corners)
+  triangles
+    .sort((a, b) => b.colorIndex - a.colorIndex)
+    .forEach(({ colorIndex, name, middle }) =>
+      drawTriangle(colors[colorIndex], middle, TRIANGLES[name].corners)
     )
-  })
 
   c.restore()
 }

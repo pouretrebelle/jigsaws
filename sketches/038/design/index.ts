@@ -61,13 +61,18 @@ export const design = ({
 
   const getColorIndex = ([x, y]: [number, number]): number =>
     Math.floor(
-      ((simplex[Seeds.Position].noise2D(
-        (x / width) * GRID_COLUMNS * GRID_FIDELITY_HORIZONTAL,
-        (y / height) * GRID_ROWS * GRID_FIDELITY_VERTICAL
-      ) +
-        1) /
-        2) *
-        COLOR_COUNT
+      map(
+        simplex[Seeds.Position].noise3D(
+          (x / width) * GRID_COLUMNS * GRID_FIDELITY_HORIZONTAL,
+          (y / height) * GRID_ROWS * GRID_FIDELITY_VERTICAL,
+          noiseStart
+        ),
+        -0.9,
+        0.9,
+        0,
+        COLOR_COUNT - 0.01,
+        true
+      )
     )
 
   for (let col = 0; col < GRID_COLUMNS; col++) {

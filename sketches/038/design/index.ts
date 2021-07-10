@@ -3,6 +3,7 @@ import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 import { map } from 'utils/numberUtils'
 import {
   COLOR_COUNT,
+  COLORS,
   GRID_COLUMNS,
   GRID_FIDELITY_HORIZONTAL,
   GRID_FIDELITY_VERTICAL,
@@ -33,11 +34,13 @@ export const design = ({
     }[]
   }[] = []
 
+  const colors = arrayValuesFromSimplex(
+    COLORS,
+    simplex[Seeds.Color],
+    COLOR_COUNT
+  )
   for (let i = 0; i < COLOR_COUNT; i++) {
-    const h = Math.floor(
-      randomFromNoise(simplex[Seeds.Color].noise2D(235.25 + i, 123.33)) * 360
-    )
-    triangleData.push({ color: hsl(h, 50, 50), triangles: [] })
+    triangleData.push({ color: colors[i], triangles: [] })
   }
 
   const drawTriangle = (

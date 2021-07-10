@@ -11,7 +11,7 @@ export enum Seeds {
 }
 
 const MIN_TAB_SIZE = 8
-const MAX_TAB_SIZE = 12
+const MAX_TAB_SIZE = 11
 
 const voronoi = new Voronoi()
 let diagram: Diagram

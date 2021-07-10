@@ -1,5 +1,4 @@
 import { Design } from 'types'
-import { arrayValuesFromSimplex } from 'utils/arrayUtils'
 import { map } from 'utils/numberUtils'
 import {
   COLOR_COUNT,
@@ -10,6 +9,7 @@ import {
   GRID_ROWS,
   TRIANGLES,
 } from './constants'
+import { getContrastingColorScale } from './colors'
 
 export enum Seeds {
   Color,
@@ -34,7 +34,7 @@ export const design = ({
     }[]
   }[] = []
 
-  const colors = arrayValuesFromSimplex(
+  const colors = getContrastingColorScale(
     COLORS,
     simplex[Seeds.Color],
     COLOR_COUNT

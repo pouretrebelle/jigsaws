@@ -11,8 +11,8 @@ export enum Seeds {
   Flip,
 }
 
-const MIN_TAB_SIZE = 8
-const MAX_TAB_SIZE = 11
+const MIN_TAB_SIZE = 6
+const MAX_TAB_SIZE = 10
 
 const voronoi = new Voronoi()
 let diagram: Diagram

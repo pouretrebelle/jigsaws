@@ -74,9 +74,9 @@ export const design = ({
       )
     )
 
-  const w = (width - bleed * 2) / GRID_ROWS
-  const h = (height - bleed * 2) / GRID_COLUMNS
-  const colOverhang = Math.ceil(bleed % w) + 0.5
+  const w = (width - bleed * 2) / GRID_COLUMNS
+  const h = (height - bleed * 2) / GRID_ROWS
+  const colOverhang = Math.ceil(bleed % w) + 1.5
   const rowOverhang = Math.ceil(bleed % h) + 0.5
   c.lineWidth = 0.1
 

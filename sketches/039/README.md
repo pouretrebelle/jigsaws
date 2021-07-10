@@ -2,11 +2,11 @@
 datePublished: 2021-07-23
 youTubeLink: todo
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [cge, ewe]
+cutNoiseSeeds: [vsg, uwl, wje]
 accentColor: 'fuchsia'
 
-pieces: 1
+pieces: 289
 timeToSolve: 1
 ---
 

@@ -3,7 +3,7 @@ import Voronoi, { Diagram, Edge } from 'voronoi'
 import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
 import { getNextContinuingEdge, getStartingEdge } from './utils'
-import { map } from 'utils/numberUtils'
+import { map, signFromRandom } from 'utils/numberUtils'
 
 export enum Seeds {
   SwayX,
@@ -83,7 +83,8 @@ const drawEdge = ({
   const p1 = points[0]
   const p2 = points[1]
 
-  const straight = points[0].dist(points[1]) < MIN_TAB_SIZE || !lSite || !rSite
+  const straight = !lSite || !rSite
+  const noTab = points[0].dist(points[1]) < MIN_TAB_SIZE
   let flip = straight
     ? false
     : simplex.noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
@@ -120,6 +121,20 @@ const drawEdge = ({
     -0.2,
     0.2
   )
+
+  if (noTab) {
+    const cSimp = simplex.noise2D(
+      123 + lSite.voronoiId * 10,
+      345 + rSite.voronoiId * 10
+    )
+    const cAng =
+      map(cSimp, -1, 1, 0.5, 0.8) * signFromRandom((cSimp * 100) % 1) * flipMult
+    const cV = p2.minusNew(p1) // vector from p1 to p2
+    const c1 = p1.plusNew(cV.multiplyNew(0.35).rotate(cAng))
+    const c2 = p2.plusNew(cV.multiplyNew(-0.35).rotate(-cAng))
+
+    return c.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, p2.x, p2.y)
+  }
 
   // the starting points of this tabs
   let p1s = p1.clone()

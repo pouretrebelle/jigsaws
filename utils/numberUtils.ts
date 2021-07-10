@@ -23,5 +23,7 @@ export const clamp = (value: number, min: number, max: number): number => {
 export const randomFromNoise = (noiseValue: number): number =>
   Math.abs(noiseValue * 10) % 1
 
+export const signFromRandom = (value: number): number => (value > 0.5 ? 1 : -1)
+
 export const roundToDecimalPlace = (num: number, degree: number): number =>
   Math.round(num * Math.pow(10, degree)) / Math.pow(10, degree)

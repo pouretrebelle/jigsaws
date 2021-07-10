@@ -3,6 +3,7 @@ import Voronoi, { Diagram, Edge } from 'voronoi'
 import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
 import { getNextContinuingEdge, getStartingEdge } from './utils'
+import { map } from 'utils/numberUtils'
 
 export enum Seeds {
   SwayX,
@@ -101,7 +102,24 @@ const drawEdge = ({
   const tVmult = 0.4 * flipMult // push of t towards other side of piece
   const tWidth = 1.1 // how far t1 and t2 are from the center
   const pWidth = 0.85 // how far p1c and p2c are from the p1s and p2s
-  const pAng = Math.atan(1 / 8) * flipMult // how far p1c and p2c lean back from tab
+  const pAng =
+    Math.atan(
+      map(
+        MAX_TAB_SIZE / dist,
+        2,
+        MIN_TAB_SIZE / MAX_TAB_SIZE,
+        1 / 2,
+        1 / 8,
+        true
+      )
+    ) * flipMult // how far p1c and p2c lean back from tab
+  const tAng = map(
+    simplex.noise2D(123 + lSite.voronoiId * 10, 345 + rSite.voronoiId * 10),
+    -1,
+    1,
+    -0.2,
+    0.2
+  )
 
   // the starting points of this tabs
   let p1s = p1.clone()
@@ -119,11 +137,12 @@ const drawEdge = ({
   const midPoint = p1s.plusNew(p2s).multiplyEq(0.5)
   const pV = p2s.minusNew(p1s) // vector from p1s to p2s
   const tV = pV.multiplyNew(tVmult).rotate(-90, true) // perpendicular to pV
+  const ptV = pV.clone().rotate(tAng) // tweak tab angles
   const t = midPoint.plusNew(tV) // top point of tab
 
   const p1c = p1s.plusNew(pV.multiplyNew(pWidth).rotate(pAng))
-  const t1 = t.minusNew(pV.multiplyNew(tWidth / 2))
-  const t2 = t.plusNew(pV.multiplyNew(tWidth / 2))
+  const t1 = t.minusNew(ptV.multiplyNew(tWidth / 2))
+  const t2 = t.plusNew(ptV.multiplyNew(tWidth / 2))
   const p2c = p2s.minusNew(pV.multiplyNew(pWidth).rotate(-pAng))
 
   c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)

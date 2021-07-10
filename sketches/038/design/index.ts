@@ -1,6 +1,6 @@
 import { Design } from 'types'
-import { hsl } from 'utils/colorUtils'
-import { randomFromNoise } from 'utils/numberUtils'
+import { arrayValuesFromSimplex } from 'utils/arrayUtils'
+import { map } from 'utils/numberUtils'
 import {
   COLOR_COUNT,
   GRID_COLUMNS,
@@ -55,10 +55,6 @@ export const design = ({
     c.stroke()
   }
 
-  const w = width / GRID_ROWS
-  const h = height / GRID_COLUMNS
-  c.lineWidth = 0.1
-
   const getColorIndex = ([x, y]: [number, number]): number =>
     Math.floor(
       map(
@@ -75,10 +71,16 @@ export const design = ({
       )
     )
 
-  for (let col = 0; col < GRID_COLUMNS; col++) {
-    for (let row = 0; row < GRID_ROWS; row++) {
-      const x = w * col
-      const y = h * row
+  const w = (width - bleed * 2) / GRID_ROWS
+  const h = (height - bleed * 2) / GRID_COLUMNS
+  const colOverhang = Math.ceil(bleed % w) + 0.5
+  const rowOverhang = Math.ceil(bleed % h) + 0.5
+  c.lineWidth = 0.1
+
+  for (let col = -colOverhang; col < GRID_COLUMNS + colOverhang; col++) {
+    for (let row = -rowOverhang; row < GRID_ROWS + rowOverhang; row++) {
+      const x = bleed + w * col
+      const y = bleed + h * row
       const middle: [number, number] = [x + w / 2, y + h / 2]
 
       const getPos = ([uX, uY]: [number, number]): [number, number] => [

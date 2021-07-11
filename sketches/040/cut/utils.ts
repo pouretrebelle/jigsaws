@@ -1,14 +1,18 @@
-import { Edge } from 'voronoi'
+import SimplexNoise from 'simplex-noise'
+import { map, signFromRandom } from 'utils/numberUtils'
+import Vector2 from 'utils/Vector2'
+import { Edge, Site } from 'voronoi'
+import { MAX_TAB_SIZE, MIN_TAB_SIZE } from './constants'
 
-export interface DirectionalEdge {
+export interface VectoralEdge {
   edge: Edge
   reverse: boolean
 }
 
 const getContinuingEdges = (
-  prev: DirectionalEdge,
+  prev: VectoralEdge,
   edges: Edge[]
-): DirectionalEdge[] => {
+): VectoralEdge[] => {
   const availableEdges = edges.filter(
     (edge) => !edge.drawn && prev.edge !== edge
   )
@@ -22,13 +26,13 @@ const getContinuingEdges = (
 }
 
 export const getNextContinuingEdge = (
-  prev: DirectionalEdge,
+  prev: VectoralEdge,
   edges: Edge[]
-): DirectionalEdge | null => {
+): VectoralEdge | null => {
   const edgeOptions = getContinuingEdges(prev, edges)
 
   if (edgeOptions.length) {
-    // for some reason the last one is always going in the right direction
+    // for some reason the last one is always going in the right Vector
     // let's not jinx it
     return edgeOptions[edgeOptions.length - 1]
   }
@@ -36,7 +40,7 @@ export const getNextContinuingEdge = (
   return null
 }
 
-export const getStartingEdge = (edges: Edge[]): DirectionalEdge | null => {
+export const getStartingEdge = (edges: Edge[]): VectoralEdge | null => {
   const undrawnEdges = edges.filter(({ drawn }) => !drawn)
 
   const startingEdge = undrawnEdges
@@ -49,7 +53,7 @@ export const getStartingEdge = (edges: Edge[]): DirectionalEdge | null => {
     )
     .find(
       (a) =>
-        // if there's no onward travel in either direction
+        // if there's no onward travel in either Vector
         // it's the start of a line
         getContinuingEdges({ edge: a, reverse: false }, edges).length === 0 ||
         getContinuingEdges({ edge: a, reverse: true }, edges).length === 0
@@ -65,4 +69,156 @@ export const getStartingEdge = (edges: Edge[]): DirectionalEdge | null => {
   }
 
   return null
+}
+
+export enum EdgeType {
+  Straight,
+  Curve,
+  Tab,
+}
+
+interface EdgeBase {
+  lSite: Site
+  rSite: Site
+  pos: [Vector2, Vector2]
+}
+interface StraightEdge {
+  edgeType: EdgeType.Straight
+}
+interface CurveEdge {
+  edgeType: EdgeType.Curve
+  anchorPos: [Vector2, Vector2]
+}
+interface TabEdge {
+  edgeType: EdgeType.Tab
+  hasWings: boolean
+  flipTab: boolean
+  tabPos: Vector2
+  bezierPos: [Vector2, Vector2]
+  anchorPos: [Vector2, Vector2]
+  tabAnchorPos: [Vector2, Vector2]
+}
+type EdgeData = EdgeBase & (StraightEdge | CurveEdge | TabEdge)
+
+export const getEdgeData = ({
+  edge,
+  simplex,
+  flipTab,
+}: {
+  edge: Edge
+  simplex: SimplexNoise
+  flipTab: boolean
+}): EdgeData => {
+  const flipSign = flipTab ? 1 : -1
+  const { lSite, rSite, va, vb } = edge
+
+  const startPos = new Vector2(va.x, va.y)
+  const endPos = new Vector2(vb.x, vb.y)
+  const result: EdgeBase = {
+    lSite,
+    rSite,
+    pos: [startPos, endPos],
+  }
+
+  if (!lSite || !rSite) {
+    return {
+      ...result,
+      edgeType: EdgeType.Straight,
+    }
+  }
+
+  const endVector = endPos.minusNew(startPos)
+  const length = endVector.magnitude()
+
+  if (length < MIN_TAB_SIZE) {
+    const curveSimplex = simplex.noise2D(
+      123 + lSite.voronoiId * 10,
+      345 + rSite.voronoiId * 10
+    )
+    const curveAngle =
+      map(curveSimplex, -1, 1, 0.5, 0.8) *
+      signFromRandom((curveSimplex * 100) % 1) *
+      flipSign
+
+    return {
+      ...result,
+      edgeType: EdgeType.Curve,
+      anchorPos: [
+        startPos.plusNew(endVector.multiplyNew(0.35).rotate(curveAngle)),
+        endPos.plusNew(endVector.multiplyNew(-0.35).rotate(-curveAngle)),
+      ],
+    }
+  }
+
+  // how far anchors lean back from tab
+  const leanBackAngle =
+    Math.atan(
+      map(
+        MAX_TAB_SIZE / length,
+        2,
+        MIN_TAB_SIZE / MAX_TAB_SIZE,
+        1 / 2,
+        1 / 8,
+        true
+      )
+    ) * flipSign
+
+  let hasWings = length > MAX_TAB_SIZE
+  let bezierStartPos = startPos.clone()
+  let bezierEndPos = endPos.clone()
+
+  if (hasWings) {
+    const endVectorUnit = endPos.minusNew(startPos).normalise()
+    const wingLength = (length - MAX_TAB_SIZE) / 2 / Math.cos(leanBackAngle)
+    bezierStartPos.plusEq(
+      endVectorUnit.multiplyNew(wingLength).rotate(leanBackAngle)
+    )
+    bezierEndPos.minusEq(
+      endVectorUnit.multiplyNew(wingLength).rotate(-leanBackAngle)
+    )
+  }
+
+  const bezierLength = Math.min(length, MAX_TAB_SIZE)
+  const bezierEndVectorUnit = bezierEndPos.minusNew(bezierStartPos).normalise()
+
+  const tabLength = bezierLength * 0.4 * flipSign
+  const tabAnchorLength = bezierLength * 1.1 // how far tab anchors are from the center
+  const anchorLength = bezierLength * 0.85
+  const tabAnchorAngle = map(
+    simplex.noise2D(123 + lSite.voronoiId * 10, 345 + rSite.voronoiId * 10),
+    -1,
+    1,
+    -0.2,
+    0.2
+  )
+
+  const tabPos = bezierEndVectorUnit
+    .multiplyNew(bezierLength / 2)
+    .plusEq(bezierStartPos)
+    .plusEq(bezierEndVectorUnit.multiplyNew(tabLength).rotate(-90, true))
+  const tabAnchorVector = bezierEndVectorUnit
+    .multiplyNew(tabAnchorLength / 2)
+    .rotate(tabAnchorAngle) // tweak tab angles
+
+  const bezierStartAnchorPos = bezierStartPos.plusNew(
+    bezierEndVectorUnit.multiplyNew(anchorLength).rotate(leanBackAngle)
+  )
+  const tabStartAnchorPos = tabPos.minusNew(tabAnchorVector)
+  const tabEndAnchorPos = tabPos.plusNew(tabAnchorVector)
+  const bezierEndAnchorPos = bezierEndPos.minusNew(
+    bezierEndVectorUnit.multiplyNew(anchorLength).rotate(-leanBackAngle)
+  )
+
+  return {
+    ...result,
+    edgeType: EdgeType.Tab,
+    flipTab,
+    hasWings,
+
+    tabPos,
+
+    bezierPos: [bezierStartPos, bezierEndPos],
+    tabAnchorPos: [tabStartAnchorPos, tabEndAnchorPos],
+    anchorPos: [bezierStartAnchorPos, bezierEndAnchorPos],
+  }
 }

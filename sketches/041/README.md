@@ -2,11 +2,11 @@
 datePublished: 2021-08-06
 youTubeLink: todo
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [izu, plk]
+cutNoiseSeeds: [izh, vso, nly]
 accentColor: 'fuchsia'
 
-pieces: 1
+pieces: 196
 timeToSolve: 1
 ---
 

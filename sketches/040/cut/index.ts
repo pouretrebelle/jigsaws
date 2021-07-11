@@ -13,6 +13,7 @@ export enum Seeds {
 
 const MIN_TAB_SIZE = 6
 const MAX_TAB_SIZE = 10
+const MIN_TAB_DIST = 10
 
 const voronoi = new Voronoi()
 let diagram: Diagram
@@ -29,7 +30,7 @@ const tweakDist = (
   return (
     (m +
       (simplex.noise2D(m * 0.15, alt * 0.15) * 0.4 +
-        simplex.noise2D(m * 0.4, alt * 0.4) * 0.2) *
+        simplex.noise2D(m * 0.4, alt * 0.4) * 0.8) *
         edgeAvoidanceScalar) /
     rows
   )
@@ -168,6 +169,16 @@ const drawEdge = ({
   }
 }
 
+const getTabPos = ({ va, vb }: Edge, flip: boolean): Vector2 => {
+  const p1 = new Vector2(va.x, va.y)
+  const p2 = new Vector2(vb.x, vb.y)
+
+  const midPoint = p1.plusNew(p2).multiplyEq(0.5)
+  const pV = p2.minusNew(p1) // vector from p1 to p2
+  const tV = pV.multiplyNew(0.4).rotate(flip ? 90 : -90, true) // perpendicular to pV
+  return midPoint.plusNew(tV) // top point of tab
+}
+
 const getCutData = ({
   width,
   columns,
@@ -196,7 +207,53 @@ const getCutData = ({
 
   voronoi.recycle(diagram)
   const bbox = { xl: 0, xr: width, yt: 0, yb: height }
-  return voronoi.compute(sites, bbox)
+  diagram = voronoi.compute(sites, bbox)
+
+  diagram.edges.forEach((edge, i) => {
+    const { lSite, rSite, va, vb } = edge
+    const p1 = new Vector2(va.x, va.y)
+    const p2 = new Vector2(vb.x, vb.y)
+
+    const straight = !lSite || !rSite
+    const noTab = p1.dist(p2) < MIN_TAB_SIZE
+    diagram.edges[i].straight = straight
+    diagram.edges[i].noTab = noTab
+    if (straight || noTab) return
+
+    let flip =
+      simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) >
+      0
+
+    const compareEdges = diagram.edges.filter((e) => !!e.tabPos)
+
+    let tabPosA = getTabPos(edge, flip)
+    const minDistToPosA = compareEdges.reduce(
+      (min, edge) => Math.min(min, tabPosA.dist(edge.tabPos)),
+      Infinity
+    )
+
+    if (minDistToPosA > MIN_TAB_DIST) {
+      diagram.edges[i].tabPos = tabPosA
+      diagram.edges[i].flip = flip
+      return
+    }
+
+    let tabPosB = getTabPos(edge, !flip)
+    const minDistToPosB = compareEdges.reduce(
+      (min, edge) => Math.min(min, tabPosB.dist(edge.tabPos)),
+      Infinity
+    )
+
+    if (minDistToPosA < minDistToPosB) {
+      diagram.edges[i].tabPos = tabPosA
+      diagram.edges[i].flip = flip
+    } else {
+      diagram.edges[i].tabPos = tabPosB
+      diagram.edges[i].flip = !flip
+    }
+  })
+
+  return diagram
 }
 
 export const cut = (cutArgs: Cut) => {
@@ -210,15 +267,15 @@ export const cut = (cutArgs: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
-  const diagram = getCutData(cutArgs)
+  const data = getCutData(cutArgs)
 
   // mark jigsaw edges as already drawn
-  diagram.edges.forEach((edge, i) => {
-    diagram.edges[i].drawn = !edge.lSite || !edge.rSite
+  data.edges.forEach((edge, i) => {
+    data.edges[i].drawn = !edge.lSite || !edge.rSite
   })
 
   // keep track of undrawn for performance
-  let undrawnEdges: Edge[] = diagram.edges
+  let undrawnEdges: Edge[] = data.edges
   const updateUndrawnEdges = () =>
     (undrawnEdges = undrawnEdges.filter(({ drawn }) => !drawn))
   updateUndrawnEdges()

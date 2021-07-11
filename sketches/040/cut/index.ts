@@ -4,12 +4,13 @@ import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
 import {
   EdgeType,
+  getAvoidPoints,
   getEdgeData,
   getNextContinuingEdge,
   getStartingEdge,
 } from './utils'
-import { map, signFromRandom } from 'utils/numberUtils'
-import { MAX_TAB_SIZE, MIN_TAB_DIST, MIN_TAB_SIZE } from './constants'
+import { MIN_TAB_DIST } from './constants'
+import { getMinDistBetweenPointSets } from 'utils/vectorUtils'
 
 export enum Seeds {
   SwayX,
@@ -165,6 +166,7 @@ const getCutData = ({
   const bbox = { xl: 0, xr: width, yt: 0, yb: height }
   diagram = voronoi.compute(sites, bbox)
 
+  const allAvoidPoints: Vector2[] = []
   diagram.edges.forEach((edge, i) => {
     const { lSite, rSite } = edge
 
@@ -179,36 +181,35 @@ const getCutData = ({
       simplex: simplex[Seeds.Flip],
       flipTab,
     })
+    const avoidPoints = getAvoidPoints(edgeData)
     diagram.edges[i].data = edgeData
-    if (edgeData.edgeType !== EdgeType.Tab) return
-
-    const compareEdges = diagram.edges.filter(
-      (altEdge) => altEdge.data?.edgeType === EdgeType.Tab && altEdge !== edge
-    )
-
-    const minDistToTab = compareEdges.reduce(
-      (min, edge) => Math.min(min, edgeData.tabPos.dist(edge.data.tabPos)),
-      Infinity
-    )
-
-    // primary tab position is okay
-    if (minDistToTab > MIN_TAB_DIST) return
-
-    const edgeDataAlt = getEdgeData({
-      edge,
-      simplex: simplex[Seeds.Flip],
-      flipTab: !flipTab,
-    })
-    if (edgeDataAlt.edgeType !== EdgeType.Tab) return // ts sigh
-
-    const minDistToTabAlt = compareEdges.reduce(
-      (min, edge) => Math.min(min, edgeDataAlt.tabPos.dist(edge.data.tabPos)),
-      Infinity
-    )
-
-    if (minDistToTab > minDistToTabAlt) {
-      diagram.edges[i].data = edgeDataAlt
+    if (edgeData.edgeType !== EdgeType.Tab) {
+      allAvoidPoints.push(...avoidPoints)
+      return
     }
+
+    const minDistToTab = getMinDistBetweenPointSets(avoidPoints, allAvoidPoints)
+
+    if (minDistToTab < MIN_TAB_DIST) {
+      const edgeDataAlt = getEdgeData({
+        edge,
+        simplex: simplex[Seeds.Flip],
+        flipTab: !flipTab,
+      })
+      if (edgeDataAlt.edgeType !== EdgeType.Tab) return // ts sigh
+      const avoidPointsAlt = getAvoidPoints(edgeDataAlt)
+
+      const minDistToTabAlt = getMinDistBetweenPointSets(
+        avoidPointsAlt,
+        allAvoidPoints
+      )
+
+      if (minDistToTabAlt > minDistToTab) {
+        diagram.edges[i].data = edgeDataAlt
+      }
+    }
+
+    allAvoidPoints.push(...getAvoidPoints(edgeData))
   })
 
   return diagram

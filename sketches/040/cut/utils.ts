@@ -1,5 +1,6 @@
 import SimplexNoise from 'simplex-noise'
 import { map, signFromRandom } from 'utils/numberUtils'
+import { getCubicBezierXYatPercent } from 'utils/vectorUtils'
 import Vector2 from 'utils/Vector2'
 import { Edge, Site } from 'voronoi'
 import { MAX_TAB_SIZE, MIN_TAB_SIZE } from './constants'
@@ -221,4 +222,63 @@ export const getEdgeData = ({
     tabAnchorPos: [tabStartAnchorPos, tabEndAnchorPos],
     anchorPos: [bezierStartAnchorPos, bezierEndAnchorPos],
   }
+}
+
+const AVOID_POINTS_GAP = 4
+export const getAvoidPoints = (edgeData: EdgeData): Vector2[] => {
+  let points: Vector2[] = []
+  const { pos } = edgeData
+
+  const Start = 0
+  const End = 1
+
+  const vec = pos[End].minusNew(pos[Start])
+  const length = vec.magnitude()
+  const unit = vec.normalise()
+
+  if (edgeData.edgeType === EdgeType.Straight) {
+    for (
+      let d = (length % AVOID_POINTS_GAP) / 2 + AVOID_POINTS_GAP / 2;
+      d < length;
+      d += AVOID_POINTS_GAP
+    ) {
+      points.push(unit.multiplyNew(d).plusEq(pos[Start]))
+    }
+    return points
+  }
+
+  if (edgeData.edgeType === EdgeType.Curve) {
+    const { anchorPos } = edgeData
+    const pointCount = Math.floor(length / AVOID_POINTS_GAP)
+    for (let d = 1 / (pointCount + 1); d < 1; d += 1 / (pointCount + 1)) {
+      points.push(
+        getCubicBezierXYatPercent(
+          pos[Start],
+          anchorPos[Start],
+          anchorPos[End],
+          pos[End],
+          d
+        )
+      )
+    }
+    return points
+  }
+
+  const { tabPos, bezierPos, anchorPos, tabAnchorPos } = edgeData
+
+  ;[Start, End].forEach((mirror) => {
+    ;[0.15, 0.8].forEach((percent) => {
+      points.push(
+        getCubicBezierXYatPercent(
+          bezierPos[mirror],
+          anchorPos[mirror],
+          tabAnchorPos[mirror],
+          tabPos,
+          percent
+        )
+      )
+    })
+  })
+
+  return points
 }

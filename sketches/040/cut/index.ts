@@ -2,18 +2,20 @@ import SimplexNoise from 'simplex-noise'
 import Voronoi, { Diagram, Edge } from 'voronoi'
 import { Cut } from 'types'
 import Vector2 from 'utils/Vector2'
-import { getNextContinuingEdge, getStartingEdge } from './utils'
+import {
+  EdgeType,
+  getEdgeData,
+  getNextContinuingEdge,
+  getStartingEdge,
+} from './utils'
 import { map, signFromRandom } from 'utils/numberUtils'
+import { MAX_TAB_SIZE, MIN_TAB_DIST, MIN_TAB_SIZE } from './constants'
 
 export enum Seeds {
   SwayX,
   SwayY,
   Flip,
 }
-
-const MIN_TAB_SIZE = 6
-const MAX_TAB_SIZE = 10
-const MIN_TAB_DIST = 10
 
 const voronoi = new Voronoi()
 let diagram: Diagram
@@ -66,117 +68,71 @@ class Point extends Vector2 {
 
 const drawEdge = ({
   c,
-  simplex,
   edge,
   moveTo,
   reverse,
 }: {
   c: CanvasRenderingContext2D
-  simplex: SimplexNoise
   edge: Edge
   moveTo: boolean
   reverse: boolean
 }) => {
-  const { lSite, rSite, va, vb } = edge
   edge.drawn = true
-  const points = [new Vector2(va.x, va.y), new Vector2(vb.x, vb.y)]
-  if (reverse) points.reverse()
-  const p1 = points[0]
-  const p2 = points[1]
 
-  const straight = !lSite || !rSite
-  const noTab = points[0].dist(points[1]) < MIN_TAB_SIZE
-  let flip = straight
-    ? false
-    : simplex.noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) > 0
-  if (reverse) flip = !flip
+  const { pos, edgeType } = edge.data
 
-  if (moveTo) c.moveTo(p1.x, p1.y)
+  const Start = reverse ? 1 : 0
+  const End = reverse ? 0 : 1
 
-  if (straight) {
-    return c.lineTo(p2.x, p2.y)
+  if (moveTo) {
+    c.moveTo(pos[Start].x, pos[Start].y)
   }
 
-  const dist = p1.dist(p2)
-  const needsWings = dist > MAX_TAB_SIZE
-  const flipMult = flip ? -1 : 1
+  if (edgeType === EdgeType.Straight) {
+    c.lineTo(pos[End].x, pos[End].y)
+    return
+  }
 
-  const tVmult = 0.4 * flipMult // push of t towards other side of piece
-  const tWidth = 1.1 // how far t1 and t2 are from the center
-  const pWidth = 0.85 // how far p1c and p2c are from the p1s and p2s
-  const pAng =
-    Math.atan(
-      map(
-        MAX_TAB_SIZE / dist,
-        2,
-        MIN_TAB_SIZE / MAX_TAB_SIZE,
-        1 / 2,
-        1 / 8,
-        true
-      )
-    ) * flipMult // how far p1c and p2c lean back from tab
-  const tAng = map(
-    simplex.noise2D(123 + lSite.voronoiId * 10, 345 + rSite.voronoiId * 10),
-    -1,
-    1,
-    -0.2,
-    0.2
+  if (edgeType === EdgeType.Curve) {
+    const { anchorPos } = edge.data
+
+    c.bezierCurveTo(
+      anchorPos[Start].x,
+      anchorPos[Start].y,
+      anchorPos[End].x,
+      anchorPos[End].y,
+      pos[End].x,
+      pos[End].y
+    )
+    return
+  }
+
+  const { hasWings, bezierPos, anchorPos, tabPos, tabAnchorPos } = edge.data
+
+  if (hasWings) {
+    c.lineTo(bezierPos[Start].x, bezierPos[Start].y)
+  }
+
+  c.bezierCurveTo(
+    anchorPos[Start].x,
+    anchorPos[Start].y,
+    tabAnchorPos[Start].x,
+    tabAnchorPos[Start].y,
+    tabPos.x,
+    tabPos.y
+  )
+  c.bezierCurveTo(
+    tabAnchorPos[End].x,
+    tabAnchorPos[End].y,
+    anchorPos[End].x,
+    anchorPos[End].y,
+    bezierPos[End].x,
+    bezierPos[End].y
   )
 
-  if (noTab) {
-    const cSimp = simplex.noise2D(
-      123 + lSite.voronoiId * 10,
-      345 + rSite.voronoiId * 10
-    )
-    const cAng =
-      map(cSimp, -1, 1, 0.5, 0.8) * signFromRandom((cSimp * 100) % 1) * flipMult
-    const cV = p2.minusNew(p1) // vector from p1 to p2
-    const c1 = p1.plusNew(cV.multiplyNew(0.35).rotate(cAng))
-    const c2 = p2.plusNew(cV.multiplyNew(-0.35).rotate(-cAng))
-
-    return c.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, p2.x, p2.y)
+  if (hasWings) {
+    c.lineTo(pos[End].x, pos[End].y)
   }
-
-  // the starting points of this tabs
-  let p1s = p1.clone()
-  let p2s = p2.clone()
-
-  if (needsWings) {
-    const pVUnit = p2.minusNew(p1).normalise()
-    const wingDist = (dist - MAX_TAB_SIZE) / 2 / Math.cos(pAng)
-    p1s.plusEq(pVUnit.multiplyNew(wingDist).rotate(pAng))
-    p2s.minusEq(pVUnit.multiplyNew(wingDist).rotate(-pAng))
-
-    c.lineTo(p1s.x, p1s.y)
-  }
-
-  const midPoint = p1s.plusNew(p2s).multiplyEq(0.5)
-  const pV = p2s.minusNew(p1s) // vector from p1s to p2s
-  const tV = pV.multiplyNew(tVmult).rotate(-90, true) // perpendicular to pV
-  const ptV = pV.clone().rotate(tAng) // tweak tab angles
-  const t = midPoint.plusNew(tV) // top point of tab
-
-  const p1c = p1s.plusNew(pV.multiplyNew(pWidth).rotate(pAng))
-  const t1 = t.minusNew(ptV.multiplyNew(tWidth / 2))
-  const t2 = t.plusNew(ptV.multiplyNew(tWidth / 2))
-  const p2c = p2s.minusNew(pV.multiplyNew(pWidth).rotate(-pAng))
-
-  c.bezierCurveTo(p1c.x, p1c.y, t1.x, t1.y, t.x, t.y)
-  c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2s.x, p2s.y)
-
-  if (needsWings) {
-    c.lineTo(p2.x, p2.y)
-  }
-}
-
-const getTabPos = ({ va, vb }: Edge, flip: boolean): Vector2 => {
-  const p1 = new Vector2(va.x, va.y)
-  const p2 = new Vector2(vb.x, vb.y)
-
-  const midPoint = p1.plusNew(p2).multiplyEq(0.5)
-  const pV = p2.minusNew(p1) // vector from p1 to p2
-  const tV = pV.multiplyNew(0.4).rotate(flip ? 90 : -90, true) // perpendicular to pV
-  return midPoint.plusNew(tV) // top point of tab
 }
 
 const getCutData = ({
@@ -210,46 +166,48 @@ const getCutData = ({
   diagram = voronoi.compute(sites, bbox)
 
   diagram.edges.forEach((edge, i) => {
-    const { lSite, rSite, va, vb } = edge
-    const p1 = new Vector2(va.x, va.y)
-    const p2 = new Vector2(vb.x, vb.y)
+    const { lSite, rSite } = edge
 
-    const straight = !lSite || !rSite
-    const noTab = p1.dist(p2) < MIN_TAB_SIZE
-    diagram.edges[i].straight = straight
-    diagram.edges[i].noTab = noTab
-    if (straight || noTab) return
+    let flipTab =
+      simplex[Seeds.Flip].noise2D(
+        lSite?.voronoiId * 10,
+        rSite?.voronoiId * 10
+      ) > 0
 
-    let flip =
-      simplex[Seeds.Flip].noise2D(lSite.voronoiId * 10, rSite.voronoiId * 10) >
-      0
+    const edgeData = getEdgeData({
+      edge,
+      simplex: simplex[Seeds.Flip],
+      flipTab,
+    })
+    diagram.edges[i].data = edgeData
+    if (edgeData.edgeType !== EdgeType.Tab) return
 
-    const compareEdges = diagram.edges.filter((e) => !!e.tabPos)
+    const compareEdges = diagram.edges.filter(
+      (altEdge) => altEdge.data?.edgeType === EdgeType.Tab && altEdge !== edge
+    )
 
-    let tabPosA = getTabPos(edge, flip)
-    const minDistToPosA = compareEdges.reduce(
-      (min, edge) => Math.min(min, tabPosA.dist(edge.tabPos)),
+    const minDistToTab = compareEdges.reduce(
+      (min, edge) => Math.min(min, edgeData.tabPos.dist(edge.data.tabPos)),
       Infinity
     )
 
-    if (minDistToPosA > MIN_TAB_DIST) {
-      diagram.edges[i].tabPos = tabPosA
-      diagram.edges[i].flip = flip
-      return
-    }
+    // primary tab position is okay
+    if (minDistToTab > MIN_TAB_DIST) return
 
-    let tabPosB = getTabPos(edge, !flip)
-    const minDistToPosB = compareEdges.reduce(
-      (min, edge) => Math.min(min, tabPosB.dist(edge.tabPos)),
+    const edgeDataAlt = getEdgeData({
+      edge,
+      simplex: simplex[Seeds.Flip],
+      flipTab: !flipTab,
+    })
+    if (edgeDataAlt.edgeType !== EdgeType.Tab) return // ts sigh
+
+    const minDistToTabAlt = compareEdges.reduce(
+      (min, edge) => Math.min(min, edgeDataAlt.tabPos.dist(edge.data.tabPos)),
       Infinity
     )
 
-    if (minDistToPosA < minDistToPosB) {
-      diagram.edges[i].tabPos = tabPosA
-      diagram.edges[i].flip = flip
-    } else {
-      diagram.edges[i].tabPos = tabPosB
-      diagram.edges[i].flip = !flip
+    if (minDistToTab > minDistToTabAlt) {
+      diagram.edges[i].data = edgeDataAlt
     }
   })
 
@@ -257,7 +215,7 @@ const getCutData = ({
 }
 
 export const cut = (cutArgs: Cut) => {
-  const { c, width, height, simplex } = cutArgs
+  const { c, width, height } = cutArgs
 
   c.beginPath()
   c.moveTo(0, 0)
@@ -286,7 +244,6 @@ export const cut = (cutArgs: Cut) => {
 
     drawEdge({
       c,
-      simplex: simplex[Seeds.Flip],
       edge: startingEdge.edge,
       moveTo: true,
       reverse: startingEdge.reverse,
@@ -301,7 +258,6 @@ export const cut = (cutArgs: Cut) => {
     while (nextEdge) {
       drawEdge({
         c,
-        simplex: simplex[Seeds.Flip],
         edge: nextEdge.edge,
         moveTo: false,
         reverse: nextEdge.reverse,
@@ -315,7 +271,7 @@ export const cut = (cutArgs: Cut) => {
 }
 
 export const cutPieces = (cutArgs: Cut) => {
-  const { c, simplex } = cutArgs
+  const { c } = cutArgs
 
   const diagram = getCutData(cutArgs)
 
@@ -337,7 +293,6 @@ export const cutPieces = (cutArgs: Cut) => {
         0.02
       drawEdge({
         c,
-        simplex: simplex[Seeds.Flip],
         edge: halfEdge.edge,
         moveTo: i === 0,
         reverse,

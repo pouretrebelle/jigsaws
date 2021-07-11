@@ -232,7 +232,7 @@ const getCutData = ({
     }
 
     diagram.edges[i].data = edgeData
-    allAvoidPoints[i] = getAvoidPoints(edgeData)
+    allAvoidPoints[i] = getAvoidPoints(edgeData, true)
   })
 
   return diagram

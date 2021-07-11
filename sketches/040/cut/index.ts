@@ -5,6 +5,7 @@ import Vector2 from 'utils/Vector2'
 import {
   EdgeType,
   getAvoidPoints,
+  getAvoidPointsOverLine,
   getEdgeData,
   getNextContinuingEdge,
   getStartingEdge,
@@ -166,7 +167,14 @@ const getCutData = ({
   const bbox = { xl: 0, xr: width, yt: 0, yb: height }
   diagram = voronoi.compute(sites, bbox)
 
-  const allAvoidPoints: Vector2[] = []
+  const allAvoidPoints: Vector2[][] = []
+  diagram.edges.forEach(({ va, vb }, i) => {
+    allAvoidPoints[i] = getAvoidPointsOverLine(
+      new Vector2(va.x, va.y),
+      new Vector2(vb.x, vb.y)
+    )
+  })
+
   diagram.edges.forEach((edge, i) => {
     const { lSite, rSite } = edge
 
@@ -184,11 +192,17 @@ const getCutData = ({
     const avoidPoints = getAvoidPoints(edgeData)
     diagram.edges[i].data = edgeData
     if (edgeData.edgeType !== EdgeType.Tab) {
-      allAvoidPoints.push(...avoidPoints)
+      allAvoidPoints[i] = avoidPoints
       return
     }
+    const comparisonPointsTemp = [...allAvoidPoints]
+    comparisonPointsTemp.splice(i, 1)
+    const comparisonPoints = comparisonPointsTemp.flat()
 
-    const minDistToTab = getMinDistBetweenPointSets(avoidPoints, allAvoidPoints)
+    const minDistToTab = getMinDistBetweenPointSets(
+      avoidPoints,
+      comparisonPoints
+    )
 
     if (minDistToTab < MIN_TAB_DIST) {
       const edgeDataAlt = getEdgeData({
@@ -201,7 +215,7 @@ const getCutData = ({
 
       const minDistToTabAlt = getMinDistBetweenPointSets(
         avoidPointsAlt,
-        allAvoidPoints
+        comparisonPoints
       )
 
       if (minDistToTabAlt > minDistToTab) {
@@ -218,7 +232,7 @@ const getCutData = ({
     }
 
     diagram.edges[i].data = edgeData
-    allAvoidPoints.push(...getAvoidPoints(edgeData))
+    allAvoidPoints[i] = getAvoidPoints(edgeData)
   })
 
   return diagram

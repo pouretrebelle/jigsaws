@@ -228,6 +228,23 @@ export const getEdgeData = ({
 }
 
 const AVOID_POINTS_GAP = 4
+
+export const getAvoidPointsOverLine = (start: Vector2, end: Vector2) => {
+  let points: Vector2[] = []
+  const vec = end.minusNew(start)
+  const length = vec.magnitude()
+  const unit = vec.normalise()
+
+  for (
+    let d = (length % AVOID_POINTS_GAP) / 2 + AVOID_POINTS_GAP / 2;
+    d < length;
+    d += AVOID_POINTS_GAP
+  ) {
+    points.push(unit.multiplyNew(d).plusEq(start))
+  }
+  return points
+}
+
 export const getAvoidPoints = (edgeData: EdgeData): Vector2[] => {
   let points: Vector2[] = []
   const { pos } = edgeData
@@ -247,7 +264,7 @@ export const getAvoidPoints = (edgeData: EdgeData): Vector2[] => {
     ) {
       points.push(unit.multiplyNew(d).plusEq(pos[Start]))
     }
-    return points
+    return getAvoidPointsOverLine(pos[Start], pos[End])
   }
 
   if (edgeData.edgeType === EdgeType.Curve) {

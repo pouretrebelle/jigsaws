@@ -1,8 +1,8 @@
 export const GRID_COLUMNS = 20
 export const GRID_ROWS = 20
 export const GRID_FIDELITY_HORIZONTAL = 0.05
-export const GRID_FIDELITY_VERTICAL = 0.1
-export const COLOR_COUNT = 8
+export const GRID_FIDELITY_VERTICAL = 0.2
+export const COLOR_COUNT = 10
 
 export const COLORS = [
   'hsl(15, 70%, 50%)',

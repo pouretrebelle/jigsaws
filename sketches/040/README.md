@@ -2,12 +2,12 @@
 datePublished: 2021-07-30
 youTubeLink: todo
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [pnx, hrz]
+cutNoiseSeeds: [bhn, cca, rii]
 accentColor: 'fuchsia'
 
-pieces: 1
+pieces: 225
 timeToSolve: 1
 ---
 
-# 039
+# 040

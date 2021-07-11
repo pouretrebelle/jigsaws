@@ -4,8 +4,6 @@ import {
   COLOR_COUNT,
   COLORS,
   GRID_COLUMNS,
-  GRID_FIDELITY_HORIZONTAL,
-  GRID_FIDELITY_VERTICAL,
   GRID_ROWS,
   TRIANGLES,
 } from './constants'
@@ -39,12 +37,13 @@ export const design = ({
   )
 
   const drawTriangle = (
-    color: string,
+    fill: string,
+    stroke: string,
     [x, y]: [number, number],
     corners: [[number, number], [number, number]]
   ) => {
-    c.fillStyle = color
-    c.strokeStyle = color
+    c.fillStyle = fill
+    c.strokeStyle = stroke
     c.beginPath()
     c.moveTo(x, y)
     corners.forEach(([cX, cY]) => c.lineTo(x + (cX * w) / 2, y + (cY * h) / 2))
@@ -57,12 +56,18 @@ export const design = ({
     Math.floor(
       map(
         simplex[Seeds.Position].noise3D(
-          (x / width) * GRID_COLUMNS * GRID_FIDELITY_HORIZONTAL,
-          (y / height) * GRID_ROWS * GRID_FIDELITY_VERTICAL,
+          (x / width) * GRID_COLUMNS * 0.07,
+          (y / height) * GRID_ROWS * 0.07,
           noiseStart
-        ),
-        -0.9,
-        0.9,
+        ) *
+          0.9 +
+          simplex[Seeds.Position].noise2D(
+            (x / width) * GRID_COLUMNS * 0.4,
+            (y / height) * GRID_ROWS * 0.4
+          ) *
+            0.1,
+        -0.8,
+        0.8,
         0,
         COLOR_COUNT - 0.01,
         true
@@ -72,8 +77,8 @@ export const design = ({
   const w = (width - bleed * 2) / GRID_COLUMNS
   const h = (height - bleed * 2) / GRID_ROWS
   const colOverhang = Math.ceil(bleed % w) + 1.5
-  const rowOverhang = Math.ceil(bleed % h) + 0.5
-  c.lineWidth = 0.1
+  const rowOverhang = Math.ceil(bleed % h) + 1.5
+  c.lineWidth = 0.3
 
   for (let col = -colOverhang; col < GRID_COLUMNS + colOverhang; col++) {
     for (let row = -rowOverhang; row < GRID_ROWS + rowOverhang; row++) {
@@ -100,7 +105,12 @@ export const design = ({
   triangles
     .sort((a, b) => b.colorIndex - a.colorIndex)
     .forEach(({ colorIndex, name, middle }) =>
-      drawTriangle(colors[colorIndex], middle, TRIANGLES[name].corners)
+      drawTriangle(
+        colors[colorIndex],
+        colors[(colorIndex + 1) % colors.length],
+        middle,
+        TRIANGLES[name].corners
+      )
     )
 
   c.restore()

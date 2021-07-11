@@ -6,8 +6,8 @@ export const settings = {
   width: 280,
   height: 280,
   bleed: 10,
-  rows: 15,
-  columns: 15,
+  rows: 14,
+  columns: 14,
 
-  backgroundColor: 'fuchsia',
+  backgroundColor: 'hsl(281, 60%, 40%)',
 } as SketchConstructorSettings

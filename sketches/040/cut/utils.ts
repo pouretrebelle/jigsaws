@@ -245,7 +245,10 @@ export const getAvoidPointsOverLine = (start: Vector2, end: Vector2) => {
   return points
 }
 
-export const getAvoidPoints = (edgeData: EdgeData): Vector2[] => {
+export const getAvoidPoints = (
+  edgeData: EdgeData,
+  dense?: boolean
+): Vector2[] => {
   let points: Vector2[] = []
   const { pos } = edgeData
 
@@ -299,6 +302,16 @@ export const getAvoidPoints = (edgeData: EdgeData): Vector2[] => {
       )
     })
   })
+
+  if (dense) {
+    points.push(
+      tabPos,
+      bezierPos[Start],
+      bezierPos[End],
+      ...getAvoidPointsOverLine(pos[Start], bezierPos[Start]),
+      ...getAvoidPointsOverLine(pos[End], bezierPos[End])
+    )
+  }
 
   return points
 }

@@ -176,7 +176,7 @@ const getCutData = ({
         rSite?.voronoiId * 10
       ) > 0
 
-    const edgeData = getEdgeData({
+    let edgeData = getEdgeData({
       edge,
       simplex: simplex[Seeds.Flip],
       flipTab,
@@ -205,10 +205,19 @@ const getCutData = ({
       )
 
       if (minDistToTabAlt > minDistToTab) {
-        diagram.edges[i].data = edgeDataAlt
+        edgeData = edgeDataAlt
+      }
+
+      if (minDistToTab < MIN_TAB_DIST && minDistToTabAlt < MIN_TAB_DIST) {
+        edgeData = getEdgeData({
+          edge,
+          simplex: simplex[Seeds.Flip],
+          forceCurve: true,
+        })
       }
     }
 
+    diagram.edges[i].data = edgeData
     allAvoidPoints.push(...getAvoidPoints(edgeData))
   })
 

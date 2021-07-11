@@ -105,10 +105,12 @@ export const getEdgeData = ({
   edge,
   simplex,
   flipTab,
+  forceCurve,
 }: {
   edge: Edge
   simplex: SimplexNoise
-  flipTab: boolean
+  flipTab?: boolean
+  forceCurve?: boolean
 }): EdgeData => {
   const flipSign = flipTab ? 1 : -1
   const { lSite, rSite, va, vb } = edge
@@ -131,15 +133,16 @@ export const getEdgeData = ({
   const endVector = endPos.minusNew(startPos)
   const length = endVector.magnitude()
 
-  if (length < MIN_TAB_SIZE) {
+  if (length < MIN_TAB_SIZE || forceCurve) {
     const curveSimplex = simplex.noise2D(
       123 + lSite.voronoiId * 10,
       345 + rSite.voronoiId * 10
     )
-    const curveAngle =
+    let curveAngle =
       map(curveSimplex, -1, 1, 0.5, 0.8) *
       signFromRandom((curveSimplex * 100) % 1) *
       flipSign
+    if (forceCurve) curveAngle *= MIN_TAB_SIZE / length
 
     return {
       ...result,
@@ -213,7 +216,7 @@ export const getEdgeData = ({
   return {
     ...result,
     edgeType: EdgeType.Tab,
-    flipTab,
+    flipTab: !!flipTab,
     hasWings,
 
     tabPos,

@@ -98,21 +98,14 @@ export const design = ({
       getRandomLength(i * STROKE_POSITION_SHIFT, layerI * LAYER_POSITION_SHIFT)
     )
 
-  c.save()
-
-  const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
-  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
-  tempC.setTransform(c.getTransform())
-  tempC.globalAlpha = STROKE_OPACITY
+  const layerStrokes: Stroke[][][] = []
+  console.time('design-data')
 
   for (let layerLoopI = 0; layerLoopI < LAYER_LOOP_COUNT; layerLoopI++) {
+    layerStrokes[layerLoopI] = []
+
     layers.forEach(({ hue, lightness, opacity }, layerI) => {
-      const layerCanvas = document.createElement('canvas')
-      layerCanvas.width = c.canvas.width
-      layerCanvas.height = c.canvas.height
-      const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
-      layerC.setTransform(c.getTransform())
-      layerC.globalAlpha = STROKE_OPACITY
+      layerStrokes[layerLoopI][layerI] = []
 
       const strokes: Stroke[] = []
       for (let strokeI = 0; strokeI < STROKES_PER_LAYER; strokeI++) {
@@ -153,10 +146,31 @@ export const design = ({
               STROKE_SIZE_VARIANCE
           )
         }
-        strokes.push(stroke)
+        layerStrokes[layerLoopI][layerI].push(stroke)
       }
+    })
+  }
 
-      strokes.forEach((stroke) => {
+  console.timeEnd('design-data')
+
+  c.save()
+  console.time('design-draw')
+
+  const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
+  const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
+  tempC.setTransform(c.getTransform())
+  tempC.globalAlpha = STROKE_OPACITY
+
+  for (let layerLoopI = 0; layerLoopI < LAYER_LOOP_COUNT; layerLoopI++) {
+    layers.forEach(({ hue, lightness, opacity }, layerI) => {
+      const layerCanvas = document.createElement('canvas')
+      layerCanvas.width = c.canvas.width
+      layerCanvas.height = c.canvas.height
+      const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
+      layerC.setTransform(c.getTransform())
+      layerC.globalAlpha = STROKE_OPACITY
+
+      layerStrokes[layerLoopI][layerI].forEach((stroke) => {
         stroke.draw({
           layerC,
           tempC,
@@ -169,5 +183,6 @@ export const design = ({
       c.drawImage(layerCanvas, 0, 0, width, height)
     })
   }
+  console.timeEnd('design-draw')
   c.restore()
 }

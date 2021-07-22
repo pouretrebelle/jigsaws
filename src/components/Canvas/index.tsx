@@ -126,9 +126,17 @@ const Canvas: React.FC = () => {
       drawBackground(drawArgs)
       c.save()
       c.scale(scale, scale)
-      if (designVisible) drawDesign(drawArgs)
+      if (designVisible) {
+        console.time('design')
+        drawDesign(drawArgs)
+        console.timeEnd('design')
+      }
       c.strokeStyle = lineColor
-      if (cutVisible) drawCut(drawArgs)
+      if (cutVisible) {
+        console.time('cut')
+        drawCut(drawArgs)
+        console.timeEnd('cut')
+      }
       drawGuides(drawArgs)
       c.restore()
     }

@@ -249,7 +249,11 @@ export const cut = (cutArgs: Cut) => {
   c.lineTo(0, 0)
   c.stroke()
 
+  console.time('cut-data')
   const data = getCutData(cutArgs)
+  console.timeEnd('cut-data')
+
+  console.time('cut-draw')
 
   // mark jigsaw edges as already drawn
   data.edges.forEach((edge, i) => {
@@ -292,6 +296,7 @@ export const cut = (cutArgs: Cut) => {
     c.stroke()
     startingEdge = getStartingEdge(undrawnEdges)
   }
+  console.timeEnd('cut-draw')
 }
 
 export const cutPieces = (cutArgs: Cut) => {

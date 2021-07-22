@@ -47,6 +47,7 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
 
   c.save()
 
+  console.time('design-data')
   const strokes: Stroke[] = []
   for (let i = 0; i < STROKE_ATTEMPTS; i++) {
     const strokeLength = map(
@@ -69,10 +70,14 @@ export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
     }
 
     if (stroke.length > MIN_LENGTH) {
-      stroke.draw(c)
       strokes.push(stroke)
     }
   }
+  console.timeEnd('design-data')
+
+  console.time('design-draw')
+  strokes.forEach((stroke) => stroke.draw(c))
+  console.timeEnd('design-draw')
 
   c.restore()
 }

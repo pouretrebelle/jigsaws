@@ -20,7 +20,7 @@ const StyledGrid = styled.article`
   display: grid;
   grid-template-rows: auto 1fr;
   grid-template-columns: 2fr 3fr;
-  grid-template-areas: 'image details' 'image details' 'video video';
+  grid-template-areas: 'image preview' 'image details' 'video video';
   grid-gap: 2em;
   margin: 3em 0;
 
@@ -273,7 +273,7 @@ export const SketchPage = ({
         </StyledMeta>
       </StyledDetails>
 
-      {/* <StyledPreviews>
+      <StyledPreviews>
         <StyledPreviewGrid>
           {[...Array(3)].map((_, i) => (
             <SketchPreviewCard
@@ -292,7 +292,7 @@ export const SketchPage = ({
         </StyledPreviewDescription>
 
         <StyledDivider />
-      </StyledPreviews> */}
+      </StyledPreviews>
     </StyledGrid>
   )
 }

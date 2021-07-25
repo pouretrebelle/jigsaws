@@ -20,10 +20,7 @@ const SketchPage = ({ sketch, ...props }: Props) => {
   useSetLocalStorageSeeds(sketch)
 
   return (
-    <PageWrapper
-      accentColorRgb={sketch.accentColorRgb}
-      title={`Abstract Puzzle ${sketch.id}`}
-    >
+    <PageWrapper accentColorRgb={sketch.accentColorRgb} title={sketch.id}>
       <SEO
         title={sketch.id}
         description={sketch.excerpt}

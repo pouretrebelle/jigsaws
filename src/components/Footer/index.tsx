@@ -10,7 +10,7 @@ import {
 
 const StyledFooter = styled.footer`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-wrap: wrap;
   align-items: center;
   gap: 1em 3em;
@@ -37,24 +37,8 @@ const StyledSocialLink = styled.a`
   }
 `
 
-const StyledNav = styled.nav`
-  margin: 0;
-  line-height: 1;
-  font-size: 1.5em;
-  font-weight: bold;
-
-  a {
-    text-decoration: none;
-  }
-`
 export const Footer = () => (
   <StyledFooter>
-    <StyledNav>
-      <Link href="/archive">
-        <a>Archive</a>
-      </Link>
-    </StyledNav>
-
     <StyledSocials>
       <StyledSocialLink href="https://instagram.com/abstractpuzzles/">
         <InstagramIcon />

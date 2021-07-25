@@ -33,7 +33,7 @@ export const PageWrapper: React.FC<Props> = ({
       }
     >
       <Favicon accentColorRgb={accentColorRgb} />
-      <Header>{title || 'Abstract Puzzles'}</Header>
+      <Header title={title} />
 
       {children}
 

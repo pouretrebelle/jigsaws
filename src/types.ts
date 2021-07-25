@@ -131,6 +131,7 @@ export interface SketchContent {
     solveStart: string
     solveMiddle: string
     solveEnd: string
+    cut: string
     canvas: string
   }
 }

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { getAllSketchContent } from 'lib/data/getAllSketchContent'
 import { useSetLocalStorageSeeds } from 'lib/hooks/useSetLocalStorageSeeds'
 import { SketchContent } from 'types'
+import { COLOR } from 'styles/tokens'
 import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { Button } from 'components/Button'
@@ -15,18 +16,39 @@ interface Props {
   latestSketch: SketchContent
 }
 
+const BREAKPOINT = '800px'
+
 const StyledDescription = styled.aside`
   margin: 0 0 1em;
   font-size: 1.5em;
-  text-align: justify;
   line-height: 1.4;
+  max-width: calc(300px + 50%);
 `
 
-const StyledButtonWrapper = styled.nav`
-  margin: 0 0 2em;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
+const StyledGrid = styled.div`
+  @media (min-width: ${BREAKPOINT}) {
+    margin-top: 3em;
+    display: grid;
+    gap: 1em 3em;
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+`
+
+const StyledPuzzleLink = styled.div`
+  grid-area: 1 / 1 / 2 / 2;
+  margin-bottom: 1em;
+`
+
+const StyledPuzzlePhoto = styled.div`
+  grid-area: 2 / 1 / 3 / 3;
+`
+
+const StyledPuzzleCut = styled.div`
+  grid-area: 1 / 2 / 3 / 4;
+
+  @media (max-width: ${BREAKPOINT}) {
+    display: none;
+  }
 `
 
 const HomePage = ({ latestSketch }: Props) => {
@@ -48,24 +70,34 @@ const HomePage = ({ latestSketch }: Props) => {
         </p>
       </StyledDescription>
 
-      <StyledButtonWrapper>
-        <Link href={latestSketch.pageLink} passHref>
-          <Button>Go to latest sketch</Button>
-        </Link>
-        <Link href={latestSketch.appLink} passHref>
-          <Button>Open explorer</Button>
-        </Link>
-        <FollowButton />
-      </StyledButtonWrapper>
+      <StyledGrid>
+        <StyledPuzzleLink>
+          <Link href={latestSketch.pageLink} passHref>
+            <Button>Read about the latest puzzle</Button>
+          </Link>
+        </StyledPuzzleLink>
 
-      <Link href={latestSketch.pageLink}>
-        <a>
+        <StyledPuzzleCut>
+          <CloudinaryImage
+            imagePath={latestSketch.imagePath.cut}
+            aspectRatio={1}
+            wrapperStyle={{
+              background: COLOR.BACKGROUND,
+              color: COLOR.TEXT,
+              paddingBottom: '106%',
+              margin: 'calc(-3% - 2em) -3%',
+              width: '106%',
+            }}
+          />
+        </StyledPuzzleCut>
+
+        <StyledPuzzlePhoto>
           <CloudinaryImage
             imagePath={latestSketch.imagePath.solveMiddle}
             aspectRatio={9 / 16}
           />
-        </a>
-      </Link>
+        </StyledPuzzlePhoto>
+      </StyledGrid>
     </PageWrapper>
   )
 }

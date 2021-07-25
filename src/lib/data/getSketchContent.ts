@@ -46,6 +46,7 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
         solveStart: youTubeLink ? `${sketchId}_solve_start.jpg` : canvas,
         solveMiddle: youTubeLink ? `${sketchId}_solve_middle.jpg` : canvas,
         solveEnd: youTubeLink ? `${sketchId}_solve_end.jpg` : canvas,
+        cut: `${sketchId}_${cutNoiseSeeds.join('-')}.svg`,
         canvas,
       },
     }

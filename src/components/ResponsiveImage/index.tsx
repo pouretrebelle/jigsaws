@@ -65,11 +65,13 @@ const StyledTimeout = styled.svg<{ $visible: boolean }>`
 interface Props {
   formatPath: ({ width }: { width: number }) => string
   aspectRatio?: number
+  wrapperStyle?: Record<string, any>
 }
 
 export const ResponsiveImage: React.FC<Props> = ({
   formatPath,
   aspectRatio,
+  wrapperStyle = {},
   ...props
 }) => {
   const imageWrapperElement = useRef<HTMLDivElement>(null)
@@ -138,8 +140,9 @@ export const ResponsiveImage: React.FC<Props> = ({
         aspectRatio
           ? {
               paddingBottom: `${Math.round(aspectRatio * 10000) / 100}%`,
+              ...wrapperStyle,
             }
-          : {}
+          : wrapperStyle
       }
     >
       <StyledLoader $visible={showLoader} aria-hidden />

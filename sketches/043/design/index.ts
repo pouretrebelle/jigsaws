@@ -75,7 +75,9 @@ export const design = ({
       height
     )
     const tilt = new Vector2(1, 0).rotate(
-      randomFromNoise(simplex[Seeds.Position].noise2D(circleI * 3.1, 123.2)) *
+      randomFromNoise(
+        simplex[Seeds.Position].noise2D(circleI * 3.1, 123.2 + noiseStart * 0.1)
+      ) *
         Math.PI *
         2
     )
@@ -83,7 +85,7 @@ export const design = ({
     const maxRadius = map(
       Math.pow(
         simplex[Seeds.Size].noise2D(circleI * 50, 123.45 + noiseStart * 0.5),
-        3
+        2.5
       ),
       0,
       1,
@@ -113,14 +115,7 @@ export const design = ({
   c.globalAlpha = 0.02
 
   for (let radius = 5; radius < CIRCLE_MAX_RADIUS; radius++) {
-    c.globalAlpha = map(
-      radius,
-      0,
-      CIRCLE_OPACITY_CLAMP_RADIUS,
-      0.06,
-      0.02,
-      true
-    )
+    c.globalAlpha = map(radius, 0, CIRCLE_OPACITY_CLAMP_RADIUS, 0.1, 0.02, true)
     circles.forEach((circle) => {
       if (radius < circle.maxRadius) {
         c.fillStyle = circle.color

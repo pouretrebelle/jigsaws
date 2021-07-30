@@ -30,12 +30,9 @@ const tweakDist = (
 ) => {
   // thin out the tweaks towards the edges
   const edgeAvoidanceScalar =
-    1 - Math.pow(Math.abs((m - rows / 2) / (rows / 2)), 5)
+    1 - Math.pow(Math.abs((m - rows / 2) / (rows / 2)), 2)
   return (
-    (m +
-      (simplex.noise2D(m * 0.1, alt * 0.1) * 1.8 +
-        simplex.noise2D(m * 0.4, alt * 0.4) * 0.1) *
-        edgeAvoidanceScalar) /
+    (m + simplex.noise2D(m * 0.075, alt * 0.075) * 2 * edgeAvoidanceScalar) /
     rows
   )
 }

@@ -23,6 +23,7 @@ interface Props {
   imagePath: string
   options?: Record<string, string | number>
   aspectRatio?: number
+  [key: string]: any
 }
 
 export const CloudinaryImage: React.FC<Props> = ({

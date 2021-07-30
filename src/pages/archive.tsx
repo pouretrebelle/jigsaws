@@ -11,7 +11,6 @@ const StyledGrid = styled.section`
   display: grid;
   grid-gap: 1em;
   grid-template-columns: repeat(2, 1fr);
-  margin: 2em 0;
 
   @media (min-width: 500px) {
     grid-template-columns: repeat(2, 1fr);
@@ -23,7 +22,7 @@ interface Props {
 }
 
 const ArchivePage = ({ sketches }: Props) => (
-  <PageWrapper>
+  <PageWrapper accentColorRgb={sketches[0].accentColorRgb}>
     <SEO title="Archive" imagePath={sketches[0].imagePath.solveMiddle} />
     <StyledGrid>
       {sketches.map((sketch) => (

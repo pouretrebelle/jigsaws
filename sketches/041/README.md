@@ -3,7 +3,7 @@ datePublished: 2021-08-06
 youTubeLink: https://youtu.be/Yoed2ZI6DNA
 
 designNoiseSeeds: [izu, plk]
-cutNoiseSeeds: [izh, vso, nly]
+cutNoiseSeeds: [kbb, fjx, oxe]
 accentColor: '#80c464'
 
 pieces: 196

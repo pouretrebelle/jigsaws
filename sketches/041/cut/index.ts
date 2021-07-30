@@ -247,6 +247,7 @@ export const cut = (cutArgs: Cut) => {
   c.lineTo(width, height)
   c.lineTo(0, height)
   c.lineTo(0, 0)
+  c.closePath()
   c.stroke()
 
   const data = getCutData(cutArgs)

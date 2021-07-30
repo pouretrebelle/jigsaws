@@ -8,6 +8,7 @@ import {
   exportDesignAnimation,
   exportCut,
   exportCutPieces,
+  exportCutWebsite,
   exportCanvas,
 } from 'lib/export'
 
@@ -24,9 +25,13 @@ const exportActions = {
     actionType: ActionType.ExportCut,
     exportFunction: exportCut,
   },
-  [ExportPart.cutPieces]: {
+  [ExportPart.CutPieces]: {
     actionType: ActionType.ExportCutPieces,
     exportFunction: exportCutPieces,
+  },
+  [ExportPart.CutWebsite]: {
+    actionType: ActionType.ExportCutWebsite,
+    exportFunction: exportCutWebsite,
   },
   [ExportPart.Canvas]: {
     actionType: ActionType.ExportCanvas,

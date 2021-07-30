@@ -22,10 +22,8 @@ const StyledGrid = styled.article`
   grid-template-columns: 2fr 3fr;
   grid-template-areas: 'image details' 'image details' 'video video';
   grid-gap: 2em;
-  margin: 3em 0;
 
   @media (max-width: ${BREAKPOINT}) {
-    margin: 2em 0;
     grid-template-columns: 1fr;
     grid-template-areas: 'image' 'details' 'video' 'mobile-nav';
   }

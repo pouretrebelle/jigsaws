@@ -19,7 +19,8 @@ export enum ExportPart {
   Design = 'design',
   DesignAnimation = 'designAnimation',
   Cut = 'cut',
-  cutPieces = 'cutPieces',
+  CutPieces = 'cutPieces',
+  CutWebsite = 'cutWebsite',
   Canvas = 'canvas',
 }
 
@@ -35,6 +36,7 @@ export enum ActionType {
   ExportDesignAnimation = 'EXPORT_DESIGN_ANIMATION',
   ExportCut = 'EXPORT_CUT',
   ExportCutPieces = 'EXPORT_CUT_PIECES',
+  ExportCutWebsite = 'EXPORT_CUT_WEBSITE',
   ExportCanvas = 'EXPORT_CANVAS',
 }
 
@@ -131,6 +133,8 @@ export interface SketchContent {
     solveStart: string
     solveMiddle: string
     solveEnd: string
+    cut: string
+    cutWebsite: string
     canvas: string
   }
 }

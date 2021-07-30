@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Link from 'next/link'
 
 import {
   GithubIcon,
@@ -10,13 +9,15 @@ import {
 
 const StyledFooter = styled.footer`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-wrap: wrap;
   align-items: center;
   gap: 1em 3em;
   margin: 3em 0 0;
   padding-bottom: 1em;
   border-bottom: 0.2em solid rgb(var(--color-accent));
+  flex: 1 0 0;
+  align-items: flex-end;
 
   a:hover,
   a:focus-visible {
@@ -37,24 +38,8 @@ const StyledSocialLink = styled.a`
   }
 `
 
-const StyledNav = styled.nav`
-  margin: 0;
-  line-height: 1;
-  font-size: 1.5em;
-  font-weight: bold;
-
-  a {
-    text-decoration: none;
-  }
-`
 export const Footer = () => (
   <StyledFooter>
-    <StyledNav>
-      <Link href="/archive">
-        <a>Archive</a>
-      </Link>
-    </StyledNav>
-
     <StyledSocials>
       <StyledSocialLink href="https://instagram.com/abstractpuzzles/">
         <InstagramIcon />

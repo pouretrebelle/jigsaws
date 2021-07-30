@@ -192,13 +192,23 @@ const Controls = () => {
         <OnlyEnv env={Env.Ide}>
           <ExportButton
             onClick={() => {
-              dispatch(exportSketch(ExportPart.cutPieces))
+              dispatch(exportSketch(ExportPart.CutPieces))
               trackEvent('Export cut', { id: sketch?.id, pieces: true })
             }}
             loading={state.pending.includes(ActionType.ExportCutPieces)}
             ext="svg"
           >
-            Export cut pieces
+            Export cut (pieces)
+          </ExportButton>
+          <ExportButton
+            onClick={() => {
+              dispatch(exportSketch(ExportPart.CutWebsite))
+              trackEvent('Export cut', { id: sketch?.id, website: true })
+            }}
+            loading={state.pending.includes(ActionType.ExportCutWebsite)}
+            ext="svg"
+          >
+            Export cut (website)
           </ExportButton>
         </OnlyEnv>
       </Section>

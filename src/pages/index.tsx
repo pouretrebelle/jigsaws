@@ -9,7 +9,6 @@ import { COLOR } from 'styles/tokens'
 import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { Button } from 'components/Button'
-import { FollowButton } from 'components/Button/FollowButton'
 import { CloudinaryImage } from 'components/CloudinaryImage'
 
 interface Props {

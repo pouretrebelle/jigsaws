@@ -22,7 +22,7 @@ interface Props {
 }
 
 const ArchivePage = ({ sketches }: Props) => (
-  <PageWrapper>
+  <PageWrapper accentColorRgb={sketches[0].accentColorRgb}>
     <SEO title="Archive" imagePath={sketches[0].imagePath.solveMiddle} />
     <StyledGrid>
       {sketches.map((sketch) => (

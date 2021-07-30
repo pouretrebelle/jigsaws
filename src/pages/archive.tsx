@@ -11,7 +11,6 @@ const StyledGrid = styled.section`
   display: grid;
   grid-gap: 1em;
   grid-template-columns: repeat(2, 1fr);
-  margin: 2em 0;
 
   @media (min-width: 500px) {
     grid-template-columns: repeat(2, 1fr);

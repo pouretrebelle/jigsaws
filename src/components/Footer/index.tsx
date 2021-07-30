@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Link from 'next/link'
 
 import {
   GithubIcon,
@@ -17,6 +16,8 @@ const StyledFooter = styled.footer`
   margin: 3em 0 0;
   padding-bottom: 1em;
   border-bottom: 0.2em solid rgb(var(--color-accent));
+  flex: 1 0 0;
+  align-items: flex-end;
 
   a:hover,
   a:focus-visible {

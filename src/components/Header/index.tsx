@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 
 const StyledHeader = styled.header`
   margin: ${(2 / 1.5).toFixed(3)}em auto;
+  width: 100%;
   line-height: 1;
   font-size: 1.5em;
   display: flex;

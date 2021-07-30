@@ -1,15 +1,17 @@
 import styled from 'styled-components'
-import Head from 'next/head'
 
 import { Header } from 'components/Header'
 import { Footer } from 'components/Footer'
 import { Favicon } from 'components/Favicon'
 
 const StyledWrapper = styled.div`
-  font-size: clamp(16px, 32px, 1.5vw);
-  padding: 0 2em;
-  max-width: calc(250px + 70%);
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
+  padding: 0 2em;
+  min-height: 100%;
+  max-width: calc(250px + 70%);
+  font-size: clamp(16px, 32px, 1.5vw);
 `
 
 interface Props {
@@ -35,7 +37,7 @@ export const PageWrapper: React.FC<Props> = ({
       <Favicon accentColorRgb={accentColorRgb} />
       <Header title={title} />
 
-      {children}
+      <main>{children}</main>
 
       <Footer />
     </StyledWrapper>

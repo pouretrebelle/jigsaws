@@ -20,6 +20,7 @@ export enum Seeds {
 
 interface Circle {
   pos: Vector2
+  tilt: Vector2
   maxRadius: number
   color: string
 }
@@ -73,6 +74,11 @@ export const design = ({
       0,
       height
     )
+    const tilt = new Vector2(1, 0).rotate(
+      randomFromNoise(simplex[Seeds.Position].noise2D(circleI * 3.1, 123.2)) *
+        Math.PI *
+        2
+    )
 
     const maxRadius = map(
       Math.pow(
@@ -97,6 +103,7 @@ export const design = ({
 
     const circle = {
       pos: new Vector2(x, y),
+      tilt,
       maxRadius,
       color: color.hex(),
     }
@@ -118,7 +125,13 @@ export const design = ({
       if (radius < circle.maxRadius) {
         c.fillStyle = circle.color
         c.beginPath()
-        c.arc(circle.pos.x, circle.pos.y, radius, 0, 2 * Math.PI)
+        c.arc(
+          circle.pos.x + circle.tilt.x * radius,
+          circle.pos.y + circle.tilt.y * radius,
+          radius,
+          0,
+          2 * Math.PI
+        )
         c.fill()
       }
     })

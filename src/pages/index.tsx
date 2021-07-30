@@ -23,6 +23,10 @@ const StyledDescription = styled.aside`
   font-size: 1.5em;
   line-height: 1.4;
   max-width: calc(300px + 50%);
+
+  > *:not(:last-child) {
+    margin-bottom: 0.5em;
+  }
 `
 
 const StyledGrid = styled.div`
@@ -61,12 +65,13 @@ const HomePage = ({ latestSketch }: Props) => {
 
       <StyledDescription>
         <p>
-          Abstract Puzzles is a generative art jigsaw project by{' '}
-          <a href="https://charlottedann.com">Charlotte Dann</a>. Each puzzle is
-          designed in the browser, both how the pieces are cut out and the
-          design on its face. Every week I make a new design and create a
-          laser-cut copy to solve — generative art is always more fun when it’s
-          tactile.
+          Abstract Puzzles is a{' '}
+          <a href="https://charlottedann.com">Charlotte Dann</a> project,
+          exploring generative art through the medium of jigsaw design.
+        </p>
+        <p>
+          Every week I create a new generative jigsaw program in the browser and
+          laser cut one of the variations to solve and critique.
         </p>
       </StyledDescription>
 

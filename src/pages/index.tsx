@@ -79,14 +79,12 @@ const HomePage = ({ latestSketch }: Props) => {
 
         <StyledPuzzleCut>
           <CloudinaryImage
-            imagePath={latestSketch.imagePath.cut}
+            imagePath={latestSketch.imagePath.cutWebsite}
             aspectRatio={1}
             wrapperStyle={{
               background: COLOR.BACKGROUND,
               color: COLOR.TEXT,
-              paddingBottom: '106%',
-              margin: 'calc(-3% - 2em) -3%',
-              width: '106%',
+              margin: '-2em 0',
             }}
           />
         </StyledPuzzleCut>

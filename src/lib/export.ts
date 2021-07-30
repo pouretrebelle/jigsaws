@@ -6,8 +6,8 @@ import { State } from 'types'
 import { drawDesign, drawCut, drawBackground } from 'lib/draw'
 
 const MM_TO_INCH = 0.0393701
-const SVG_MULIPLIER = 3.7795
-const CUT_PIECES_EXPORT_WIDTH = 1000
+const LASER_CUT_SVG_MULTIPLIER = 3.7795
+const CUT_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2
 const ANIMATION_FRAMES = 500
@@ -122,10 +122,10 @@ export const exportCut = (state: State) => {
   const { width, height, bleed } = sketch.settings
 
   let c = new C2S(
-    SVG_MULIPLIER * (width + bleed * 2),
-    SVG_MULIPLIER * (height + bleed * 2)
+    LASER_CUT_SVG_MULTIPLIER * (width + bleed * 2),
+    LASER_CUT_SVG_MULTIPLIER * (height + bleed * 2)
   )
-  c.scale(SVG_MULIPLIER)
+  c.scale(LASER_CUT_SVG_MULTIPLIER)
   drawCut({ c, lineWidth: 0.1, state }, false)
 
   const blob = new Blob([c.getSerializedSvg()], {
@@ -141,11 +141,8 @@ export const exportCutPieces = (state: State) => {
 
   const { width, height, bleed } = sketch.settings
 
-  let c = new C2S(
-    CUT_PIECES_EXPORT_WIDTH,
-    (CUT_PIECES_EXPORT_WIDTH * height) / width
-  )
-  c.scale(CUT_PIECES_EXPORT_WIDTH / width)
+  let c = new C2S(CUT_EXPORT_WIDTH, (CUT_EXPORT_WIDTH * height) / width)
+  c.scale(CUT_EXPORT_WIDTH / width)
   c.translate(-bleed, -bleed) // don't include bleed in pieces export
   drawCut({ c, lineWidth: 0.1, state }, true)
 
@@ -154,4 +151,25 @@ export const exportCutPieces = (state: State) => {
   })
 
   saveAs(blob, `${sketch.id}_pieces_${formatSeeds(cutNoiseSeeds)}.svg`)
+}
+
+export const exportCutWebsite = (state: State) => {
+  const { sketch, cutNoiseSeeds } = state
+  if (!sketch) return
+
+  const { width, height, bleed } = sketch.settings
+  const lineWidth = 0.5 // 0.5mm line
+
+  let c = new C2S(CUT_EXPORT_WIDTH, (CUT_EXPORT_WIDTH * height) / width)
+  c.lineJoin = 'bevel'
+  c.lineCap = 'round'
+  c.scale(CUT_EXPORT_WIDTH / (width + lineWidth))
+  c.translate(-bleed + lineWidth / 2, -bleed + lineWidth / 2)
+  drawCut({ c, lineWidth, state }, false)
+
+  const blob = new Blob([c.getSerializedSvg()], {
+    type: 'text/plain',
+  })
+
+  saveAs(blob, `${sketch.id}_website_${formatSeeds(cutNoiseSeeds)}.svg`)
 }

@@ -1,3 +1,4 @@
+import chroma from 'chroma-js'
 import { Design } from 'types'
 import { map, randomFromNoise } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
@@ -62,6 +63,13 @@ export const design = ({
       height
     )
 
+    const hue = hues[circleI % hues.length]
+    let color = chroma(`hsl(${hue}, 70%, 60%)`)
+    if (color.luminance() > 0.3) {
+      color = color.luminance(0.3)
+    }
+    color = color.brighten(simplex[Seeds.Color].noise2D(circleI * 3.5, 4.6) * 2)
+
     const circle = {
       pos: new Vector2(x, y),
       maxRadius: map(
@@ -71,7 +79,7 @@ export const design = ({
         CIRCLE_MIN_RADIUS,
         CIRCLE_MAX_RADIUS
       ),
-      color: `hsl(${hues[circleI % hues.length]}, 50%, 50%)`,
+      color: color.hex(),
     }
     circles.push(circle)
   }

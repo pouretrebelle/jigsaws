@@ -2,10 +2,10 @@
 datePublished: 2021-08-20
 youTubeLink: next
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [uqw, akl, ziv]
+cutNoiseSeeds: [wyc, kjz, kdn]
 
-pieces: 1
+pieces: 225
 timeToSolve: 1
 ---
 

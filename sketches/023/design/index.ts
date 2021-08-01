@@ -105,9 +105,7 @@ export const design = ({
 
   for (let layerLoopI = 0; layerLoopI < LAYER_LOOP_COUNT; layerLoopI++) {
     layers.forEach(({ hue, lightness, opacity }, layerI) => {
-      const layerCanvas = document.createElement('canvas')
-      layerCanvas.width = c.canvas.width
-      layerCanvas.height = c.canvas.height
+      const layerCanvas = createCanvas(c.canvas.width, c.canvas.height)
       const layerC = layerCanvas.getContext('2d') as CanvasRenderingContext2D
       layerC.setTransform(c.getTransform())
       layerC.globalAlpha = STROKE_OPACITY

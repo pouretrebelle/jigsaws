@@ -7,6 +7,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 dayjs.extend(advancedFormat)
 
 import { SketchContent } from 'types'
+import { COLOR } from 'styles/tokens'
 import { Button } from 'components/Button'
 import { CloudinaryImage } from 'components/CloudinaryImage'
 import { SketchPreviewCard } from 'components/SketchPreviewCard'
@@ -168,22 +169,22 @@ const StyledPreviewGrid = styled.section`
   }
 `
 
-const StyledDivider = styled.hr`
-  display: none;
-  height: 0.2em;
-  width: 100%;
-  background: #ddd;
-  border: 0;
-  border-radius: 0.1em;
+const StyledPreviewDescription = styled.div`
+  margin: 1em 0 0;
+  font-size: 0.8em;
+
+  @media (max-width: ${BREAKPOINT}) {
+    display: none;
+  }
 `
 
-const StyledPreviewDescription = styled.div`
-  display: none;
-  margin: 1em 0 1.5em;
-
-  @media (min-width: ${BREAKPOINT}) {
-    font-size: 0.8em;
-  }
+const StyledDivider = styled.hr`
+  margin: 1em 0 0;
+  height: 0.1em;
+  width: 100%;
+  background: ${COLOR.DIVIDER};
+  border: 0;
+  border-radius: 0.1em;
 `
 
 const LinkWrapper: React.FC<{ href: string }> = ({ children, href }) => (
@@ -290,9 +291,8 @@ export const SketchPage = ({
           are some random outputs generated on the fly just for you &ndash;
           crack open <Link href={appLink}>the explorer</Link> for finer control
           of the parameters.
+          <StyledDivider />
         </StyledPreviewDescription>
-
-        <StyledDivider />
       </StyledPreviews>
     </StyledGrid>
   )

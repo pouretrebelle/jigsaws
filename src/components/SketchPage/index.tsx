@@ -25,7 +25,7 @@ const StyledGrid = styled.article`
 
   @media (max-width: ${BREAKPOINT}) {
     grid-template-columns: 1fr;
-    grid-template-areas: 'image' 'details' 'video' 'mobile-nav';
+    grid-template-areas: 'preview' 'image' 'details' 'video' 'mobile-nav';
   }
 
   > * > *:first-child {
@@ -153,16 +153,19 @@ const StyledMeta = styled.aside`
 
 const StyledPreviews = styled.div`
   grid-area: preview;
-
-  @media (max-width: ${BREAKPOINT}) {
-    display: none;
-  }
 `
 
 const StyledPreviewGrid = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 1em;
+
+  @media (max-width: ${BREAKPOINT}) {
+    grid-template-columns: 1fr 1fr;
+    > *:nth-child(3) {
+      display: none;
+    }
+  }
 `
 
 const StyledDivider = styled.hr`

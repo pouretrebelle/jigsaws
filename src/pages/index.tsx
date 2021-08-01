@@ -10,6 +10,7 @@ import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { Button } from 'components/Button'
 import { CloudinaryImage } from 'components/CloudinaryImage'
+import { SketchPreviewCard } from 'components/SketchPreviewCard'
 
 interface Props {
   latestSketch: SketchContent
@@ -42,7 +43,7 @@ const StyledPuzzleLink = styled.div`
   margin-bottom: 1em;
 `
 
-const StyledPuzzlePhoto = styled.div`
+const StyledPuzzlePhoto = styled.a`
   grid-area: 2 / 1 / 3 / 3;
 `
 
@@ -52,6 +53,18 @@ const StyledPuzzleCut = styled.div`
   @media (max-width: ${BREAKPOINT}) {
     display: none;
   }
+`
+
+const StyledPreviewHeader = styled.h2`
+  margin: 1em 0;
+  font-weight: normal;
+`
+
+const StyledPreviewGrid = styled.div`
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 1fr 1fr 1fr;
+  max-width: calc(400px + 30%);
 `
 
 const HomePage = ({ latestSketch }: Props) => {
@@ -93,13 +106,30 @@ const HomePage = ({ latestSketch }: Props) => {
           />
         </StyledPuzzleCut>
 
-        <StyledPuzzlePhoto>
-          <CloudinaryImage
-            imagePath={latestSketch.imagePath.solveMiddle}
-            aspectRatio={9 / 16}
-          />
-        </StyledPuzzlePhoto>
+        <Link passHref href={latestSketch.pageLink}>
+          <StyledPuzzlePhoto>
+            <CloudinaryImage
+              imagePath={latestSketch.imagePath.solveMiddle}
+              aspectRatio={9 / 16}
+            />
+          </StyledPuzzlePhoto>
+        </Link>
       </StyledGrid>
+
+      <StyledPreviewHeader>
+        Generate variations of this design in{' '}
+        <Link href={`/app/${latestSketch.id}`}>the explorer</Link>
+      </StyledPreviewHeader>
+      <StyledPreviewGrid>
+        {[...Array(3)].map((_, i) => (
+          <SketchPreviewCard
+            key={i}
+            id={latestSketch.id}
+            designNoiseSeeds={latestSketch.designNoiseSeeds}
+            cutNoiseSeeds={latestSketch.cutNoiseSeeds}
+          />
+        ))}
+      </StyledPreviewGrid>
     </PageWrapper>
   )
 }

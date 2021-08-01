@@ -12,7 +12,7 @@
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
-    "vercel-build": "yum install libuuid-devel libmount-devel zlib-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/ && mkdir -p src/.temp/sketches && npm run sync:sketches && npm run build",
+    "vercel-build": "mkdir -p src/.temp/sketches && npm run sync:sketches && npm run build",
     "sync:sketches": "cp -r sketches src/.temp/",
     "prepare": "husky install"
   },

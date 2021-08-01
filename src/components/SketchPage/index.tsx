@@ -8,6 +8,7 @@ dayjs.extend(advancedFormat)
 
 import { SketchContent } from 'types'
 import { COLOR } from 'styles/tokens'
+import { BulletSeparator } from 'components/BulletSeparator'
 import { Button } from 'components/Button'
 import { CloudinaryImage } from 'components/CloudinaryImage'
 import { SketchPreviewCard } from 'components/SketchPreviewCard'
@@ -268,10 +269,16 @@ export const SketchPage = ({
           }}
         />
         <StyledMeta>
-          {pieces} pieces &bull; Solved in {timeToSolve} &bull; Published on{' '}
-          <time dateTime={dayjsDatePublished.format('YYYY-MM-DD')}>
-            {dayjsDatePublished.format('Do MMMM ′YY')}
-          </time>
+          <BulletSeparator as="ul">
+            <li>{pieces} pieces</li>
+            <li>Solved in {timeToSolve}</li>
+            <li>
+              Published on{' '}
+              <time dateTime={dayjsDatePublished.format('YYYY-MM-DD')}>
+                {dayjsDatePublished.format('Do MMMM ′YY')}
+              </time>
+            </li>
+          </BulletSeparator>
         </StyledMeta>
       </StyledDetails>
 

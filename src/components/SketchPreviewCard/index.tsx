@@ -14,6 +14,12 @@ const StyledArticle = styled.article`
   font-size: 0.75em;
 `
 
+const StyledLink = styled.a`
+  display: block;
+  padding: 10%;
+  background: #111;
+`
+
 const StyledMeta = styled.aside`
   display: flex;
   min-width: 0;
@@ -51,8 +57,8 @@ export const SketchPreviewCard: React.FC<Props> = ({
 
   return (
     <StyledArticle>
-      <Link href={`/app/${id}`}>
-        <a
+      <Link href={`/app/${id}`} passHref>
+        <StyledLink
           onClick={() =>
             setLocalStorageSeeds({
               designNoiseSeeds,
@@ -68,7 +74,7 @@ export const SketchPreviewCard: React.FC<Props> = ({
             }
             aspectRatio={1}
           />
-        </a>
+        </StyledLink>
       </Link>
       <StyledMeta>
         <SketchVariant

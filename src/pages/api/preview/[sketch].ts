@@ -8,6 +8,7 @@ interface Req {
   query: {
     sketch?: string
     width?: string
+    lineWidth?: string
     designSeeds?: string
     cutSeeds?: string
   }
@@ -27,6 +28,8 @@ const handler = async (req: Req, res: Res) => {
     await import(`.temp/sketches/${req.query.sketch || '001'}/index.ts`)
 
   const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
+  const lineWidth = req.query.lineWidth ? parseFloat(req.query.lineWidth) : 0
+
   const queryDesignSeeds = req.query.designSeeds
     ? req.query.designSeeds.split(',')
     : []
@@ -39,10 +42,13 @@ const handler = async (req: Req, res: Res) => {
     (_, i) => queryDesignSeeds[i] || makeRandomSeed()
   )
 
-  const designScale = canvasWidth / settings.width
+  const designScale = (canvasWidth + lineWidth) / settings.width
 
   c.save()
+  c.translate(-lineWidth / 2, -lineWidth / 2)
   c.scale(designScale, designScale)
+
+  c.save()
   c.translate(-settings.bleed, -settings.bleed)
 
   if (settings.backgroundColor) {
@@ -62,24 +68,24 @@ const handler = async (req: Req, res: Res) => {
   } as Design)
   c.restore()
 
-  const cutSeeds = Object.keys(CutNoiseSeeds).map(
-    (_, i) => queryCutSeeds[i] || makeRandomSeed()
-  )
+  if (lineWidth) {
+    const cutSeeds = Object.keys(CutNoiseSeeds).map(
+      (_, i) => queryCutSeeds[i] || makeRandomSeed()
+    )
 
-  c.strokeStyle = 'black'
-  c.lineWidth = 0.75 / designScale
+    c.strokeStyle = 'black'
+    c.lineWidth = lineWidth / designScale
 
-  c.save()
-  c.scale(designScale, designScale)
-  cut({
-    c,
-    seed: cutSeeds,
-    simplex: cutSeeds.map((seed) => new SimplexNoise(seed)),
-    noiseStart: 0,
-    ...settings,
-  } as Cut)
+    cut({
+      c,
+      seed: cutSeeds,
+      simplex: cutSeeds.map((seed) => new SimplexNoise(seed)),
+      noiseStart: 0,
+      ...settings,
+    } as Cut)
+  }
+
   c.restore()
-
   canvas.createPNGStream().pipe(res)
 }
 

@@ -9,6 +9,9 @@ import { ResponsiveImage } from 'components/ResponsiveImage'
 import { SketchVariant } from 'components/SketchVariant'
 import { ShuffleButton } from 'components/ShuffleButton'
 
+const PIXEL_DENSITY =
+  typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+
 const StyledArticle = styled.article`
   min-width: 0;
   font-size: 0.75em;
@@ -70,7 +73,9 @@ export const SketchPreviewCard: React.FC<Props> = ({
             formatPath={({ width }) =>
               `/api/preview/${id}?width=${width}&designSeeds=${designNoiseSeeds.join(
                 ','
-              )}&cutSeeds=${cutNoiseSeeds.join(',')}`
+              )}&cutSeeds=${cutNoiseSeeds.join(',')}&lineWidth=${
+                PIXEL_DENSITY / 4
+              }`
             }
             aspectRatio={1}
           />

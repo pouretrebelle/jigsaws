@@ -9,8 +9,8 @@ interface Req {
     sketch?: string
     width?: string
     lineWidth?: string
-    designSeeds?: string
-    cutSeeds?: string
+    designNoiseSeeds?: string
+    cutNoiseSeeds?: string
   }
 }
 
@@ -30,16 +30,18 @@ const handler = async (req: Req, res: Res) => {
   const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
   const lineWidth = req.query.lineWidth ? parseFloat(req.query.lineWidth) : 0
 
-  const queryDesignSeeds = req.query.designSeeds
-    ? req.query.designSeeds.split(',')
+  const queryDesignNoiseSeeds = req.query.designNoiseSeeds
+    ? req.query.designNoiseSeeds.split(',')
     : []
-  const queryCutSeeds = req.query.cutSeeds ? req.query.cutSeeds.split(',') : []
+  const queryCutNoiseSeeds = req.query.cutNoiseSeeds
+    ? req.query.cutNoiseSeeds.split(',')
+    : []
 
   const canvas = createCanvas(canvasWidth, canvasWidth)
   const c = canvas.getContext('2d') as CanvasRenderingContext2D
 
-  const designSeeds = Object.keys(DesignNoiseSeeds).map(
-    (_, i) => queryDesignSeeds[i] || makeRandomSeed()
+  const designNoiseSeeds = Object.keys(DesignNoiseSeeds).map(
+    (_, i) => queryDesignNoiseSeeds[i] || makeRandomSeed()
   )
 
   const designScale = (canvasWidth + lineWidth) / settings.width
@@ -59,8 +61,8 @@ const handler = async (req: Req, res: Res) => {
   design({
     c,
     createCanvas,
-    seed: designSeeds,
-    simplex: designSeeds.map((seed) => new SimplexNoise(seed)),
+    seed: designNoiseSeeds,
+    simplex: designNoiseSeeds.map((seed) => new SimplexNoise(seed)),
     noiseStart: 0,
     ...settings,
     width: settings.width ? settings.width + settings.bleed * 2 : undefined,
@@ -69,8 +71,8 @@ const handler = async (req: Req, res: Res) => {
   c.restore()
 
   if (lineWidth) {
-    const cutSeeds = Object.keys(CutNoiseSeeds).map(
-      (_, i) => queryCutSeeds[i] || makeRandomSeed()
+    const cutNoiseSeeds = Object.keys(CutNoiseSeeds).map(
+      (_, i) => queryCutNoiseSeeds[i] || makeRandomSeed()
     )
 
     c.strokeStyle = 'black'
@@ -78,8 +80,8 @@ const handler = async (req: Req, res: Res) => {
 
     cut({
       c,
-      seed: cutSeeds,
-      simplex: cutSeeds.map((seed) => new SimplexNoise(seed)),
+      seed: cutNoiseSeeds,
+      simplex: cutNoiseSeeds.map((seed) => new SimplexNoise(seed)),
       noiseStart: 0,
       ...settings,
     } as Cut)

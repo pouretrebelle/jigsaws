@@ -6,6 +6,7 @@ import Vector2 from 'utils/Vector2'
 
 import {
   CIRCLE_COUNT,
+  CIRCLE_LAYER_COUNT,
   CIRCLE_MAX_RADIUS,
   CIRCLE_MIN_RADIUS,
   CIRCLE_OPACITY_CLAMP_RADIUS,
@@ -15,6 +16,8 @@ import {
 export enum Seeds {
   Color,
   Position,
+  Rotation,
+  Cone,
   Size,
 }
 
@@ -45,38 +48,59 @@ export const design = ({
     )
   }
 
-  c.fillStyle = `hsl(${hues[0]}, 50%, 50%)`
+  c.fillStyle = `hsl(${hues[0]}, 40%, 40%)`
   c.fillRect(0, 0, width, height)
 
   const circles: Circle[] = []
 
   let clusterSeparator = 0
-  for (let circleI = 0; circleI < CIRCLE_COUNT; circleI++) {
+  for (
+    let circleI = 0;
+    circleI < CIRCLE_COUNT * CIRCLE_LAYER_COUNT;
+    circleI++
+  ) {
     if (
       randomFromNoise(simplex[Seeds.Position].noise2D(circleI * 43.21, 123.2)) >
-      0.6
+      0.8
     ) {
       clusterSeparator++
     }
-    const posDifferentiator = circleI * 0.02 + clusterSeparator * 6.3
+    const posDifferentiator = circleI * 0.1 + clusterSeparator * 6.3
 
     const x = map(
-      simplex[Seeds.Position].noise3D(posDifferentiator + 0.5, 0.5, noiseStart),
+      simplex[Seeds.Position].noise3D(
+        posDifferentiator + 0.5,
+        0.5,
+        noiseStart * 0.1
+      ),
       -0.6,
       0.6,
       0,
       width
     )
     const y = map(
-      simplex[Seeds.Position].noise3D(0.5, posDifferentiator + 0.5, noiseStart),
+      simplex[Seeds.Position].noise3D(
+        0.5,
+        posDifferentiator + 0.5,
+        noiseStart * 0.1
+      ),
       -0.6,
       0.6,
       0,
       height
     )
-    const tilt = new Vector2(1, 0).rotate(
+    const tilt = new Vector2(
+      map(
+        randomFromNoise(simplex[Seeds.Cone].noise2D(circleI * 3.1, 123.2)),
+        0,
+        1,
+        1.2,
+        3
+      ),
+      0
+    ).rotate(
       randomFromNoise(
-        simplex[Seeds.Position].noise2D(circleI * 3.1, 123.2 + noiseStart * 0.1)
+        simplex[Seeds.Rotation].noise2D(circleI * 3.1, 123.2 + noiseStart * 0.1)
       ) *
         Math.PI *
         2
@@ -85,7 +109,7 @@ export const design = ({
     const maxRadius = map(
       Math.pow(
         simplex[Seeds.Size].noise2D(circleI * 50, 123.45 + noiseStart * 0.5),
-        2.5
+        2
       ),
       0,
       1,
@@ -97,7 +121,7 @@ export const design = ({
       hues,
       randomFromNoise(simplex[Seeds.Color].noise2D(circleI, 0))
     )
-    let color = chroma(`hsl(${hue}, 70%, 60%)`)
+    let color = chroma(`hsl(${hue}, 70%, 40%)`)
     if (color.luminance() > 0.3) {
       color = color.luminance(0.3)
     }
@@ -112,24 +136,31 @@ export const design = ({
     circles.push(circle)
   }
 
-  c.globalAlpha = 0.02
-
-  for (let radius = 5; radius < CIRCLE_MAX_RADIUS; radius++) {
-    c.globalAlpha = map(radius, 0, CIRCLE_OPACITY_CLAMP_RADIUS, 0.1, 0.02, true)
-    circles.forEach((circle) => {
-      if (radius < circle.maxRadius) {
-        c.fillStyle = circle.color
-        c.beginPath()
-        c.arc(
-          circle.pos.x + circle.tilt.x * radius,
-          circle.pos.y + circle.tilt.y * radius,
-          radius,
-          0,
-          2 * Math.PI
-        )
-        c.fill()
-      }
-    })
+  for (let circleLayer = 0; circleLayer < CIRCLE_LAYER_COUNT; circleLayer++) {
+    for (let radius = 3; radius < CIRCLE_MAX_RADIUS; radius++) {
+      c.globalAlpha = map(
+        radius,
+        0,
+        CIRCLE_OPACITY_CLAMP_RADIUS,
+        0.1,
+        0.02,
+        true
+      )
+      circles.forEach((circle) => {
+        if (radius < circle.maxRadius) {
+          c.fillStyle = circle.color
+          c.beginPath()
+          c.arc(
+            circle.pos.x + circle.tilt.x * radius,
+            circle.pos.y + circle.tilt.y * radius,
+            radius,
+            0,
+            2 * Math.PI
+          )
+          c.fill()
+        }
+      })
+    }
   }
 
   c.restore()

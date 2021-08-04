@@ -35,8 +35,11 @@ export const design = ({
   height,
   bleed,
   noiseStart,
+  createCanvas,
 }: Design) => {
-  c.save()
+  const bigCanvas = createCanvas(c.canvas.width * 2, c.canvas.height * 2)
+  const bigC = bigCanvas.getContext('2d') as CanvasRenderingContext2D
+  bigC.setTransform(c.getTransform())
 
   const hues: number[] = []
   for (let hueI = 0; hueI < COLOR_COUNT + 1; hueI++) {
@@ -48,8 +51,9 @@ export const design = ({
     )
   }
 
-  c.fillStyle = `hsl(${hues[0]}, 40%, 40%)`
-  c.fillRect(0, 0, width, height)
+  bigC.fillStyle = `hsl(${hues[0]}, 40%, 40%)`
+  bigC.fillRect(0, 0, width * 2, height * 2)
+  bigC.translate(width / 2, height / 2)
 
   const circles: Circle[] = []
 
@@ -138,7 +142,7 @@ export const design = ({
 
   for (let circleLayer = 0; circleLayer < CIRCLE_LAYER_COUNT; circleLayer++) {
     for (let radius = 3; radius < CIRCLE_MAX_RADIUS; radius++) {
-      c.globalAlpha = map(
+      bigC.globalAlpha = map(
         radius,
         0,
         CIRCLE_OPACITY_CLAMP_RADIUS,
@@ -148,20 +152,20 @@ export const design = ({
       )
       circles.forEach((circle) => {
         if (radius < circle.maxRadius) {
-          c.fillStyle = circle.color
-          c.beginPath()
-          c.arc(
+          bigC.fillStyle = circle.color
+          bigC.beginPath()
+          bigC.arc(
             circle.pos.x + circle.tilt.x * radius,
             circle.pos.y + circle.tilt.y * radius,
             radius,
             0,
             2 * Math.PI
           )
-          c.fill()
+          bigC.fill()
         }
       })
     }
   }
 
-  c.restore()
+  c.drawImage(bigC.canvas, -width / 2, -height / 2, width * 2, height * 2)
 }

@@ -6,7 +6,7 @@ import { State } from 'types'
 import { drawDesign, drawCut, drawBackground } from 'lib/draw'
 
 export const MM_TO_INCH = 0.0393701
-const LASER_CUT_SVG_MULTIPLIER = 3.7795
+export const LASER_CUT_SVG_MULTIPLIER = 3.7795
 const CUT_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
 const CANVAS_EXPORT_LINE_WIDTH = 2

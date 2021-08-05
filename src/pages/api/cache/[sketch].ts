@@ -2,9 +2,13 @@ import fs from 'fs'
 import cloudinary from 'cloudinary'
 import SimplexNoise from 'simplex-noise'
 import { createCanvas } from 'canvas'
+import C2S from 'canvas2svg'
+import { JSDOM } from 'jsdom'
+import { XMLSerializer } from 'xmldom'
+import { btoa } from 'abab'
 
 import { Design } from 'types'
-import { formatSeeds, MM_TO_INCH } from 'lib/export'
+import { formatSeeds, LASER_CUT_SVG_MULTIPLIER, MM_TO_INCH } from 'lib/export'
 
 interface Cache {
   cutNoiseSeeds: string[]
@@ -111,8 +115,85 @@ const cacheDesign = async ({
   }
 }
 
-const cacheCut = async (seeds: string, json: Cache) => {
+const cacheCut = async ({
+  sketch,
+  cutNoiseSeeds: seeds,
+  json,
+}: {
+  sketch: string
+  cutNoiseSeeds: string
+  json: Cache
+}): Promise<Result> => {
+  const { settings, cut, CutNoiseSeeds } = await import(
+    `.temp/sketches/${sketch}/index.ts`
+  )
+
+  const cutNoiseSeeds = seeds.split('-')
+
+  if (json.cutNoiseSeeds.includes(seeds)) {
+    return {
+      status: 400,
+      message: 'Seeds already cached',
+    }
+  }
+
+  // enums as an object have keys+values both ways
+  if (Object.keys(CutNoiseSeeds).length / 2 !== cutNoiseSeeds.length) {
+    return {
+      status: 400,
+      message: 'Seed count doesn’t match sketch',
+    }
+  }
+
+  const { width, height, bleed } = settings
+
+  // https://github.com/gliffy/canvas2svg/issues/78#issuecomment-668298923
+  const dom = new JSDOM()
+  dom.window.XMLSerializer = XMLSerializer
+  global.window = dom.window as any
+  global.XMLSerializer = XMLSerializer
+  let c = new C2S({
+    document: dom.window.document,
+    width: LASER_CUT_SVG_MULTIPLIER * (width + bleed * 2),
+    height: LASER_CUT_SVG_MULTIPLIER * (height + bleed * 2),
+  })
+  c.scale(LASER_CUT_SVG_MULTIPLIER)
+  c.translate(bleed, bleed)
+  c.lineWidth = 0.1
+  cut(
+    {
+      c,
+      seed: cutNoiseSeeds,
+      simplex: cutNoiseSeeds.map((seed) => new SimplexNoise(seed)),
+      noiseStart: 0,
+      ...settings,
+    },
+    false
+  )
+
+  const filename = `${sketch}_${formatSeeds(cutNoiseSeeds)}`
+  let cloudinaryResponse: cloudinary.UploadApiResponse
+  try {
+    cloudinaryResponse = await cloudinary.v2.uploader.upload(
+      `data:image/svg+xml;base64,${btoa(c.getSerializedSvg())}`,
+      { public_id: filename, format: 'svg', tags: ['cache'] }
+    )
+  } catch (e) {
+    console.error(e)
+
+    return {
+      status: 500,
+      message: 'Cloudinary upload failed',
+    }
+  }
+
+  console.log(`Cloudinary upload ${filename}.svg`)
   json.cutNoiseSeeds.push(seeds)
+
+  return {
+    status: 200,
+    message: 'Cloudinary upload successful',
+  }
 }
 
 const handler = async (req: Req, res: Res) => {
@@ -135,7 +216,9 @@ const handler = async (req: Req, res: Res) => {
   if (designNoiseSeeds) {
     result = await cacheDesign({ sketch, designNoiseSeeds, json })
   }
-  if (cutNoiseSeeds) await cacheCut(cutNoiseSeeds, json)
+  if (cutNoiseSeeds) {
+    result = await cacheCut({ sketch, cutNoiseSeeds, json })
+  }
 
   if (result.status === 200) {
     try {

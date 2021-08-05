@@ -10,3 +10,5 @@ timeToSolve: 1
 ---
 
 # 042
+
+![canvas](https://res.cloudinary.com/abstract-puzzles/image/upload/w_2000/042_yfi-huh-iuc_ojp-vmm-fve?raw=true)

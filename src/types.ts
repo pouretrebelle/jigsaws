@@ -38,6 +38,8 @@ export enum ActionType {
   ExportCutPieces = 'EXPORT_CUT_PIECES',
   ExportCutWebsite = 'EXPORT_CUT_WEBSITE',
   ExportCanvas = 'EXPORT_CANVAS',
+  CacheDesign = 'CACHE_DESIGN',
+  CacheCut = 'CACHE_CUT',
 }
 
 export interface Action {

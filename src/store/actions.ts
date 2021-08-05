@@ -1,3 +1,4 @@
+export { cacheSketch } from './ducks/cacheSketch'
 export { exportSketch } from './ducks/exportSketch'
 export { loadSketch } from './ducks/loadSketch'
 export { toggleVisibility } from './ducks/toggleVisibility'

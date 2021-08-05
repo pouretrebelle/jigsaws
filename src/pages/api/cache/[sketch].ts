@@ -47,7 +47,7 @@ const cacheDesign = async ({
 
   if (json.designNoiseSeeds.includes(seeds)) {
     return {
-      status: 200,
+      status: 400,
       message: 'Seeds already cached',
     }
   }

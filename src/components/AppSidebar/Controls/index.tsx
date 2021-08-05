@@ -7,6 +7,7 @@ import { Env, EnvContext, ExceptEnv, OnlyEnv } from 'env'
 import {
   toggleVisibility,
   updateSeed,
+  cacheSketch,
   exportSketch,
   updateNoiseStart,
 } from 'store/actions'
@@ -122,6 +123,18 @@ const Controls = () => {
         >
           Export design
         </ExportButton>
+        <OnlyEnv env={Env.Dev}>
+          <ExportButton
+            onClick={() => {
+              dispatch(cacheSketch(ExportPart.Design))
+              trackEvent('Cache design', { id: sketch?.id })
+            }}
+            loading={state.pending.includes(ActionType.CacheDesign)}
+            ext="png"
+          >
+            Cache design
+          </ExportButton>
+        </OnlyEnv>
 
         <OnlyEnv env={Env.Ide}>
           <RangeSlider
@@ -209,6 +222,18 @@ const Controls = () => {
             ext="svg"
           >
             Export cut (website)
+          </ExportButton>
+        </OnlyEnv>
+        <OnlyEnv env={Env.Dev}>
+          <ExportButton
+            onClick={() => {
+              dispatch(cacheSketch(ExportPart.Cut))
+              trackEvent('Cache cut', { id: sketch?.id })
+            }}
+            loading={state.pending.includes(ActionType.CacheCut)}
+            ext="svg"
+          >
+            Cache cut
           </ExportButton>
         </OnlyEnv>
       </Section>

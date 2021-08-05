@@ -18,6 +18,8 @@ interface Cache {
 interface Req {
   query: {
     sketch: string
+  }
+  body: {
     designNoiseSeeds?: string
     cutNoiseSeeds?: string
   }
@@ -197,7 +199,8 @@ const cacheCut = async ({
 }
 
 const handler = async (req: Req, res: Res) => {
-  const { sketch, designNoiseSeeds, cutNoiseSeeds } = req.query
+  const { sketch } = req.query
+  const { designNoiseSeeds, cutNoiseSeeds } = req.body
   const cachePath = `sketches/${sketch}/cache.json`
   let json: Cache = {
     cutNoiseSeeds: [],

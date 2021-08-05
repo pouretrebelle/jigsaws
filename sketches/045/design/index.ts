@@ -67,24 +67,21 @@ export const design = ({
     circleI++
   ) {
     const x = map(
-      simplex[Seeds.Position].noise3D(circleI * 5 + 0.5, 0.5, noiseStart * 0.1),
+      simplex[Seeds.Position].noise2D(circleI * 5 + 0.5, 0.5),
       -0.6,
       0.6,
       0,
       width
     )
     const y = map(
-      simplex[Seeds.Position].noise3D(0.5, circleI * 5 + 0.5, noiseStart * 0.1),
+      simplex[Seeds.Position].noise2D(0.5, circleI * 5 + 0.5),
       -0.6,
       0.6,
       0,
       height
     )
     const maxRadius = map(
-      Math.pow(
-        simplex[Seeds.Size].noise2D(circleI * 50, 123.45 + noiseStart * 0.5),
-        2
-      ),
+      Math.pow(simplex[Seeds.Size].noise2D(circleI * 50, 123.45), 2),
       0,
       1,
       CIRCLE_MIN_RADIUS,
@@ -138,7 +135,11 @@ export const design = ({
   for (let spinCircleI = 0; spinCircleI < SPIN_CIRCLE_COUNT; spinCircleI++) {
     const x = map(
       randomFromNoise(
-        simplex[Seeds.Position].noise2D(spinCircleI * 12 + 0.5, 0.5)
+        simplex[Seeds.Position].noise3D(
+          spinCircleI * 12 + 0.5,
+          123.45,
+          noiseStart * 0.2
+        )
       ),
       0,
       1,
@@ -147,7 +148,11 @@ export const design = ({
     )
     const y = map(
       randomFromNoise(
-        simplex[Seeds.Position].noise2D(0.5, spinCircleI * 12 + 0.5)
+        simplex[Seeds.Position].noise3D(
+          123.45,
+          spinCircleI * 12 + 0.5,
+          noiseStart * 0.2
+        )
       ),
       0,
       1,
@@ -155,7 +160,7 @@ export const design = ({
       height
     )
     const radius = map(
-      simplex[Seeds.Size].noise2D(spinCircleI * 50, 123.45 + noiseStart * 0.5),
+      simplex[Seeds.Size].noise2D(spinCircleI * 50, 123.45),
       -1,
       1,
       SPIN_CIRCLE_MIN_RADIUS,

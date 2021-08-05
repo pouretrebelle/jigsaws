@@ -22,13 +22,11 @@ export enum Seeds {
   Color,
   Position,
   Rotation,
-  Cone,
   Size,
 }
 
 interface Circle {
   pos: Vector2
-  tilt: Vector2
   maxRadius: number
   color: string
 }
@@ -63,59 +61,25 @@ export const design = ({
 
   const circles: Circle[] = []
 
-  let clusterSeparator = 0
   for (
     let circleI = 0;
     circleI < CIRCLE_COUNT * CIRCLE_LAYER_COUNT;
     circleI++
   ) {
-    if (
-      randomFromNoise(simplex[Seeds.Position].noise2D(circleI * 43.21, 123.2)) >
-      0.8
-    ) {
-      clusterSeparator++
-    }
-    const posDifferentiator = circleI * 0.1 + clusterSeparator * 6.3
-
     const x = map(
-      simplex[Seeds.Position].noise3D(
-        posDifferentiator + 0.5,
-        0.5,
-        noiseStart * 0.1
-      ),
+      simplex[Seeds.Position].noise3D(circleI * 5 + 0.5, 0.5, noiseStart * 0.1),
       -0.6,
       0.6,
       0,
       width
     )
     const y = map(
-      simplex[Seeds.Position].noise3D(
-        0.5,
-        posDifferentiator + 0.5,
-        noiseStart * 0.1
-      ),
+      simplex[Seeds.Position].noise3D(0.5, circleI * 5 + 0.5, noiseStart * 0.1),
       -0.6,
       0.6,
       0,
       height
     )
-    const tilt = new Vector2(
-      map(
-        randomFromNoise(simplex[Seeds.Cone].noise2D(circleI * 3.1, 123.2)),
-        0,
-        1,
-        1.2,
-        3
-      ),
-      0
-    ).rotate(
-      randomFromNoise(
-        simplex[Seeds.Rotation].noise2D(circleI * 3.1, 123.2 + noiseStart * 0.1)
-      ) *
-        Math.PI *
-        2
-    )
-
     const maxRadius = map(
       Math.pow(
         simplex[Seeds.Size].noise2D(circleI * 50, 123.45 + noiseStart * 0.5),
@@ -139,7 +103,6 @@ export const design = ({
 
     const circle = {
       pos: new Vector2(x, y),
-      tilt,
       maxRadius,
       color: color.hex(),
     }
@@ -160,13 +123,7 @@ export const design = ({
         if (radius < circle.maxRadius) {
           bigC.fillStyle = circle.color
           bigC.beginPath()
-          bigC.arc(
-            circle.pos.x + circle.tilt.x * radius,
-            circle.pos.y + circle.tilt.y * radius,
-            radius,
-            0,
-            2 * Math.PI
-          )
+          bigC.arc(circle.pos.x, circle.pos.y, radius, 0, 2 * Math.PI)
           bigC.fill()
         }
       })

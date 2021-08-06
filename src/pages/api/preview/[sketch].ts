@@ -1,8 +1,9 @@
 import SimplexNoise from 'simplex-noise'
-import { createCanvas } from 'canvas'
+import { createCanvas, Image } from 'canvas'
 
 import { Design, Cut } from 'types'
 import { makeRandomSeed } from 'lib/seeds'
+import { buildCloudinaryImageUrl } from 'components/CloudinaryImage'
 
 interface Req {
   query: {
@@ -23,11 +24,17 @@ type Res = NodeJS.WritableStream & {
 
 const handler = async (req: Req, res: Res) => {
   res.setHeader('content-type', 'image/png')
+  const { sketch, width } = req.query
 
   const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } =
-    await import(`.temp/sketches/${req.query.sketch || '001'}/index.ts`)
+    await import(`.temp/sketches/${sketch || '001'}/index.ts`)
 
-  const canvasWidth = req.query.width ? parseInt(req.query.width) : 200
+  let cache
+  try {
+    cache = await import(`.temp/sketches/${sketch || '001'}/cache.json`)
+  } catch {}
+
+  const canvasWidth = width ? parseInt(width) : 200
   const lineWidth = req.query.lineWidth ? parseFloat(req.query.lineWidth) : 0
 
   const queryDesignNoiseSeeds = req.query.designNoiseSeeds
@@ -47,29 +54,63 @@ const handler = async (req: Req, res: Res) => {
 
   const designScale = (canvasWidth + lineWidth) / settings.width
 
-  c.save()
-  c.translate(-lineWidth / 2, -lineWidth / 2)
-  c.scale(designScale, designScale)
-
-  c.save()
-  c.translate(-settings.bleed, -settings.bleed)
-
   if (settings.backgroundColor) {
     c.fillStyle = settings.backgroundColor
     c.fillRect(0, 0, canvasWidth, canvasWidth)
   }
 
-  design({
-    c,
-    createCanvas,
-    seed: designNoiseSeeds,
-    simplex: designNoiseSeeds.map((seed) => new SimplexNoise(seed)),
-    noiseStart: 0,
-    ...settings,
-    width: settings.width ? settings.width + settings.bleed * 2 : undefined,
-    height: settings.height ? settings.height + settings.bleed * 2 : undefined,
-  } as Design)
-  c.restore()
+  if (
+    cache?.designNoiseSeeds &&
+    cache.designNoiseSeeds.includes(designNoiseSeeds.join('-'))
+  ) {
+    const cacheBleed = Math.round(
+      (canvasWidth - lineWidth) *
+        (settings.bleed / (settings.width + settings.bleed * 2))
+    )
+    const cacheWidth = canvasWidth + cacheBleed * 2
+    const imageUrl = buildCloudinaryImageUrl(
+      `${sketch}_${designNoiseSeeds.join('-')}.png`,
+      { c: 'scale', w: cacheWidth, h: cacheWidth }
+    )
+
+    const image = new Image()
+    await new Promise((resolve, reject) => {
+      image.onload = () => {
+        resolve(image.width)
+      }
+      image.onerror = reject
+      image.src = imageUrl
+    })
+
+    c.save()
+    c.translate(-cacheBleed, -cacheBleed)
+    c.drawImage(
+      image as unknown as HTMLImageElement,
+      0,
+      0,
+      cacheWidth,
+      cacheWidth
+    )
+    c.restore()
+  } else {
+    c.save()
+    c.translate(-lineWidth / 2, -lineWidth / 2)
+    c.scale(designScale, designScale)
+    c.translate(-settings.bleed, -settings.bleed)
+    design({
+      c,
+      createCanvas,
+      seed: designNoiseSeeds,
+      simplex: designNoiseSeeds.map((seed) => new SimplexNoise(seed)),
+      noiseStart: 0,
+      ...settings,
+      width: settings.width ? settings.width + settings.bleed * 2 : undefined,
+      height: settings.height
+        ? settings.height + settings.bleed * 2
+        : undefined,
+    } as Design)
+    c.restore()
+  }
 
   if (lineWidth) {
     let cutNoiseSeeds = Object.keys(CutNoiseSeeds)
@@ -80,6 +121,9 @@ const handler = async (req: Req, res: Res) => {
     c.strokeStyle = 'black'
     c.lineWidth = lineWidth / designScale
 
+    c.save()
+    c.translate(-lineWidth / 2, -lineWidth / 2)
+    c.scale(designScale, designScale)
     cut({
       c,
       seed: cutNoiseSeeds,
@@ -87,9 +131,9 @@ const handler = async (req: Req, res: Res) => {
       noiseStart: 0,
       ...settings,
     } as Cut)
+    c.restore()
   }
 
-  c.restore()
   canvas.createPNGStream().pipe(res)
 }
 

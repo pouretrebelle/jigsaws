@@ -40,9 +40,10 @@ const handler = async (req: Req, res: Res) => {
   const canvas = createCanvas(canvasWidth, canvasWidth)
   const c = canvas.getContext('2d') as CanvasRenderingContext2D
 
-  const designNoiseSeeds = Object.keys(DesignNoiseSeeds).map(
-    (_, i) => queryDesignNoiseSeeds[i] || makeRandomSeed()
-  )
+  let designNoiseSeeds = Object.keys(DesignNoiseSeeds)
+  designNoiseSeeds = designNoiseSeeds
+    .slice(0, designNoiseSeeds.length / 2)
+    .map((_, i) => queryDesignNoiseSeeds[i] || makeRandomSeed())
 
   const designScale = (canvasWidth + lineWidth) / settings.width
 
@@ -71,9 +72,10 @@ const handler = async (req: Req, res: Res) => {
   c.restore()
 
   if (lineWidth) {
-    const cutNoiseSeeds = Object.keys(CutNoiseSeeds).map(
-      (_, i) => queryCutNoiseSeeds[i] || makeRandomSeed()
-    )
+    let cutNoiseSeeds = Object.keys(CutNoiseSeeds)
+    cutNoiseSeeds = cutNoiseSeeds
+      .slice(0, cutNoiseSeeds.length / 2)
+      .map((_, i) => queryCutNoiseSeeds[i] || makeRandomSeed())
 
     c.strokeStyle = 'black'
     c.lineWidth = lineWidth / designScale

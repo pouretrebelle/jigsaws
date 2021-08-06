@@ -6,6 +6,7 @@ import C2S from 'canvas2svg'
 import { JSDOM } from 'jsdom'
 import { XMLSerializer } from 'xmldom'
 import { btoa } from 'abab'
+import prettier from 'prettier'
 
 import { Design } from 'types'
 import { formatSeeds, LASER_CUT_SVG_MULTIPLIER, MM_TO_INCH } from 'lib/export'
@@ -224,8 +225,11 @@ const handler = async (req: Req, res: Res) => {
   }
 
   if (result.status === 200) {
+    const output = prettier.format(JSON.stringify(json), {
+      parser: 'json',
+    })
     try {
-      fs.writeFileSync(cachePath, JSON.stringify(json))
+      fs.writeFileSync(cachePath, output)
       console.log(`Write file ${cachePath}`)
 
       const tempPath = `src/.temp/sketches/${sketch}/cache.json`

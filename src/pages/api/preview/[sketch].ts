@@ -1,5 +1,6 @@
 import SimplexNoise from 'simplex-noise'
 import { createCanvas, Image } from 'canvas'
+import { btoa } from 'abab'
 
 import { Design, Cut } from 'types'
 import { makeRandomSeed } from 'lib/seeds'
@@ -59,15 +60,16 @@ const handler = async (req: Req, res: Res) => {
     c.fillRect(0, 0, canvasWidth, canvasWidth)
   }
 
+  const cacheBleed = Math.ceil(
+    (canvasWidth * (settings.bleed + lineWidth / 4)) /
+      (settings.width + settings.bleed * 2)
+  )
+  const cacheWidth = canvasWidth + cacheBleed * 2
+
   if (
     cache?.designNoiseSeeds &&
     cache.designNoiseSeeds.includes(designNoiseSeeds.join('-'))
   ) {
-    const cacheBleed = Math.round(
-      (canvasWidth - lineWidth) *
-        (settings.bleed / (settings.width + settings.bleed * 2))
-    )
-    const cacheWidth = canvasWidth + cacheBleed * 2
     const imageUrl = buildCloudinaryImageUrl(
       `${sketch}_${designNoiseSeeds.join('-')}.png`,
       { c: 'scale', w: cacheWidth, h: cacheWidth }
@@ -119,19 +121,60 @@ const handler = async (req: Req, res: Res) => {
       .map((_, i) => queryCutNoiseSeeds[i] || makeRandomSeed())
 
     c.strokeStyle = 'black'
-    c.lineWidth = lineWidth / designScale
 
-    c.save()
-    c.translate(-lineWidth / 2, -lineWidth / 2)
-    c.scale(designScale, designScale)
-    cut({
-      c,
-      seed: cutNoiseSeeds,
-      simplex: cutNoiseSeeds.map((seed) => new SimplexNoise(seed)),
-      noiseStart: 0,
-      ...settings,
-    } as Cut)
-    c.restore()
+    if (
+      cache?.cutNoiseSeeds &&
+      cache.cutNoiseSeeds.includes(cutNoiseSeeds.join('-'))
+    ) {
+      const imageUrl = buildCloudinaryImageUrl(
+        `${sketch}_${cutNoiseSeeds.join('-')}.svg`,
+        { c: 'scale', w: cacheWidth, h: cacheWidth }
+      )
+
+      const result = await fetch(imageUrl)
+      let svg = await result.text()
+      // append a style tag after the first closed tag to set the line width, proper dodgy
+      svg = svg.replace(
+        `>`,
+        `><style>path { stroke-width: ${lineWidth / designScale}px</style>`
+      )
+
+      const image = new Image()
+      await new Promise((resolve, reject) => {
+        image.onload = () => {
+          resolve(image.width)
+        }
+        image.onerror = reject
+        image.src = `data:image/svg+xml;base64,${btoa(svg)}`
+      })
+      image.width = cacheWidth
+      image.height = cacheWidth
+
+      c.save()
+      c.translate(-cacheBleed, -cacheBleed)
+      c.drawImage(
+        image as unknown as HTMLImageElement,
+        0,
+        0,
+        cacheWidth,
+        cacheWidth
+      )
+      c.restore()
+    } else {
+      c.lineWidth = lineWidth / designScale
+
+      c.save()
+      c.translate(-lineWidth / 2, -lineWidth / 2)
+      c.scale(designScale, designScale)
+      cut({
+        c,
+        seed: cutNoiseSeeds,
+        simplex: cutNoiseSeeds.map((seed) => new SimplexNoise(seed)),
+        noiseStart: 0,
+        ...settings,
+      } as Cut)
+      c.restore()
+    }
   }
 
   canvas.createPNGStream().pipe(res)

@@ -1,4 +1,4 @@
-import { useContext, useState, useLayoutEffect } from 'react'
+import { useContext, useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 
@@ -49,16 +49,26 @@ export const SketchPreviewCard: React.FC<Props> = ({ id }) => {
   const [designNoiseSeeds, setDesignNoiseSeeds] = useState<string[]>([])
   const [cutNoiseSeeds, setCutNoiseSeeds] = useState<string[]>([])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setDesignNoiseSeeds(getDesignNoiseSeeds())
     setCutNoiseSeeds(getCutNoiseSeeds())
-  }, [])
+  }, [id])
 
   const shuffleSeeds = () => {
     setDesignNoiseSeeds(getDesignNoiseSeeds())
     setCutNoiseSeeds(getCutNoiseSeeds())
     trackEvent('Shuffle preview seeds', { id })
   }
+
+  const formatPath = useCallback(
+    ({ width }) =>
+      `/api/preview/${id}?width=${width}&designNoiseSeeds=${designNoiseSeeds.join(
+        '-'
+      )}&cutNoiseSeeds=${cutNoiseSeeds.join('-')}&lineWidth=${
+        PIXEL_DENSITY / 4
+      }`,
+    [id, designNoiseSeeds, cutNoiseSeeds]
+  )
 
   return (
     <StyledArticle>
@@ -71,16 +81,7 @@ export const SketchPreviewCard: React.FC<Props> = ({ id }) => {
             })
           }
         >
-          <ResponsiveImage
-            formatPath={({ width }) =>
-              `/api/preview/${id}?width=${width}&designNoiseSeeds=${designNoiseSeeds.join(
-                '-'
-              )}&cutNoiseSeeds=${cutNoiseSeeds.join('-')}&lineWidth=${
-                PIXEL_DENSITY / 4
-              }`
-            }
-            aspectRatio={1}
-          />
+          <ResponsiveImage formatPath={formatPath} aspectRatio={1} />
         </StyledLink>
       </Link>
       <StyledMeta>

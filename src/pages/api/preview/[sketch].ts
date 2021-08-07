@@ -39,10 +39,10 @@ const handler = async (req: Req, res: Res) => {
   const lineWidth = req.query.lineWidth ? parseFloat(req.query.lineWidth) : 0
 
   const queryDesignNoiseSeeds = req.query.designNoiseSeeds
-    ? req.query.designNoiseSeeds.split(',')
+    ? req.query.designNoiseSeeds.split('-')
     : []
   const queryCutNoiseSeeds = req.query.cutNoiseSeeds
-    ? req.query.cutNoiseSeeds.split(',')
+    ? req.query.cutNoiseSeeds.split('-')
     : []
 
   const canvas = createCanvas(canvasWidth, canvasWidth)

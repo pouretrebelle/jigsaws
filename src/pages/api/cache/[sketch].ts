@@ -8,13 +8,8 @@ import { XMLSerializer } from 'xmldom'
 import { btoa } from 'abab'
 import prettier from 'prettier'
 
-import { Design } from 'types'
+import { Design, Cache } from 'types'
 import { formatSeeds, LASER_CUT_SVG_MULTIPLIER, MM_TO_INCH } from 'lib/export'
-
-interface Cache {
-  cutNoiseSeeds: string[]
-  designNoiseSeeds: string[]
-}
 
 interface Req {
   query: {

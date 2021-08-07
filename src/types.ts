@@ -91,6 +91,11 @@ export interface Sketch {
   settings: SketchSettings
 }
 
+export interface Cache {
+  cutNoiseSeeds: string[]
+  designNoiseSeeds: string[]
+}
+
 export interface Cut {
   c: CanvasRenderingContext2D
   simplex: SimplexNoise[]
@@ -139,4 +144,5 @@ export interface SketchContent {
     cutWebsite: string
     canvas: string
   }
+  cache: Cache
 }

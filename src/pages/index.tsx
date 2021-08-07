@@ -127,6 +127,7 @@ const HomePage = ({ latestSketch }: Props) => {
         <PreviewProvider
           designNoiseSeeds={latestSketch.designNoiseSeeds}
           cutNoiseSeeds={latestSketch.cutNoiseSeeds}
+          cache={latestSketch.cache}
         >
           {[...Array(3)].map((_, i) => (
             <SketchPreviewCard key={i} id={latestSketch.id} />

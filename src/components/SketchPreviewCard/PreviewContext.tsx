@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext } from 'react'
 import { shuffle } from 'shuffle-seed'
 
 import { Cache } from 'types'
@@ -11,6 +11,11 @@ interface Props {
   cache: Cache
 }
 
+interface State {
+  designCache: Cache['designNoiseSeeds']
+  cutCache: Cache['cutNoiseSeeds']
+}
+
 interface Context {
   getDesignNoiseSeeds: () => string[]
   getCutNoiseSeeds: () => string[]
@@ -18,41 +23,55 @@ interface Context {
 
 export const PreviewContext = createContext({} as Context)
 
-export const PreviewProvider = ({
-  children,
-  designNoiseSeeds: sketchDesignNoiseSeeds,
-  cutNoiseSeeds: sketchCutNoiseSeeds,
-  cache,
-}: Props) => {
-  const [designIndex, setDesignIndex] = useState(0)
-  const [cutIndex, setCutIndex] = useState(0)
+export class PreviewProvider extends React.Component<Props> {
+  designIndex = 0
+  cutIndex = 0
+  shuffleSeed = Date.now()
 
-  const shuffleSeed = 'abc'
-  const designCache = shuffle(cache?.designNoiseSeeds, shuffleSeed)
-  const cutCache = shuffle(cache?.cutNoiseSeeds, shuffleSeed)
-
-  useEffect(() => {
-    setDesignIndex(0)
-    setCutIndex(0)
-  }, [cache])
-
-  const getDesignNoiseSeeds = () => {
-    if (!designCache.length) return sketchDesignNoiseSeeds.map(makeRandomSeed)
-    setDesignIndex(designIndex + 1)
-    return designCache[designIndex % designCache.length].split('-')
-  }
-  const getCutNoiseSeeds = () => {
-    if (!cutCache.length) return sketchCutNoiseSeeds.map(makeRandomSeed)
-    setCutIndex(cutIndex + 1)
-    return cutCache[cutIndex % cutCache.length].split('-')
+  componentDidUpdate(prevProps: Props) {
+    if (
+      prevProps.designNoiseSeeds.join('') !==
+        this.props.designNoiseSeeds.join('') ||
+      prevProps.cutNoiseSeeds.join('') !== this.props.cutNoiseSeeds.join('')
+    ) {
+      this.shuffleSeed = Date.now()
+      this.designIndex = 0
+      this.cutIndex = 0
+    }
   }
 
-  const value = {
-    getDesignNoiseSeeds,
-    getCutNoiseSeeds,
+  getDesignNoiseSeeds = (): string[] => {
+    const { designNoiseSeeds, cache } = this.props
+
+    const designCache = shuffle(cache.designNoiseSeeds, this.shuffleSeed)
+    if (!designCache.length) return designNoiseSeeds.map(makeRandomSeed)
+
+    this.designIndex++
+    return designCache[this.designIndex % designCache.length].split('-')
   }
 
-  return (
-    <PreviewContext.Provider value={value}>{children}</PreviewContext.Provider>
-  )
+  getCutNoiseSeeds = (): string[] => {
+    const { cutNoiseSeeds, cache } = this.props
+
+    const cutCache = shuffle(cache.cutNoiseSeeds, this.shuffleSeed)
+    if (!cutCache.length) return cutNoiseSeeds.map(makeRandomSeed)
+
+    this.cutIndex++
+    return cutCache[this.cutIndex % cutCache.length].split('-')
+  }
+
+  render() {
+    const { children } = this.props
+
+    return (
+      <PreviewContext.Provider
+        value={{
+          getDesignNoiseSeeds: this.getDesignNoiseSeeds,
+          getCutNoiseSeeds: this.getCutNoiseSeeds,
+        }}
+      >
+        {children}
+      </PreviewContext.Provider>
+    )
+  }
 }

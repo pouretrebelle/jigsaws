@@ -10,7 +10,10 @@ import { SEO } from 'components/SEO'
 import { PageWrapper } from 'components/PageWrapper'
 import { Button } from 'components/Button'
 import { CloudinaryImage } from 'components/CloudinaryImage'
-import { SketchPreviewCard } from 'components/SketchPreviewCard'
+import {
+  PreviewProvider,
+  SketchPreviewCard,
+} from 'components/SketchPreviewCard'
 
 interface Props {
   latestSketch: SketchContent
@@ -121,14 +124,14 @@ const HomePage = ({ latestSketch }: Props) => {
         <Link href={`/app/${latestSketch.id}`}>the explorer</Link>
       </StyledPreviewHeader>
       <StyledPreviewGrid>
-        {[...Array(3)].map((_, i) => (
-          <SketchPreviewCard
-            key={i}
-            id={latestSketch.id}
-            designNoiseSeeds={latestSketch.designNoiseSeeds}
-            cutNoiseSeeds={latestSketch.cutNoiseSeeds}
-          />
-        ))}
+        <PreviewProvider
+          designNoiseSeeds={latestSketch.designNoiseSeeds}
+          cutNoiseSeeds={latestSketch.cutNoiseSeeds}
+        >
+          {[...Array(3)].map((_, i) => (
+            <SketchPreviewCard key={i} id={latestSketch.id} />
+          ))}
+        </PreviewProvider>
       </StyledPreviewGrid>
     </PageWrapper>
   )

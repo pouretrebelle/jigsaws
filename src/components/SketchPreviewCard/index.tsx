@@ -72,8 +72,8 @@ export const SketchPreviewCard: React.FC<Props> = ({
           <ResponsiveImage
             formatPath={({ width }) =>
               `/api/preview/${id}?width=${width}&designNoiseSeeds=${designNoiseSeeds.join(
-                ','
-              )}&cutNoiseSeeds=${cutNoiseSeeds.join(',')}&lineWidth=${
+                '-'
+              )}&cutNoiseSeeds=${cutNoiseSeeds.join('-')}&lineWidth=${
                 PIXEL_DENSITY / 4
               }`
             }

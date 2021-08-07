@@ -11,7 +11,10 @@ import { COLOR } from 'styles/tokens'
 import { BulletSeparator } from 'components/BulletSeparator'
 import { Button } from 'components/Button'
 import { CloudinaryImage } from 'components/CloudinaryImage'
-import { SketchPreviewCard } from 'components/SketchPreviewCard'
+import {
+  SketchPreviewCard,
+  PreviewProvider,
+} from 'components/SketchPreviewCard'
 import { SketchVariant } from 'components/SketchVariant'
 
 import { Player } from './Player'
@@ -212,6 +215,7 @@ export const SketchPage = ({
   cutNoiseSeeds,
   nextSketchLink,
   prevSketchLink,
+  cache,
 }: Props) => {
   const navButtons = (
     <>
@@ -284,14 +288,14 @@ export const SketchPage = ({
 
       <StyledPreviews>
         <StyledPreviewGrid>
-          {[...Array(3)].map((_, i) => (
-            <SketchPreviewCard
-              key={i}
-              id={id}
-              designNoiseSeeds={designNoiseSeeds}
-              cutNoiseSeeds={cutNoiseSeeds}
-            />
-          ))}
+          <PreviewProvider
+            designNoiseSeeds={designNoiseSeeds}
+            cutNoiseSeeds={cutNoiseSeeds}
+          >
+            {[...Array(3)].map((_, i) => (
+              <SketchPreviewCard key={i} id={id} />
+            ))}
+          </PreviewProvider>
         </StyledPreviewGrid>
         <StyledPreviewDescription>
           Each jigsaw is designed and developed entirely in the browser. Above

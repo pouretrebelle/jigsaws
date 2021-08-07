@@ -1,13 +1,16 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useLayoutEffect } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 
 import { SketchContent } from 'types'
 import { EnvContext } from 'env'
-import { makeRandomSeed, setLocalStorageSeeds } from 'lib/seeds'
+import { setLocalStorageSeeds } from 'lib/seeds'
 import { ResponsiveImage } from 'components/ResponsiveImage'
 import { SketchVariant } from 'components/SketchVariant'
 import { ShuffleButton } from 'components/ShuffleButton'
+
+import { PreviewContext } from './PreviewContext'
+export { PreviewProvider } from './PreviewContext'
 
 const PIXEL_DENSITY =
   typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
@@ -37,24 +40,23 @@ const StyledActions = styled.div`
   flex: 0 0 0;
 `
 
-type Props = Pick<SketchContent, 'id' | 'designNoiseSeeds' | 'cutNoiseSeeds'>
+type Props = Pick<SketchContent, 'id'>
 
-export const SketchPreviewCard: React.FC<Props> = ({
-  id,
-  designNoiseSeeds: sketchDesignNoiseSeeds,
-  cutNoiseSeeds: sketchCutNoiseSeeds,
-}) => {
+export const SketchPreviewCard: React.FC<Props> = ({ id }) => {
+  const { getDesignNoiseSeeds, getCutNoiseSeeds } = useContext(PreviewContext)
   const { trackEvent } = useContext(EnvContext)
-  const [designNoiseSeeds, setDesignNoiseSeeds] = useState(
-    sketchDesignNoiseSeeds.map(makeRandomSeed)
-  )
-  const [cutNoiseSeeds, setCutNoiseSeeds] = useState(
-    sketchCutNoiseSeeds.map(makeRandomSeed)
-  )
+
+  const [designNoiseSeeds, setDesignNoiseSeeds] = useState<string[]>([])
+  const [cutNoiseSeeds, setCutNoiseSeeds] = useState<string[]>([])
+
+  useLayoutEffect(() => {
+    setDesignNoiseSeeds(getDesignNoiseSeeds())
+    setCutNoiseSeeds(getCutNoiseSeeds())
+  }, [])
 
   const shuffleSeeds = () => {
-    setDesignNoiseSeeds(sketchDesignNoiseSeeds.map(makeRandomSeed))
-    setCutNoiseSeeds(sketchCutNoiseSeeds.map(makeRandomSeed))
+    setDesignNoiseSeeds(getDesignNoiseSeeds())
+    setCutNoiseSeeds(getCutNoiseSeeds())
     trackEvent('Shuffle preview seeds', { id })
   }
 

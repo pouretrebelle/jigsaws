@@ -12,6 +12,18 @@ const getRgb = (color: string): string => chroma(color).rgb().join(', ')
 export const getSketchContent = (sketchId: string): SketchContent | null => {
   try {
     const file = fs.readFileSync(`sketches/${sketchId}/README.md`, 'utf8')
+    let cache = {
+      designNoiseSeeds: [],
+      cutNoiseSeeds: [],
+    }
+    try {
+      const cacheText = fs.readFileSync(
+        `sketches/${sketchId}/cache.json`,
+        'utf8'
+      )
+      cache = JSON.parse(cacheText)
+    } catch {}
+
     const {
       content,
       data: {
@@ -50,6 +62,7 @@ export const getSketchContent = (sketchId: string): SketchContent | null => {
         cutWebsite: `${sketchId}_website_${cutNoiseSeeds.join('-')}.svg`,
         canvas,
       },
+      cache,
     }
   } catch (err) {
     console.error(`Cannot get content of sketch ${sketchId}`)

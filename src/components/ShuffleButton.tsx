@@ -7,6 +7,8 @@ interface Props {
 
 const StyledShuffleButton = styled.button`
   position: relative;
+  padding: 0.5em;
+  margin: -0.5em;
   outline: none;
   color: #777;
   transition: transform 0.2s ease;

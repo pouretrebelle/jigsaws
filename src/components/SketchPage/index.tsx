@@ -30,7 +30,7 @@ const StyledGrid = styled.article`
 
   @media (max-width: ${BREAKPOINT}) {
     grid-template-columns: 1fr;
-    grid-template-areas: 'image' 'mobile-nav' 'details' 'video';
+    grid-template-areas: 'mobile-preview' 'mobile-nav' 'details' 'video';
   }
 
   > * > *:first-child {
@@ -59,9 +59,10 @@ const StyledVideo = styled.figure`
 
 const StyledSidebar = styled.div`
   grid-area: image;
+  margin: -2em 0;
 
-  @media (min-width: ${BREAKPOINT}) {
-    margin: -2em 0;
+  @media (max-width: ${BREAKPOINT}) {
+    display: none;
   }
 `
 
@@ -123,6 +124,14 @@ const StyledMobileNav = styled(StyledNav)`
 
   @media (max-width: ${BREAKPOINT}) {
     display: flex;
+  }
+`
+
+const StyledMobilePreview = styled.div`
+  grid-area: mobile-preview;
+
+  @media (min-width: ${BREAKPOINT}) {
+    display: none;
   }
 `
 
@@ -265,6 +274,16 @@ export const SketchPage = ({
           <StyledNav>{navButtons}</StyledNav>
         </StyledSidebarInner>
       </StyledSidebar>
+
+      <StyledMobilePreview>
+        <PreviewProvider
+          designNoiseSeeds={designNoiseSeeds}
+          cutNoiseSeeds={cutNoiseSeeds}
+          cache={cache}
+        >
+          <SketchPreviewCard id={id} primary />
+        </PreviewProvider>
+      </StyledMobilePreview>
 
       <StyledMobileNav>
         <Link href={appLink} passHref>

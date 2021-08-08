@@ -98,6 +98,8 @@ const StyledNav = styled.nav`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
+  position: sticky;
+  bottom: 1em;
 
   > * {
     flex: 1 0 8em;
@@ -111,6 +113,8 @@ const StyledNav = styled.nav`
 const StyledMobileNav = styled(StyledNav)`
   grid-area: mobile-nav;
   display: none;
+  position: relative;
+  bottom: 0;
 
   @media (max-width: ${BREAKPOINT}) {
     display: flex;

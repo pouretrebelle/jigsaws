@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
 import { shuffle } from 'shuffle-seed'
 
-import { Cache } from 'types'
+import { Cache, SketchContent } from 'types'
 import { makeRandomSeed } from 'lib/seeds'
 
 interface Props {
@@ -16,10 +16,10 @@ interface State {
   cutCache: Cache['cutNoiseSeeds']
 }
 
-interface Context {
+type Context = {
   getDesignNoiseSeeds: () => string[]
   getCutNoiseSeeds: () => string[]
-}
+} & Pick<SketchContent, 'designNoiseSeeds' | 'cutNoiseSeeds'>
 
 export const PreviewContext = createContext({} as Context)
 
@@ -61,11 +61,13 @@ export class PreviewProvider extends React.Component<Props> {
   }
 
   render() {
-    const { children } = this.props
+    const { children, designNoiseSeeds, cutNoiseSeeds } = this.props
 
     return (
       <PreviewContext.Provider
         value={{
+          designNoiseSeeds,
+          cutNoiseSeeds,
           getDesignNoiseSeeds: this.getDesignNoiseSeeds,
           getCutNoiseSeeds: this.getCutNoiseSeeds,
         }}

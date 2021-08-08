@@ -17,7 +17,7 @@ const PIXEL_DENSITY =
 
 const StyledArticle = styled.article`
   min-width: 0;
-  font-size: 0.75em;
+  font-size: max(14px, 0.75em);
 `
 
 const StyledLink = styled.a`
@@ -40,18 +40,25 @@ const StyledActions = styled.div`
   flex: 0 0 0;
 `
 
-type Props = Pick<SketchContent, 'id'>
+type Props = Pick<SketchContent, 'id'> & { primary?: boolean }
 
-export const SketchPreviewCard: React.FC<Props> = ({ id }) => {
-  const { getDesignNoiseSeeds, getCutNoiseSeeds } = useContext(PreviewContext)
+export const SketchPreviewCard: React.FC<Props> = ({ id, primary }) => {
+  const {
+    getDesignNoiseSeeds,
+    getCutNoiseSeeds,
+    designNoiseSeeds: sketchDesignNoiseSeeds,
+    cutNoiseSeeds: sketchCutNoiseSeeds,
+  } = useContext(PreviewContext)
   const { trackEvent } = useContext(EnvContext)
 
   const [designNoiseSeeds, setDesignNoiseSeeds] = useState<string[]>([])
   const [cutNoiseSeeds, setCutNoiseSeeds] = useState<string[]>([])
 
   useEffect(() => {
-    setDesignNoiseSeeds(getDesignNoiseSeeds())
-    setCutNoiseSeeds(getCutNoiseSeeds())
+    setDesignNoiseSeeds(
+      primary ? sketchDesignNoiseSeeds : getDesignNoiseSeeds()
+    )
+    setCutNoiseSeeds(primary ? sketchCutNoiseSeeds : getCutNoiseSeeds())
   }, [id])
 
   const shuffleSeeds = () => {

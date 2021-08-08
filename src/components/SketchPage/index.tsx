@@ -250,10 +250,6 @@ export const SketchPage = ({
 
   return (
     <StyledGrid>
-      <StyledVideo>
-        <Player id={id} youTubeLink={youTubeLink} imagePath={imagePath} />
-      </StyledVideo>
-
       <StyledSidebar>
         <StyledSidebarInner>
           <StyledImageWrapper>
@@ -292,6 +288,27 @@ export const SketchPage = ({
         {navButtons}
       </StyledMobileNav>
 
+      <StyledPreviews>
+        <StyledPreviewGrid>
+          <PreviewProvider
+            designNoiseSeeds={designNoiseSeeds}
+            cutNoiseSeeds={cutNoiseSeeds}
+            cache={cache}
+          >
+            {[...Array(3)].map((_, i) => (
+              <SketchPreviewCard key={i} id={id} />
+            ))}
+          </PreviewProvider>
+        </StyledPreviewGrid>
+        <StyledPreviewDescription>
+          Each jigsaw is designed and developed entirely in the browser. Above
+          are some random outputs generated on the fly just for you &ndash;
+          crack open <Link href={appLink}>the explorer</Link> for finer control
+          of the parameters.
+          <StyledDivider />
+        </StyledPreviewDescription>
+      </StyledPreviews>
+
       <StyledDetails>
         <ReactMarkdown
           // eslint-disable-next-line react/no-children-prop
@@ -315,26 +332,9 @@ export const SketchPage = ({
         </StyledMeta>
       </StyledDetails>
 
-      <StyledPreviews>
-        <StyledPreviewGrid>
-          <PreviewProvider
-            designNoiseSeeds={designNoiseSeeds}
-            cutNoiseSeeds={cutNoiseSeeds}
-            cache={cache}
-          >
-            {[...Array(3)].map((_, i) => (
-              <SketchPreviewCard key={i} id={id} />
-            ))}
-          </PreviewProvider>
-        </StyledPreviewGrid>
-        <StyledPreviewDescription>
-          Each jigsaw is designed and developed entirely in the browser. Above
-          are some random outputs generated on the fly just for you &ndash;
-          crack open <Link href={appLink}>the explorer</Link> for finer control
-          of the parameters.
-          <StyledDivider />
-        </StyledPreviewDescription>
-      </StyledPreviews>
+      <StyledVideo>
+        <Player id={id} youTubeLink={youTubeLink} imagePath={imagePath} />
+      </StyledVideo>
     </StyledGrid>
   )
 }

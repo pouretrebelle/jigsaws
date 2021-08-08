@@ -44,12 +44,18 @@ const StyledIcon = styled.svg`
   margin-right: 0.2em;
 `
 
-type Props = Pick<SketchContent, 'designNoiseSeeds' | 'cutNoiseSeeds'>
+type Props = Pick<SketchContent, 'designNoiseSeeds' | 'cutNoiseSeeds'> & {
+  className?: string
+}
 
-export const SketchVariant = ({ designNoiseSeeds, cutNoiseSeeds }: Props) => {
+export const SketchVariant = ({
+  designNoiseSeeds,
+  cutNoiseSeeds,
+  className,
+}: Props) => {
   const identifier = `${designNoiseSeeds.join('-')}_${cutNoiseSeeds.join('-')}`
   return (
-    <StyledSketchVariant title={identifier} aria-hidden>
+    <StyledSketchVariant title={identifier} aria-hidden className={className}>
       <StyledInner>
         <StyledIcon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7 7">
           <path

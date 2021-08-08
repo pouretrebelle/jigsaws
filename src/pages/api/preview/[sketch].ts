@@ -9,6 +9,7 @@ import { buildCloudinaryImageUrl } from 'components/CloudinaryImage'
 interface Req {
   query: {
     sketch?: string
+    cached?: 'true'
     width?: string
     lineWidth?: string
     designNoiseSeeds?: string
@@ -25,7 +26,7 @@ type Res = NodeJS.WritableStream & {
 
 const handler = async (req: Req, res: Res) => {
   res.setHeader('content-type', 'image/png')
-  const { sketch, width } = req.query
+  const { sketch, width, cached } = req.query
 
   const { settings, design, DesignNoiseSeeds, cut, CutNoiseSeeds } =
     await import(`.temp/sketches/${sketch || '001'}/index.ts`)
@@ -67,8 +68,9 @@ const handler = async (req: Req, res: Res) => {
   const cacheWidth = canvasWidth + cacheBleed * 2
 
   if (
-    cache?.designNoiseSeeds &&
-    cache.designNoiseSeeds.includes(designNoiseSeeds.join('-'))
+    cached ||
+    (cache?.designNoiseSeeds &&
+      cache.designNoiseSeeds.includes(designNoiseSeeds.join('-')))
   ) {
     const imageUrl = buildCloudinaryImageUrl(
       `${sketch}_${designNoiseSeeds.join('-')}.png`,
@@ -123,8 +125,9 @@ const handler = async (req: Req, res: Res) => {
     c.strokeStyle = 'black'
 
     if (
-      cache?.cutNoiseSeeds &&
-      cache.cutNoiseSeeds.includes(cutNoiseSeeds.join('-'))
+      cached ||
+      (cache?.cutNoiseSeeds &&
+        cache.cutNoiseSeeds.includes(cutNoiseSeeds.join('-')))
     ) {
       const imageUrl = buildCloudinaryImageUrl(
         `${sketch}_${cutNoiseSeeds.join('-')}.svg`,

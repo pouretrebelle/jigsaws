@@ -81,7 +81,7 @@ const HomePage = ({ latestSketch }: Props) => {
       <StyledDescription>
         <p>
           Abstract Puzzles is a{' '}
-          <a href="https://charlottedann.com">Charlotte Dann</a> project,
+          <a href="https://charlottedann.com">Charlotte&nbsp;Dann</a> project,
           exploring generative art through the medium of jigsaw design.
         </p>
         <p>
@@ -121,7 +121,7 @@ const HomePage = ({ latestSketch }: Props) => {
 
       <StyledPreviewHeader>
         Generate variations of this design in{' '}
-        <Link href={`/app/${latestSketch.id}`}>the explorer</Link>
+        <Link href={`/app/${latestSketch.id}`}>the&nbsp;explorer</Link>
       </StyledPreviewHeader>
       <StyledPreviewGrid>
         <PreviewProvider

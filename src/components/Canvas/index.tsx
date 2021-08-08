@@ -10,7 +10,7 @@ import Loader from 'components/Loader'
 
 const PIXEL_DENSITY =
   typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
-const CANVAS_PADDING = 50
+const CANVAS_PADDING = 32
 
 interface CanvasWrapperProps {
   $isZooming: boolean

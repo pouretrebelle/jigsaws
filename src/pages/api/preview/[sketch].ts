@@ -11,7 +11,7 @@ interface Req {
     sketch?: string
     cached?: 'true'
     width?: string
-    lineWidth?: string
+    pixelDensity?: string
     designNoiseSeeds?: string
     cutNoiseSeeds?: string
   }
@@ -37,7 +37,12 @@ const handler = async (req: Req, res: Res) => {
   } catch {}
 
   const canvasWidth = width ? parseInt(width) : 200
-  const lineWidth = req.query.lineWidth ? parseFloat(req.query.lineWidth) : 0
+  const lineWidth =
+    Math.round(
+      (canvasWidth / 1000) *
+        (req.query.pixelDensity ? parseFloat(req.query.pixelDensity) : 1) *
+        100
+    ) / 100
 
   const queryDesignNoiseSeeds = req.query.designNoiseSeeds
     ? req.query.designNoiseSeeds.split('-')
@@ -116,68 +121,66 @@ const handler = async (req: Req, res: Res) => {
     c.restore()
   }
 
-  if (lineWidth) {
-    let cutNoiseSeeds = Object.keys(CutNoiseSeeds)
-    cutNoiseSeeds = cutNoiseSeeds
-      .slice(0, cutNoiseSeeds.length / 2)
-      .map((_, i) => queryCutNoiseSeeds[i] || makeRandomSeed())
+  let cutNoiseSeeds = Object.keys(CutNoiseSeeds)
+  cutNoiseSeeds = cutNoiseSeeds
+    .slice(0, cutNoiseSeeds.length / 2)
+    .map((_, i) => queryCutNoiseSeeds[i] || makeRandomSeed())
 
-    c.strokeStyle = 'black'
+  c.strokeStyle = 'black'
 
-    if (
-      cached ||
-      (cache?.cutNoiseSeeds &&
-        cache.cutNoiseSeeds.includes(cutNoiseSeeds.join('-')))
-    ) {
-      const imageUrl = buildCloudinaryImageUrl(
-        `${sketch}_${cutNoiseSeeds.join('-')}.svg`,
-        { c: 'scale', w: cacheWidth, h: cacheWidth }
-      )
+  if (
+    cached ||
+    (cache?.cutNoiseSeeds &&
+      cache.cutNoiseSeeds.includes(cutNoiseSeeds.join('-')))
+  ) {
+    const imageUrl = buildCloudinaryImageUrl(
+      `${sketch}_${cutNoiseSeeds.join('-')}.svg`,
+      { c: 'scale', w: cacheWidth, h: cacheWidth }
+    )
 
-      const result = await fetch(imageUrl)
-      let svg = await result.text()
-      // append a style tag after the first closed tag to set the line width, proper dodgy
-      svg = svg.replace(
-        `>`,
-        `><style>path { stroke-width: ${lineWidth / designScale}px</style>`
-      )
+    const result = await fetch(imageUrl)
+    let svg = await result.text()
+    // append a style tag after the first closed tag to set the line width, proper dodgy
+    svg = svg.replace(
+      `>`,
+      `><style>path { stroke-width: ${lineWidth / designScale}px</style>`
+    )
 
-      const image = new Image()
-      await new Promise((resolve, reject) => {
-        image.onload = () => {
-          resolve(image.width)
-        }
-        image.onerror = reject
-        image.src = `data:image/svg+xml;base64,${btoa(svg)}`
-      })
-      image.width = cacheWidth
-      image.height = cacheWidth
+    const image = new Image()
+    await new Promise((resolve, reject) => {
+      image.onload = () => {
+        resolve(image.width)
+      }
+      image.onerror = reject
+      image.src = `data:image/svg+xml;base64,${btoa(svg)}`
+    })
+    image.width = cacheWidth
+    image.height = cacheWidth
 
-      c.save()
-      c.translate(-cacheBleed, -cacheBleed)
-      c.drawImage(
-        image as unknown as HTMLImageElement,
-        0,
-        0,
-        cacheWidth,
-        cacheWidth
-      )
-      c.restore()
-    } else {
-      c.lineWidth = lineWidth / designScale
+    c.save()
+    c.translate(-cacheBleed, -cacheBleed)
+    c.drawImage(
+      image as unknown as HTMLImageElement,
+      0,
+      0,
+      cacheWidth,
+      cacheWidth
+    )
+    c.restore()
+  } else {
+    c.lineWidth = lineWidth / designScale
 
-      c.save()
-      c.translate(-lineWidth / 2, -lineWidth / 2)
-      c.scale(designScale, designScale)
-      cut({
-        c,
-        seed: cutNoiseSeeds,
-        simplex: cutNoiseSeeds.map((seed) => new SimplexNoise(seed)),
-        noiseStart: 0,
-        ...settings,
-      } as Cut)
-      c.restore()
-    }
+    c.save()
+    c.translate(-lineWidth / 2, -lineWidth / 2)
+    c.scale(designScale, designScale)
+    cut({
+      c,
+      seed: cutNoiseSeeds,
+      simplex: cutNoiseSeeds.map((seed) => new SimplexNoise(seed)),
+      noiseStart: 0,
+      ...settings,
+    } as Cut)
+    c.restore()
   }
 
   canvas.createPNGStream().pipe(res)

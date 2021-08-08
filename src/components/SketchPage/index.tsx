@@ -30,7 +30,7 @@ const StyledGrid = styled.article`
 
   @media (max-width: ${BREAKPOINT}) {
     grid-template-columns: 1fr;
-    grid-template-areas: 'preview' 'image' 'details' 'video' 'mobile-nav';
+    grid-template-areas: 'image' 'mobile-nav' 'details' 'video';
   }
 
   > * > *:first-child {
@@ -158,23 +158,24 @@ const StyledMeta = styled.aside`
   font-style: italic;
   margin-top: 1.5em;
   font-size: 0.8em;
+
+  @media (max-width: ${BREAKPOINT}) {
+    font-size: 0.7em;
+  }
 `
 
 const StyledPreviews = styled.div`
   grid-area: preview;
+
+  @media (max-width: ${BREAKPOINT}) {
+    display: none;
+  }
 `
 
 const StyledPreviewGrid = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 1em;
-
-  @media (max-width: ${BREAKPOINT}) {
-    grid-template-columns: 1fr 1fr;
-    > *:nth-child(3) {
-      display: none;
-    }
-  }
 `
 
 const StyledPreviewDescription = styled.div`

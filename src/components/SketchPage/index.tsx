@@ -94,6 +94,11 @@ const StyledImageLink = styled.a`
   z-index: 1;
 `
 
+const StyledSketchVariant = styled(SketchVariant)`
+  position: sticky;
+  top: 2em;
+`
+
 const StyledNav = styled.nav`
   display: flex;
   flex-wrap: wrap;
@@ -251,7 +256,7 @@ export const SketchPage = ({
                 />
               </StyledImageLink>
             </Link>
-            <SketchVariant
+            <StyledSketchVariant
               designNoiseSeeds={designNoiseSeeds}
               cutNoiseSeeds={cutNoiseSeeds}
             />

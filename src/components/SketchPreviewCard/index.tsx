@@ -73,6 +73,10 @@ export const SketchPreviewCard: React.FC<Props> = ({ id, primary }) => {
         '-'
       )}&cutNoiseSeeds=${cutNoiseSeeds.join('-')}&lineWidth=${
         PIXEL_DENSITY / 4
+      }${
+        designNoiseSeeds === sketchDesignNoiseSeeds &&
+        cutNoiseSeeds === sketchCutNoiseSeeds &&
+        '&cached=true'
       }`,
     [id, designNoiseSeeds, cutNoiseSeeds]
   )

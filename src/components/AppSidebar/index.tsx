@@ -8,10 +8,12 @@ import { AppLinks } from './AppLinks'
 
 export const AppSidebar: React.FC = () => (
   <>
-    <ExceptEnv env={Env.Ide}>
-      <AppLinks />
-    </ExceptEnv>
-    <Selector />
+    <div>
+      <ExceptEnv env={Env.Ide}>
+        <AppLinks />
+      </ExceptEnv>
+      <Selector />
+    </div>
     <Controls />
   </>
 )

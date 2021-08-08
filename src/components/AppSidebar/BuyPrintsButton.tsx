@@ -10,7 +10,6 @@ const StyledButton = styled.a`
   position: relative;
   width: 100%;
   padding: 0.5rem;
-  margin: 0.5rem 0 0;
   background: #eee;
   border-radius: 3px;
   font-size: 0.75rem;

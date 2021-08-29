@@ -1,12 +1,13 @@
 ---
-datePublished: 2021-09-03
+datePublished: 2021-09-17
 youTubeLink: next
 
 designNoiseSeeds: [ioy, wgt, cgg, zjc]
 cutNoiseSeeds: [djt, nsu, xjn]
+accentColor: '#40b7b1'
 
 pieces: 225
-timeToSolve: 1
+timeToSolve: 56:03
 ---
 
 # 045

@@ -1,12 +1,13 @@
 ---
-datePublished: 2021-08-20
+datePublished: 2021-09-03
 youTubeLink: next
 
 designNoiseSeeds: [nrw, ael, aio]
 cutNoiseSeeds: [wyc, kjz, kdn]
+accentColor: '#5d77ec'
 
 pieces: 225
-timeToSolve: 1
+timeToSolve: 44:19
 ---
 
 # 043

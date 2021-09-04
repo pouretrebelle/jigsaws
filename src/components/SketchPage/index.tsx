@@ -73,7 +73,8 @@ const StyledSidebarInner = styled.figure`
 
   @media (min-width: ${BREAKPOINT}) {
     position: sticky;
-    padding: 2em 0;
+    padding: 2em 0 1em;
+    margin-bottom: 1em !important;
     display: flex;
     gap: 2em;
     justify-content: space-between;

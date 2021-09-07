@@ -65,103 +65,104 @@ const Controls = () => {
           Copy seeds
         </ExportButton>
       </Section>
-      <Section>
-        <h2>
-          <ToggleButton
-            active={rasterVisible}
-            onClick={() => dispatch(toggleVisibility(Layer.Raster))}
-            title="Toggle raster"
-          />
-          Raster
-        </h2>
-        {rasterNoiseSeeds.length > 0 && (
-          <>
-            <H3>
-              Noise seed{rasterNoiseSeeds.length > 1 && 's'}{' '}
-              <ShuffleButton
-                onClick={() => {
-                  dispatch(updateSeed(Layer.Raster))
-                  trackEvent('Update raster seed', {
-                    id: sketch?.id,
-                    all: true,
-                  })
-                }}
-              />
-            </H3>
-            {settings.rasterNoiseSeeds.map((label, i) => (
-              <Input
-                key={label}
-                layer={Layer.Raster}
-                index={i}
-                label={label}
-                value={rasterNoiseSeeds[i]}
-                onChange={() =>
-                  trackEvent('Update raster seed', { id: sketch?.id, label })
-                }
-              />
-            ))}
-          </>
-        )}
-        <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.Raster))
-            trackEvent('Export raster', { id: sketch?.id })
-          }}
-          loading={state.pending.includes(ActionType.ExportRaster)}
-          ext="png"
-        >
-          Export raster
-        </ExportButton>
-      </Section>
 
-      <Section>
-        <h2>
-          <ToggleButton
-            active={vectorVisible}
-            onClick={() => dispatch(toggleVisibility(Layer.Vector))}
-            title="Toggle vector"
-          />
-          Vector
-        </h2>
-        {vectorNoiseSeeds.length > 0 && (
-          <>
-            <H3>
-              Noise seed{vectorNoiseSeeds.length > 1 && 's'}{' '}
-              <ShuffleButton
-                onClick={() => {
-                  dispatch(updateSeed(Layer.Vector))
-                  trackEvent('Update vector seed', {
-                    id: sketch?.id,
-                    all: true,
-                  })
-                }}
+      {rasterNoiseSeeds.length > 0 && (
+        <Section>
+          {vectorNoiseSeeds.length > 0 && (
+            <h2>
+              <ToggleButton
+                active={rasterVisible}
+                onClick={() => dispatch(toggleVisibility(Layer.Raster))}
+                title="Toggle raster"
               />
-            </H3>
-            {settings.vectorNoiseSeeds.map((label, i) => (
-              <Input
-                key={label}
-                layer={Layer.Vector}
-                index={i}
-                label={label}
-                value={vectorNoiseSeeds[i]}
-                onChange={() =>
-                  trackEvent('Update vector seed', { id: sketch?.id, label })
-                }
+              Raster
+            </h2>
+          )}
+          <H3>
+            Noise seed{rasterNoiseSeeds.length > 1 && 's'}{' '}
+            <ShuffleButton
+              onClick={() => {
+                dispatch(updateSeed(Layer.Raster))
+                trackEvent('Update raster seed', {
+                  id: sketch?.id,
+                  all: true,
+                })
+              }}
+            />
+          </H3>
+          {settings.rasterNoiseSeeds.map((label, i) => (
+            <Input
+              key={label}
+              layer={Layer.Raster}
+              index={i}
+              label={label}
+              value={rasterNoiseSeeds[i]}
+              onChange={() =>
+                trackEvent('Update raster seed', { id: sketch?.id, label })
+              }
+            />
+          ))}
+          <ExportButton
+            onClick={() => {
+              dispatch(exportSketch(ExportPart.Raster))
+              trackEvent('Export raster', { id: sketch?.id })
+            }}
+            loading={state.pending.includes(ActionType.ExportRaster)}
+            ext="png"
+          >
+            Export raster
+          </ExportButton>
+        </Section>
+      )}
+
+      {vectorNoiseSeeds.length > 0 && (
+        <Section>
+          {rasterNoiseSeeds.length > 0 && (
+            <h2>
+              <ToggleButton
+                active={vectorVisible}
+                onClick={() => dispatch(toggleVisibility(Layer.Vector))}
+                title="Toggle vector"
               />
-            ))}
-          </>
-        )}
-        <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.Vector))
-            trackEvent('Export vector', { id: sketch?.id, pieces: false })
-          }}
-          loading={state.pending.includes(ActionType.ExportVector)}
-          ext="svg"
-        >
-          Export vector
-        </ExportButton>
-      </Section>
+              Vector
+            </h2>
+          )}
+          <H3>
+            Noise seed{vectorNoiseSeeds.length > 1 && 's'}{' '}
+            <ShuffleButton
+              onClick={() => {
+                dispatch(updateSeed(Layer.Vector))
+                trackEvent('Update vector seed', {
+                  id: sketch?.id,
+                  all: true,
+                })
+              }}
+            />
+          </H3>
+          {settings.vectorNoiseSeeds.map((label, i) => (
+            <Input
+              key={label}
+              layer={Layer.Vector}
+              index={i}
+              label={label}
+              value={vectorNoiseSeeds[i]}
+              onChange={() =>
+                trackEvent('Update vector seed', { id: sketch?.id, label })
+              }
+            />
+          ))}
+          <ExportButton
+            onClick={() => {
+              dispatch(exportSketch(ExportPart.Vector))
+              trackEvent('Export vector', { id: sketch?.id, pieces: false })
+            }}
+            loading={state.pending.includes(ActionType.ExportVector)}
+            ext="svg"
+          >
+            Export vector
+          </ExportButton>
+        </Section>
+      )}
     </>
   )
 }

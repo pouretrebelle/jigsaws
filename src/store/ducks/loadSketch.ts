@@ -15,7 +15,7 @@ import { removePending, addPending } from '../actions'
 type EnumObject = Record<string, any>
 
 const getKeysFromEnum = (enumObject: EnumObject): string[] =>
-  Object.keys(enumObject).filter(
+  Object.keys(enumObject || {}).filter(
     (key) => typeof enumObject[key as any] === 'number'
   )
 
@@ -79,6 +79,8 @@ export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
           sketch,
           vectorNoiseSeeds,
           rasterNoiseSeeds,
+          rasterVisible: !!sketch.raster,
+          vectorVisible: !!sketch.vector,
           loading: false,
         }
       }

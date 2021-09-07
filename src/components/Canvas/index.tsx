@@ -126,9 +126,9 @@ const Canvas: React.FC = () => {
       drawBackground(drawArgs)
       c.save()
       c.scale(scale, scale)
-      if (rasterVisible) drawRaster(drawArgs)
+      if (rasterVisible && drawRaster) drawRaster(drawArgs)
       c.strokeStyle = lineColor
-      if (vectorVisible) drawVector(drawArgs)
+      if (vectorVisible && drawVector) drawVector(drawArgs)
       drawGuides(drawArgs)
       c.restore()
     }

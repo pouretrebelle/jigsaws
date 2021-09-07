@@ -79,8 +79,8 @@ export interface SketchSettings {
 
 export interface Sketch {
   id: string
-  raster: any
-  vector: any
+  raster?: any
+  vector?: any
   settings: SketchSettings
 }
 

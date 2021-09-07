@@ -9,8 +9,9 @@ import { getFromStorage } from 'lib/storage'
 declare const SKETCH_IDS: string[]
 
 const DevApp = () => {
+  const storedSketchId = getFromStorage('sketch', null)
   const [sketchId, setSketchId] = useState(
-    getFromStorage('sketch', [...SKETCH_IDS].pop())
+    SKETCH_IDS.includes(storedSketchId) ? storedSketchId : [...SKETCH_IDS].pop()
   )
 
   return (

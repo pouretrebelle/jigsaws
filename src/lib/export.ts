@@ -3,20 +3,20 @@ import C2S from 'canvas2svg'
 import WebMWriter from 'webm-writer'
 
 import { State } from 'types'
-import { drawDesign, drawCut, drawBackground } from 'lib/draw'
+import { drawRaster, drawVector, drawBackground } from 'lib/draw'
 
 export const MM_TO_INCH = 0.0393701
-export const LASER_CUT_SVG_MULTIPLIER = 3.7795
-const CUT_EXPORT_WIDTH = 1000
+export const LASER_VECTOR_SVG_MULTIPLIER = 3.7795
+const VECTOR_EXPORT_WIDTH = 1000
 const CANVAS_EXPORT_WIDTH = 2000
-const CANVAS_EXPORT_LINE_WIDTH = 2
+const CANVAS_EXPORT_LINE_WIDTH = 5
 const ANIMATION_FRAMES = 500
 const ANIMATION_EXPORT_WIDTH = 2000
 
 export const formatSeeds = (seeds: string[]) => seeds.join('-')
 
 export const exportCanvas = (state: State) => {
-  const { sketch, designNoiseSeeds, cutNoiseSeeds } = state
+  const { sketch, rasterNoiseSeeds, vectorNoiseSeeds } = state
   if (!sketch) return
 
   const { bleedWidth, bleedRatio, lineColor } = sketch.settings
@@ -37,23 +37,23 @@ export const exportCanvas = (state: State) => {
 
   drawBackground(drawArgs)
   c.scale(scale, scale)
-  drawDesign(drawArgs)
+  drawRaster(drawArgs)
   c.strokeStyle = lineColor
-  drawCut(drawArgs)
+  drawVector(drawArgs)
 
   canvas.toBlob((blob) => {
     if (blob)
       saveAs(
         blob,
-        `${sketch.id}_${formatSeeds(designNoiseSeeds)}_${formatSeeds(
-          cutNoiseSeeds
+        `${sketch.id}_${formatSeeds(rasterNoiseSeeds)}_${formatSeeds(
+          vectorNoiseSeeds
         )}.png`
       )
   })
 }
 
-export const exportDesign = (state: State) => {
-  const { sketch, designNoiseSeeds } = state
+export const exportRaster = (state: State) => {
+  const { sketch, rasterNoiseSeeds } = state
   if (!sketch) return
 
   const { width, height, bleed } = sketch.settings
@@ -66,17 +66,17 @@ export const exportDesign = (state: State) => {
   const c = canvas.getContext('2d') as CanvasRenderingContext2D
   c.scale(scale, scale)
 
-  drawDesign({ c, state })
+  drawRaster({ c, state })
 
   canvas.toBlob((blob) => {
-    if (blob) saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.png`)
+    if (blob) saveAs(blob, `${sketch.id}_${formatSeeds(rasterNoiseSeeds)}.png`)
   })
 }
 
-export const exportDesignAnimation = (state: State) => {
+export const exportRasterAnimation = (state: State) => {
   const FRAME_INCREMENT = 1 / ANIMATION_FRAMES
 
-  const { sketch, designNoiseSeeds } = state
+  const { sketch, rasterNoiseSeeds } = state
   if (!sketch) return
 
   const { bleedWidth, bleedRatio } = sketch.settings
@@ -104,72 +104,72 @@ export const exportDesignAnimation = (state: State) => {
   drawBackground(drawArgs)
   c.scale(scale, scale)
   for (let i = 0; i < ANIMATION_FRAMES; i++) {
-    drawDesign({ c, state: { ...state, noiseStart: i * FRAME_INCREMENT } })
+    drawRaster({ c, state: { ...state, noiseStart: i * FRAME_INCREMENT } })
     videoWriter.addFrame(canvas)
     console.info(`add frame ${i + 1}/${ANIMATION_FRAMES}`)
   }
   c.restore()
 
   videoWriter.complete().then((blob: Blob) => {
-    saveAs(blob, `${sketch.id}_${formatSeeds(designNoiseSeeds)}.webm`)
+    saveAs(blob, `${sketch.id}_${formatSeeds(rasterNoiseSeeds)}.webm`)
   })
 }
 
-export const exportCut = (state: State) => {
-  const { sketch, cutNoiseSeeds } = state
+export const exportVector = (state: State) => {
+  const { sketch, vectorNoiseSeeds } = state
   if (!sketch) return
 
   const { width, height, bleed } = sketch.settings
 
   let c = new C2S(
-    LASER_CUT_SVG_MULTIPLIER * (width + bleed * 2),
-    LASER_CUT_SVG_MULTIPLIER * (height + bleed * 2)
+    LASER_VECTOR_SVG_MULTIPLIER * (width + bleed * 2),
+    LASER_VECTOR_SVG_MULTIPLIER * (height + bleed * 2)
   )
-  c.scale(LASER_CUT_SVG_MULTIPLIER)
-  drawCut({ c, lineWidth: 0.1, state }, false)
+  c.scale(LASER_VECTOR_SVG_MULTIPLIER)
+  drawVector({ c, lineWidth: 0.1, state }, false)
 
   const blob = new Blob([c.getSerializedSvg()], {
     type: 'text/plain',
   })
 
-  saveAs(blob, `${sketch.id}_${formatSeeds(cutNoiseSeeds)}.svg`)
+  saveAs(blob, `${sketch.id}_${formatSeeds(vectorNoiseSeeds)}.svg`)
 }
 
-export const exportCutPieces = (state: State) => {
-  const { sketch, cutNoiseSeeds } = state
+export const exportVectorPieces = (state: State) => {
+  const { sketch, vectorNoiseSeeds } = state
   if (!sketch) return
 
   const { width, height, bleed } = sketch.settings
 
-  let c = new C2S(CUT_EXPORT_WIDTH, (CUT_EXPORT_WIDTH * height) / width)
-  c.scale(CUT_EXPORT_WIDTH / width)
+  let c = new C2S(VECTOR_EXPORT_WIDTH, (VECTOR_EXPORT_WIDTH * height) / width)
+  c.scale(VECTOR_EXPORT_WIDTH / width)
   c.translate(-bleed, -bleed) // don't include bleed in pieces export
-  drawCut({ c, lineWidth: 0.1, state }, true)
+  drawVector({ c, lineWidth: 0.1, state }, true)
 
   const blob = new Blob([c.getSerializedSvg()], {
     type: 'text/plain',
   })
 
-  saveAs(blob, `${sketch.id}_pieces_${formatSeeds(cutNoiseSeeds)}.svg`)
+  saveAs(blob, `${sketch.id}_pieces_${formatSeeds(vectorNoiseSeeds)}.svg`)
 }
 
-export const exportCutWebsite = (state: State) => {
-  const { sketch, cutNoiseSeeds } = state
+export const exportVectorWebsite = (state: State) => {
+  const { sketch, vectorNoiseSeeds } = state
   if (!sketch) return
 
   const { width, height, bleed } = sketch.settings
   const lineWidth = 0.5 // 0.5mm line
 
-  let c = new C2S(CUT_EXPORT_WIDTH, (CUT_EXPORT_WIDTH * height) / width)
+  let c = new C2S(VECTOR_EXPORT_WIDTH, (VECTOR_EXPORT_WIDTH * height) / width)
   c.lineJoin = 'bevel'
   c.lineCap = 'round'
-  c.scale(CUT_EXPORT_WIDTH / (width + lineWidth))
+  c.scale(VECTOR_EXPORT_WIDTH / (width + lineWidth))
   c.translate(-bleed + lineWidth / 2, -bleed + lineWidth / 2)
-  drawCut({ c, lineWidth, state }, false)
+  drawVector({ c, lineWidth, state }, false)
 
   const blob = new Blob([c.getSerializedSvg()], {
     type: 'text/plain',
   })
 
-  saveAs(blob, `${sketch.id}_website_${formatSeeds(cutNoiseSeeds)}.svg`)
+  saveAs(blob, `${sketch.id}_website_${formatSeeds(vectorNoiseSeeds)}.svg`)
 }

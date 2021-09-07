@@ -1,5 +1,5 @@
 import SimplexNoise from 'simplex-noise'
-import { Cut } from 'types'
+import { Vector } from 'types'
 import Vector2 from 'utils/Vector2'
 
 export enum Seeds {
@@ -81,7 +81,14 @@ const addToCurves = (
   c.bezierCurveTo(t2.x, t2.y, p2c.x, p2c.y, p2.x, p2.y)
 }
 
-export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
+export const vector = ({
+  c,
+  width,
+  columns,
+  height,
+  rows,
+  simplex,
+}: Vector) => {
   c.beginPath()
   c.moveTo(0, 0)
   c.lineTo(width, 0)
@@ -149,14 +156,14 @@ export const cut = ({ c, width, columns, height, rows, simplex }: Cut) => {
   }
 }
 
-export const cutPieces = ({
+export const vectorPieces = ({
   c,
   width,
   columns,
   height,
   rows,
   simplex,
-}: Cut) => {
+}: Vector) => {
   const crossPoints = [] as Point[][]
 
   for (let x = 0; x < columns + 1; x++) {

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { EnvContext } from 'env'
 import { SketchContext } from 'store/Provider'
 import { useWindowSize } from 'lib/hooks'
-import { drawBackground, drawDesign, drawCut, drawGuides } from 'lib/draw'
+import { drawBackground, drawRaster, drawVector, drawGuides } from 'lib/draw'
 import { ActionType } from 'types'
 import Loader from 'components/Loader'
 
@@ -41,10 +41,10 @@ const Canvas: React.FC = () => {
   const {
     sketch,
     noiseStart,
-    designVisible,
-    cutVisible,
-    designNoiseSeeds,
-    cutNoiseSeeds,
+    rasterVisible,
+    vectorVisible,
+    rasterNoiseSeeds,
+    vectorNoiseSeeds,
   } = state
 
   const { width: windowWidth, height: windowHeight } = useWindowSize()
@@ -126,9 +126,9 @@ const Canvas: React.FC = () => {
       drawBackground(drawArgs)
       c.save()
       c.scale(scale, scale)
-      if (designVisible) drawDesign(drawArgs)
+      if (rasterVisible) drawRaster(drawArgs)
       c.strokeStyle = lineColor
-      if (cutVisible) drawCut(drawArgs)
+      if (vectorVisible) drawVector(drawArgs)
       drawGuides(drawArgs)
       c.restore()
     }
@@ -137,10 +137,10 @@ const Canvas: React.FC = () => {
     canvasWidth,
     canvasHeight,
     noiseStart,
-    designVisible,
-    cutVisible,
-    designNoiseSeeds,
-    cutNoiseSeeds,
+    rasterVisible,
+    vectorVisible,
+    rasterNoiseSeeds,
+    vectorNoiseSeeds,
   ])
 
   const onMouseMoved = ({ pageX, pageY }: React.MouseEvent) => {

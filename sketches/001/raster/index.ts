@@ -1,4 +1,4 @@
-import { Design } from 'types'
+import { Raster } from 'types'
 import { randomFromNoise } from 'utils/numberUtils'
 
 import Dot from './Dot'
@@ -16,7 +16,7 @@ export enum Seeds {
   Rotation,
 }
 
-export const design = ({ c, simplex, width, height, noiseStart }: Design) => {
+export const raster = ({ c, simplex, width, height, noiseStart }: Raster) => {
   c.fillStyle = BACKGROUND
   c.fillRect(0, 0, width, height)
 

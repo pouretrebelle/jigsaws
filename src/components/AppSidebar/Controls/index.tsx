@@ -25,8 +25,13 @@ const H3 = styled.h3`
 
 const Controls = () => {
   const [state, dispatch] = useContext(SketchContext)
-  const { sketch, designVisible, designNoiseSeeds, cutVisible, cutNoiseSeeds } =
-    state
+  const {
+    sketch,
+    rasterVisible,
+    rasterNoiseSeeds,
+    vectorVisible,
+    vectorNoiseSeeds,
+  } = state
   const { trackEvent } = useContext(EnvContext)
 
   if (!sketch) return null
@@ -49,7 +54,10 @@ const Controls = () => {
         <ExportButton
           onClick={() =>
             navigator.clipboard.writeText(
-              yaml.dump({ designNoiseSeeds, cutNoiseSeeds }, { flowLevel: 1 })
+              yaml.dump(
+                { rasterNoiseSeeds, vectorNoiseSeeds },
+                { flowLevel: 1 }
+              )
             )
           }
           ext="yml"
@@ -60,35 +68,35 @@ const Controls = () => {
       <Section>
         <h2>
           <ToggleButton
-            active={designVisible}
-            onClick={() => dispatch(toggleVisibility(Layer.Design))}
-            title="Toggle design"
+            active={rasterVisible}
+            onClick={() => dispatch(toggleVisibility(Layer.Raster))}
+            title="Toggle raster"
           />
-          Design
+          Raster
         </h2>
-        {designNoiseSeeds.length > 0 && (
+        {rasterNoiseSeeds.length > 0 && (
           <>
             <H3>
-              Noise seed{designNoiseSeeds.length > 1 && 's'}{' '}
+              Noise seed{rasterNoiseSeeds.length > 1 && 's'}{' '}
               <ShuffleButton
                 onClick={() => {
-                  dispatch(updateSeed(Layer.Design))
-                  trackEvent('Update design seed', {
+                  dispatch(updateSeed(Layer.Raster))
+                  trackEvent('Update raster seed', {
                     id: sketch?.id,
                     all: true,
                   })
                 }}
               />
             </H3>
-            {settings.designNoiseSeeds.map((label, i) => (
+            {settings.rasterNoiseSeeds.map((label, i) => (
               <Input
                 key={label}
-                layer={Layer.Design}
+                layer={Layer.Raster}
                 index={i}
                 label={label}
-                value={designNoiseSeeds[i]}
+                value={rasterNoiseSeeds[i]}
                 onChange={() =>
-                  trackEvent('Update design seed', { id: sketch?.id, label })
+                  trackEvent('Update raster seed', { id: sketch?.id, label })
                 }
               />
             ))}
@@ -96,45 +104,48 @@ const Controls = () => {
         )}
         <ExportButton
           onClick={() => {
-            dispatch(exportSketch(ExportPart.Design))
-            trackEvent('Export design', { id: sketch?.id })
+            dispatch(exportSketch(ExportPart.Raster))
+            trackEvent('Export raster', { id: sketch?.id })
           }}
-          loading={state.pending.includes(ActionType.ExportDesign)}
+          loading={state.pending.includes(ActionType.ExportRaster)}
           ext="png"
         >
-          Export design
+          Export raster
         </ExportButton>
       </Section>
 
       <Section>
         <h2>
           <ToggleButton
-            active={cutVisible}
-            onClick={() => dispatch(toggleVisibility(Layer.Cut))}
-            title="Toggle cut"
+            active={vectorVisible}
+            onClick={() => dispatch(toggleVisibility(Layer.Vector))}
+            title="Toggle vector"
           />
-          Cut
+          Vector
         </h2>
-        {cutNoiseSeeds.length > 0 && (
+        {vectorNoiseSeeds.length > 0 && (
           <>
             <H3>
-              Noise seed{cutNoiseSeeds.length > 1 && 's'}{' '}
+              Noise seed{vectorNoiseSeeds.length > 1 && 's'}{' '}
               <ShuffleButton
                 onClick={() => {
-                  dispatch(updateSeed(Layer.Cut))
-                  trackEvent('Update cut seed', { id: sketch?.id, all: true })
+                  dispatch(updateSeed(Layer.Vector))
+                  trackEvent('Update vector seed', {
+                    id: sketch?.id,
+                    all: true,
+                  })
                 }}
               />
             </H3>
-            {settings.cutNoiseSeeds.map((label, i) => (
+            {settings.vectorNoiseSeeds.map((label, i) => (
               <Input
                 key={label}
-                layer={Layer.Cut}
+                layer={Layer.Vector}
                 index={i}
                 label={label}
-                value={cutNoiseSeeds[i]}
+                value={vectorNoiseSeeds[i]}
                 onChange={() =>
-                  trackEvent('Update cut seed', { id: sketch?.id, label })
+                  trackEvent('Update vector seed', { id: sketch?.id, label })
                 }
               />
             ))}
@@ -142,33 +153,33 @@ const Controls = () => {
         )}
         <ExportButton
           onClick={() => {
-            dispatch(exportSketch(ExportPart.Cut))
-            trackEvent('Export cut', { id: sketch?.id, pieces: false })
+            dispatch(exportSketch(ExportPart.Vector))
+            trackEvent('Export vector', { id: sketch?.id, pieces: false })
           }}
-          loading={state.pending.includes(ActionType.ExportCut)}
+          loading={state.pending.includes(ActionType.ExportVector)}
           ext="svg"
         >
-          Export cut
+          Export vector
         </ExportButton>
         <ExportButton
           onClick={() => {
-            dispatch(exportSketch(ExportPart.CutPieces))
-            trackEvent('Export cut', { id: sketch?.id, pieces: true })
+            dispatch(exportSketch(ExportPart.VectorPieces))
+            trackEvent('Export vector', { id: sketch?.id, pieces: true })
           }}
-          loading={state.pending.includes(ActionType.ExportCutPieces)}
+          loading={state.pending.includes(ActionType.ExportVectorPieces)}
           ext="svg"
         >
-          Export cut (pieces)
+          Export vector (pieces)
         </ExportButton>
         <ExportButton
           onClick={() => {
-            dispatch(exportSketch(ExportPart.CutWebsite))
-            trackEvent('Export cut', { id: sketch?.id, website: true })
+            dispatch(exportSketch(ExportPart.VectorWebsite))
+            trackEvent('Export vector', { id: sketch?.id, website: true })
           }}
-          loading={state.pending.includes(ActionType.ExportCutWebsite)}
+          loading={state.pending.includes(ActionType.ExportVectorWebsite)}
           ext="svg"
         >
-          Export cut (website)
+          Export vector (website)
         </ExportButton>
       </Section>
     </>

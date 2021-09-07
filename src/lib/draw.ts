@@ -22,49 +22,47 @@ export const drawBackground = ({ canvas, c, state }: DrawArgs) => {
   c.fillRect(0, 0, canvas.width, canvas.height)
 }
 
-export const drawDesign = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
+export const drawRaster = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
   if (!state.sketch) return
 
-  const { bleedWidth, bleedHeight, rows, columns, bleed } =
-    state.sketch.settings
+  const { bleedWidth, bleedHeight, bleed, ...rest } = state.sketch.settings
 
-  const simplex = state.designNoiseSeeds.map((seed) => new SimplexNoise(seed))
+  const simplex = state.rasterNoiseSeeds.map((seed) => new SimplexNoise(seed))
 
-  state.sketch.design({
+  state.sketch.raster({
     c,
     createCanvas,
     simplex,
-    seed: state.designNoiseSeeds,
+    seed: state.rasterNoiseSeeds,
     noiseStart: state.noiseStart,
+    ...rest,
     width: bleedWidth,
     height: bleedHeight,
     bleed,
-    rows,
-    columns,
   })
 }
 
-export const drawCut = (
-  { c, lineWidth, state }: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>,
-  cutPieces: boolean = false
-) => {
+export const drawVector = ({
+  c,
+  lineWidth,
+  state,
+}: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>) => {
   if (!state.sketch) return
 
-  const { width, height, rows, columns, bleed } = state.sketch.settings
+  const { width, height, bleed, ...rest } = state.sketch.settings
 
-  const simplex = state.cutNoiseSeeds.map((seed) => new SimplexNoise(seed))
+  const simplex = state.vectorNoiseSeeds.map((seed) => new SimplexNoise(seed))
 
   c.save()
   c.lineWidth = lineWidth
   c.translate(bleed, bleed)
-  state.sketch[cutPieces ? 'cutPieces' : 'cut']({
+  state.sketch.vector({
     c,
     simplex,
-    seed: state.cutNoiseSeeds,
+    seed: state.vectorNoiseSeeds,
+    ...rest,
     width,
     height,
-    rows,
-    columns,
   })
   c.restore()
 }

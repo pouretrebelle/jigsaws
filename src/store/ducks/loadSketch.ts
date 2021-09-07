@@ -15,14 +15,14 @@ import { removePending, addPending } from '../actions'
 type EnumObject = Record<string, any>
 
 const getKeysFromEnum = (enumObject: EnumObject): string[] =>
-  Object.keys(enumObject).filter(
+  Object.keys(enumObject || {}).filter(
     (key) => typeof enumObject[key as any] === 'number'
   )
 
 interface Payload extends Omit<Sketch, 'settings'>, Pick<State, 'error'> {
   settings: SketchConstructorSettings
-  DesignNoiseSeeds: EnumObject
-  CutNoiseSeeds: EnumObject
+  RasterNoiseSeeds: EnumObject
+  VectorNoiseSeeds: EnumObject
 }
 
 export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
@@ -31,8 +31,8 @@ export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
       case ActionType.LoadSketch: {
         const {
           settings,
-          DesignNoiseSeeds,
-          CutNoiseSeeds,
+          RasterNoiseSeeds,
+          VectorNoiseSeeds,
           error,
           id,
           ...rest
@@ -50,8 +50,8 @@ export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
           lineColor: settings.lineColor || '#fff',
           height,
           rows: settings.rows || settings.columns,
-          designNoiseSeeds: getKeysFromEnum(DesignNoiseSeeds),
-          cutNoiseSeeds: getKeysFromEnum(CutNoiseSeeds),
+          rasterNoiseSeeds: getKeysFromEnum(RasterNoiseSeeds),
+          vectorNoiseSeeds: getKeysFromEnum(VectorNoiseSeeds),
         } as SketchSettings
 
         const sketch = {
@@ -60,25 +60,27 @@ export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
           settings: augmentedSettings,
         }
 
-        const cutNoiseSeedCount = augmentedSettings.cutNoiseSeeds.length
-        const cutNoiseSeeds = [
-          ...state.cutNoiseSeeds,
-          ...makeRandomSeedArray(cutNoiseSeedCount),
-        ].slice(0, cutNoiseSeedCount)
+        const vectorNoiseSeedCount = augmentedSettings.vectorNoiseSeeds.length
+        const vectorNoiseSeeds = [
+          ...state.vectorNoiseSeeds,
+          ...makeRandomSeedArray(vectorNoiseSeedCount),
+        ].slice(0, vectorNoiseSeedCount)
 
-        const designNoiseSeedCount = augmentedSettings.designNoiseSeeds.length
-        const designNoiseSeeds = [
-          ...state.designNoiseSeeds,
-          ...makeRandomSeedArray(designNoiseSeedCount),
-        ].slice(0, designNoiseSeedCount)
+        const rasterNoiseSeedCount = augmentedSettings.rasterNoiseSeeds.length
+        const rasterNoiseSeeds = [
+          ...state.rasterNoiseSeeds,
+          ...makeRandomSeedArray(rasterNoiseSeedCount),
+        ].slice(0, rasterNoiseSeedCount)
 
         localStorage.setItem('sketch', id)
 
         return {
           ...state,
           sketch,
-          cutNoiseSeeds,
-          designNoiseSeeds,
+          vectorNoiseSeeds,
+          rasterNoiseSeeds,
+          rasterVisible: !!sketch.raster,
+          vectorVisible: !!sketch.vector,
           loading: false,
         }
       }

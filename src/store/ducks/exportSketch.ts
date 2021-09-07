@@ -4,34 +4,24 @@ import { State, Action, ActionType, ExportPart } from 'types'
 
 import { removePending, addPending, updateNoiseStart } from '../actions'
 import {
-  exportDesign,
-  exportDesignAnimation,
-  exportCut,
-  exportCutPieces,
-  exportCutWebsite,
+  exportRaster,
+  exportRasterAnimation,
+  exportVector,
   exportCanvas,
 } from 'lib/export'
 
 const exportActions = {
-  [ExportPart.Design]: {
-    actionType: ActionType.ExportDesign,
-    exportFunction: exportDesign,
+  [ExportPart.Raster]: {
+    actionType: ActionType.ExportRaster,
+    exportFunction: exportRaster,
   },
-  [ExportPart.DesignAnimation]: {
-    actionType: ActionType.ExportDesignAnimation,
-    exportFunction: exportDesignAnimation,
+  [ExportPart.RasterAnimation]: {
+    actionType: ActionType.ExportRasterAnimation,
+    exportFunction: exportRasterAnimation,
   },
-  [ExportPart.Cut]: {
-    actionType: ActionType.ExportCut,
-    exportFunction: exportCut,
-  },
-  [ExportPart.CutPieces]: {
-    actionType: ActionType.ExportCutPieces,
-    exportFunction: exportCutPieces,
-  },
-  [ExportPart.CutWebsite]: {
-    actionType: ActionType.ExportCutWebsite,
-    exportFunction: exportCutWebsite,
+  [ExportPart.Vector]: {
+    actionType: ActionType.ExportVector,
+    exportFunction: exportVector,
   },
   [ExportPart.Canvas]: {
     actionType: ActionType.ExportCanvas,
@@ -49,7 +39,7 @@ export const exportSketch =
     dispatch(addPending(actionType))
 
     // reset noise start
-    if (actionType !== ActionType.ExportCut) {
+    if (actionType !== ActionType.ExportVector) {
       dispatch(updateNoiseStart(0))
     }
 

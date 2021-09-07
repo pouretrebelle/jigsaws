@@ -1,5 +1,4 @@
 import { getFromStorage } from 'lib/storage'
-import { Env } from 'env'
 
 export const getInitialState = () => ({
   sketchId: '001',
@@ -7,11 +6,11 @@ export const getInitialState = () => ({
 
   noiseStart: 0,
 
-  cutVisible: getFromStorage('cutVisible', true, true),
-  cutNoiseSeeds: getFromStorage('cutNoiseSeeds', [], true),
+  vectorVisible: getFromStorage('vectorVisible', true, true),
+  vectorNoiseSeeds: getFromStorage('vectorNoiseSeeds', [], true),
 
-  designVisible: getFromStorage('designVisible', true, true),
-  designNoiseSeeds: getFromStorage('designNoiseSeeds', [], true),
+  rasterVisible: getFromStorage('rasterVisible', true, true),
+  rasterNoiseSeeds: getFromStorage('rasterNoiseSeeds', [], true),
 
   pending: [],
   error: undefined,

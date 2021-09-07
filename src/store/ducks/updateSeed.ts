@@ -14,7 +14,8 @@ export const reducer: React.Reducer<State, { type: string; payload: Payload }> =
     if (action.type !== ActionType.UpdateSeed) return state
 
     const { layer, index, value } = action.payload
-    const storeKey = layer === Layer.Cut ? 'cutNoiseSeeds' : 'designNoiseSeeds'
+    const storeKey =
+      layer === Layer.Vector ? 'vectorNoiseSeeds' : 'rasterNoiseSeeds'
 
     let seeds = [...state[storeKey]]
     if (index !== undefined) {

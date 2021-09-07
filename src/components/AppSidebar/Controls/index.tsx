@@ -3,14 +3,8 @@ import styled from 'styled-components'
 import yaml from 'js-yaml'
 
 import { SketchContext } from 'store/Provider'
-import { Env, EnvContext, ExceptEnv, OnlyEnv } from 'env'
-import {
-  toggleVisibility,
-  updateSeed,
-  cacheSketch,
-  exportSketch,
-  updateNoiseStart,
-} from 'store/actions'
+import { EnvContext } from 'env'
+import { toggleVisibility, updateSeed, exportSketch } from 'store/actions'
 import { Layer, ExportPart, ActionType } from 'types'
 import { trim } from 'styles/helpers'
 import { ShuffleButton } from 'components/ShuffleButton'
@@ -18,8 +12,6 @@ import { ShuffleButton } from 'components/ShuffleButton'
 import Input from './Input'
 import ExportButton from './ExportButton'
 import ToggleButton from './ToggleButton'
-import RangeSlider from './RangeSlider'
-import { BuyPrintsButton } from '../BuyPrintsButton'
 
 const Section = styled.section`
   margin: 0 0 1.5rem;
@@ -35,11 +27,10 @@ const Controls = () => {
   const [state, dispatch] = useContext(SketchContext)
   const {
     sketch,
-    noiseStart,
-    designVisible,
-    designNoiseSeeds,
-    cutVisible,
-    cutNoiseSeeds,
+    rasterVisible,
+    rasterNoiseSeeds,
+    vectorVisible,
+    vectorNoiseSeeds,
   } = state
   const { trackEvent } = useContext(EnvContext)
 
@@ -50,9 +41,6 @@ const Controls = () => {
   return (
     <>
       <Section>
-        <ExceptEnv env={Env.Ide}>
-          <BuyPrintsButton />
-        </ExceptEnv>
         <ExportButton
           onClick={() => {
             dispatch(exportSketch(ExportPart.Canvas))
@@ -63,180 +51,118 @@ const Controls = () => {
         >
           Export canvas
         </ExportButton>
-        <ExceptEnv env={Env.Prod}>
-          <ExportButton
-            onClick={() =>
-              navigator.clipboard.writeText(
-                yaml.dump({ designNoiseSeeds, cutNoiseSeeds }, { flowLevel: 1 })
-              )
-            }
-            ext="yml"
-          >
-            Copy seeds
-          </ExportButton>
-        </ExceptEnv>
-      </Section>
-      <Section>
-        <h2>
-          <ToggleButton
-            active={designVisible}
-            onClick={() => dispatch(toggleVisibility(Layer.Design))}
-            title="Toggle design"
-          />
-          Design
-        </h2>
-        {designNoiseSeeds.length > 0 && (
-          <>
-            <H3>
-              Noise seed{designNoiseSeeds.length > 1 && 's'}{' '}
-              <ShuffleButton
-                onClick={() => {
-                  dispatch(updateSeed(Layer.Design))
-                  trackEvent('Update design seed', {
-                    id: sketch?.id,
-                    all: true,
-                  })
-                }}
-              />
-            </H3>
-            {settings.designNoiseSeeds.map((label, i) => (
-              <Input
-                key={label}
-                layer={Layer.Design}
-                index={i}
-                label={label}
-                value={designNoiseSeeds[i]}
-                onChange={() =>
-                  trackEvent('Update design seed', { id: sketch?.id, label })
-                }
-              />
-            ))}
-          </>
-        )}
         <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.Design))
-            trackEvent('Export design', { id: sketch?.id })
-          }}
-          loading={state.pending.includes(ActionType.ExportDesign)}
-          ext="png"
+          onClick={() =>
+            navigator.clipboard.writeText(
+              yaml.dump(
+                { rasterNoiseSeeds, vectorNoiseSeeds },
+                { flowLevel: 1 }
+              )
+            )
+          }
+          ext="yml"
         >
-          Export design
+          Copy seeds
         </ExportButton>
-        <OnlyEnv env={Env.Dev}>
+      </Section>
+
+      {rasterNoiseSeeds.length > 0 && (
+        <Section>
+          {vectorNoiseSeeds.length > 0 && (
+            <h2>
+              <ToggleButton
+                active={rasterVisible}
+                onClick={() => dispatch(toggleVisibility(Layer.Raster))}
+                title="Toggle raster"
+              />
+              Raster
+            </h2>
+          )}
+          <H3>
+            Noise seed{rasterNoiseSeeds.length > 1 && 's'}{' '}
+            <ShuffleButton
+              onClick={() => {
+                dispatch(updateSeed(Layer.Raster))
+                trackEvent('Update raster seed', {
+                  id: sketch?.id,
+                  all: true,
+                })
+              }}
+            />
+          </H3>
+          {settings.rasterNoiseSeeds.map((label, i) => (
+            <Input
+              key={label}
+              layer={Layer.Raster}
+              index={i}
+              label={label}
+              value={rasterNoiseSeeds[i]}
+              onChange={() =>
+                trackEvent('Update raster seed', { id: sketch?.id, label })
+              }
+            />
+          ))}
           <ExportButton
             onClick={() => {
-              dispatch(cacheSketch(ExportPart.Design))
-              trackEvent('Cache design', { id: sketch?.id })
+              dispatch(exportSketch(ExportPart.Raster))
+              trackEvent('Export raster', { id: sketch?.id })
             }}
-            loading={state.pending.includes(ActionType.CacheDesign)}
+            loading={state.pending.includes(ActionType.ExportRaster)}
             ext="png"
           >
-            Cache design
+            Export raster
           </ExportButton>
-        </OnlyEnv>
+        </Section>
+      )}
 
-        <OnlyEnv env={Env.Ide}>
-          <RangeSlider
-            label="Preview animation frames"
-            min={0}
-            max={1}
-            step={0.004}
-            value={noiseStart}
-            onChange={(e) => {
-              dispatch(updateNoiseStart(Number(e.target.value)))
-              trackEvent('Export animation', { id: sketch?.id })
-            }}
-          />
-          <ExportButton
-            onClick={() => dispatch(exportSketch(ExportPart.DesignAnimation))}
-            loading={state.pending.includes(ActionType.ExportDesignAnimation)}
-            ext="webm"
-          >
-            Export animation
-          </ExportButton>
-        </OnlyEnv>
-      </Section>
-
-      <Section>
-        <h2>
-          <ToggleButton
-            active={cutVisible}
-            onClick={() => dispatch(toggleVisibility(Layer.Cut))}
-            title="Toggle cut"
-          />
-          Cut
-        </h2>
-        {cutNoiseSeeds.length > 0 && (
-          <>
-            <H3>
-              Noise seed{cutNoiseSeeds.length > 1 && 's'}{' '}
-              <ShuffleButton
-                onClick={() => {
-                  dispatch(updateSeed(Layer.Cut))
-                  trackEvent('Update cut seed', { id: sketch?.id, all: true })
-                }}
+      {vectorNoiseSeeds.length > 0 && (
+        <Section>
+          {rasterNoiseSeeds.length > 0 && (
+            <h2>
+              <ToggleButton
+                active={vectorVisible}
+                onClick={() => dispatch(toggleVisibility(Layer.Vector))}
+                title="Toggle vector"
               />
-            </H3>
-            {settings.cutNoiseSeeds.map((label, i) => (
-              <Input
-                key={label}
-                layer={Layer.Cut}
-                index={i}
-                label={label}
-                value={cutNoiseSeeds[i]}
-                onChange={() =>
-                  trackEvent('Update cut seed', { id: sketch?.id, label })
-                }
-              />
-            ))}
-          </>
-        )}
-        <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.Cut))
-            trackEvent('Export cut', { id: sketch?.id, pieces: false })
-          }}
-          loading={state.pending.includes(ActionType.ExportCut)}
-          ext="svg"
-        >
-          Export cut
-        </ExportButton>
-        <OnlyEnv env={Env.Ide}>
+              Vector
+            </h2>
+          )}
+          <H3>
+            Noise seed{vectorNoiseSeeds.length > 1 && 's'}{' '}
+            <ShuffleButton
+              onClick={() => {
+                dispatch(updateSeed(Layer.Vector))
+                trackEvent('Update vector seed', {
+                  id: sketch?.id,
+                  all: true,
+                })
+              }}
+            />
+          </H3>
+          {settings.vectorNoiseSeeds.map((label, i) => (
+            <Input
+              key={label}
+              layer={Layer.Vector}
+              index={i}
+              label={label}
+              value={vectorNoiseSeeds[i]}
+              onChange={() =>
+                trackEvent('Update vector seed', { id: sketch?.id, label })
+              }
+            />
+          ))}
           <ExportButton
             onClick={() => {
-              dispatch(exportSketch(ExportPart.CutPieces))
-              trackEvent('Export cut', { id: sketch?.id, pieces: true })
+              dispatch(exportSketch(ExportPart.Vector))
+              trackEvent('Export vector', { id: sketch?.id, pieces: false })
             }}
-            loading={state.pending.includes(ActionType.ExportCutPieces)}
+            loading={state.pending.includes(ActionType.ExportVector)}
             ext="svg"
           >
-            Export cut (pieces)
+            Export vector
           </ExportButton>
-          <ExportButton
-            onClick={() => {
-              dispatch(exportSketch(ExportPart.CutWebsite))
-              trackEvent('Export cut', { id: sketch?.id, website: true })
-            }}
-            loading={state.pending.includes(ActionType.ExportCutWebsite)}
-            ext="svg"
-          >
-            Export cut (website)
-          </ExportButton>
-        </OnlyEnv>
-        <OnlyEnv env={Env.Dev}>
-          <ExportButton
-            onClick={() => {
-              dispatch(cacheSketch(ExportPart.Cut))
-              trackEvent('Cache cut', { id: sketch?.id })
-            }}
-            loading={state.pending.includes(ActionType.CacheCut)}
-            ext="svg"
-          >
-            Cache cut
-          </ExportButton>
-        </OnlyEnv>
-      </Section>
+        </Section>
+      )}
     </>
   )
 }

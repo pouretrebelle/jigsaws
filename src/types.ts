@@ -5,10 +5,10 @@ export interface State {
   sketchId: string
   sketch?: Sketch
   noiseStart: number
-  cutVisible: boolean
-  cutNoiseSeeds: string[]
-  designVisible: boolean
-  designNoiseSeeds: string[]
+  vectorVisible: boolean
+  vectorNoiseSeeds: string[]
+  rasterVisible: boolean
+  rasterNoiseSeeds: string[]
   pending: ActionType[]
   error?: {
     message?: string
@@ -16,11 +16,9 @@ export interface State {
 }
 
 export enum ExportPart {
-  Design = 'design',
-  DesignAnimation = 'designAnimation',
-  Cut = 'cut',
-  CutPieces = 'cutPieces',
-  CutWebsite = 'cutWebsite',
+  Raster = 'raster',
+  RasterAnimation = 'rasterAnimation',
+  Vector = 'vector',
   Canvas = 'canvas',
 }
 
@@ -32,14 +30,10 @@ export enum ActionType {
   ToggleVisibility = 'TOGGLE_VISIBILITY',
   UpdateSeed = 'UPDATE_SEED',
   UpdateNoiseStart = 'UPDATE_NOISE_START',
-  ExportDesign = 'EXPORT_DESIGN',
-  ExportDesignAnimation = 'EXPORT_DESIGN_ANIMATION',
-  ExportCut = 'EXPORT_CUT',
-  ExportCutPieces = 'EXPORT_CUT_PIECES',
-  ExportCutWebsite = 'EXPORT_CUT_WEBSITE',
+  ExportRaster = 'EXPORT_RASTER',
+  ExportRasterAnimation = 'EXPORT_RASTER_ANIMATION',
+  ExportVector = 'EXPORT_VECTOR',
   ExportCanvas = 'EXPORT_CANVAS',
-  CacheDesign = 'CACHE_DESIGN',
-  CacheCut = 'CACHE_CUT',
 }
 
 export interface Action {
@@ -52,32 +46,27 @@ export type Thunk = (dispatch: React.Dispatch<Action>, state: State) => void
 export type AugmentedDispatch = React.Dispatch<Thunk | Action>
 
 export enum Layer {
-  Cut = 'cut',
-  Design = 'design',
+  Vector = 'vector',
+  Raster = 'raster',
 }
 
 export interface SketchConstructorSettings {
   width: number
-  columns: number
-  bleed: number
   height?: number
-  rows?: number
+  bleed: number
   lineColor?: string
   backgroundColor?: string
-  cutNoiseSeeds: string[]
-  designNoiseSeeds: string[]
+  [key: string]: any
 }
 
 export interface SketchSettings {
   width: number
   height: number
   bleed: number
-  rows: number
-  columns: number
   lineColor: string
   backgroundColor: string
-  cutNoiseSeeds: string[]
-  designNoiseSeeds: string[]
+  vectorNoiseSeeds: string[]
+  rasterNoiseSeeds: string[]
   bleedWidth: number
   bleedHeight: number
   bleedRatio: number
@@ -85,28 +74,21 @@ export interface SketchSettings {
 
 export interface Sketch {
   id: string
-  design: any
-  cut: any
-  cutPieces: any
+  raster?: any
+  vector?: any
   settings: SketchSettings
 }
 
-export interface Cache {
-  cutNoiseSeeds: string[]
-  designNoiseSeeds: string[]
-}
-
-export interface Cut {
+export interface Vector {
   c: CanvasRenderingContext2D
   simplex: SimplexNoise[]
   seed: string[]
   width: number
   height: number
-  rows: number
-  columns: number
+  [key: string]: any
 }
 
-export interface Design {
+export interface Raster {
   c: CanvasRenderingContext2D
   createCanvas: (
     width: number,
@@ -117,32 +99,6 @@ export interface Design {
   width: number
   height: number
   bleed: number
-  rows: number
-  columns: number
   noiseStart: number
-}
-
-export interface SketchContent {
-  id: string
-  markdownDescription: string
-  excerpt: string
-  youTubeLink: string
-  appLink: string
-  pageLink: string
-  designNoiseSeeds: string[]
-  cutNoiseSeeds: string[]
-  accentColor?: string
-  accentColorRgb?: string
-  datePublished: number
-  pieces: number
-  timeToSolve: string
-  imagePath: {
-    solveStart: string
-    solveMiddle: string
-    solveEnd: string
-    cut: string
-    cutWebsite: string
-    canvas: string
-  }
-  cache: Cache
+  [key: string]: any
 }

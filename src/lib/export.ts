@@ -37,9 +37,9 @@ export const exportCanvas = (state: State) => {
 
   drawBackground(drawArgs)
   c.scale(scale, scale)
-  drawRaster(drawArgs)
+  if (sketch.raster) drawRaster(drawArgs)
   c.strokeStyle = lineColor
-  drawVector(drawArgs)
+  if (sketch.vector) drawVector(drawArgs)
 
   canvas.toBlob((blob) => {
     if (blob)

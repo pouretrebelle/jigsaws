@@ -52,22 +52,17 @@ export enum Layer {
 
 export interface SketchConstructorSettings {
   width: number
-  columns: number
-  bleed: number
   height?: number
-  rows?: number
+  bleed: number
   lineColor?: string
   backgroundColor?: string
-  vectorNoiseSeeds: string[]
-  rasterNoiseSeeds: string[]
+  [key: string]: any
 }
 
 export interface SketchSettings {
   width: number
   height: number
   bleed: number
-  rows: number
-  columns: number
   lineColor: string
   backgroundColor: string
   vectorNoiseSeeds: string[]
@@ -90,8 +85,7 @@ export interface Vector {
   seed: string[]
   width: number
   height: number
-  rows: number
-  columns: number
+  [key: string]: any
 }
 
 export interface Raster {
@@ -105,7 +99,6 @@ export interface Raster {
   width: number
   height: number
   bleed: number
-  rows: number
-  columns: number
   noiseStart: number
+  [key: string]: any
 }

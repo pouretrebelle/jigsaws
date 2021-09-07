@@ -10,10 +10,10 @@ const sketches = readdirSync('sketches', { withFileTypes: true })
 
 module.exports = (env, argv) => ({
   devtool: 'eval-source-map',
-  entry: './ide/App.tsx',
+  entry: './src/App.tsx',
   plugins: [
     new HtmlWebpackPlugin({
-      template: './ide/layout.pug',
+      template: './src/layout.pug',
       inject: 'body',
     }),
     new webpack.DefinePlugin({
@@ -35,7 +35,7 @@ module.exports = (env, argv) => ({
           {
             loader: 'babel-loader',
             options: {
-              configFile: './ide/.babelrc',
+              configFile: './.babelrc',
             },
           },
           {
@@ -74,7 +74,7 @@ module.exports = (env, argv) => ({
     modules: ['src', 'node_modules', 'utils'],
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
-      utils: path.resolve(__dirname, '../utils'),
+      utils: path.resolve(__dirname, 'utils'),
     },
   },
 })

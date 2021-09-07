@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "ide": "cross-env NODE_ENV=development webpack serve --config=ide/webpack.config.js --mode=development",
+    "ide": "cross-env NODE_ENV=development webpack serve --config=webpack.config.js --mode=development",
     "start": "npm run ide",
     "prettier": "prettier -w .",
     "test": "jest",

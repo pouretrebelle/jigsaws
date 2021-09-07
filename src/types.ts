@@ -19,8 +19,6 @@ export enum ExportPart {
   Raster = 'raster',
   RasterAnimation = 'rasterAnimation',
   Vector = 'vector',
-  VectorPieces = 'vectorPieces',
-  VectorWebsite = 'vectorWebsite',
   Canvas = 'canvas',
 }
 
@@ -35,8 +33,6 @@ export enum ActionType {
   ExportRaster = 'EXPORT_RASTER',
   ExportRasterAnimation = 'EXPORT_RASTER_ANIMATION',
   ExportVector = 'EXPORT_VECTOR',
-  ExportVectorPieces = 'EXPORT_VECTOR_PIECES',
-  ExportVectorWebsite = 'EXPORT_VECTOR_WEBSITE',
   ExportCanvas = 'EXPORT_CANVAS',
 }
 
@@ -85,7 +81,6 @@ export interface Sketch {
   id: string
   raster: any
   vector: any
-  vectorPieces: any
   settings: SketchSettings
 }
 

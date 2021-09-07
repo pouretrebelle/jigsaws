@@ -126,50 +126,11 @@ export const exportVector = (state: State) => {
     LASER_VECTOR_SVG_MULTIPLIER * (height + bleed * 2)
   )
   c.scale(LASER_VECTOR_SVG_MULTIPLIER)
-  drawVector({ c, lineWidth: 0.1, state }, false)
+  drawVector({ c, lineWidth: 0.1, state })
 
   const blob = new Blob([c.getSerializedSvg()], {
     type: 'text/plain',
   })
 
   saveAs(blob, `${sketch.id}_${formatSeeds(vectorNoiseSeeds)}.svg`)
-}
-
-export const exportVectorPieces = (state: State) => {
-  const { sketch, vectorNoiseSeeds } = state
-  if (!sketch) return
-
-  const { width, height, bleed } = sketch.settings
-
-  let c = new C2S(VECTOR_EXPORT_WIDTH, (VECTOR_EXPORT_WIDTH * height) / width)
-  c.scale(VECTOR_EXPORT_WIDTH / width)
-  c.translate(-bleed, -bleed) // don't include bleed in pieces export
-  drawVector({ c, lineWidth: 0.1, state }, true)
-
-  const blob = new Blob([c.getSerializedSvg()], {
-    type: 'text/plain',
-  })
-
-  saveAs(blob, `${sketch.id}_pieces_${formatSeeds(vectorNoiseSeeds)}.svg`)
-}
-
-export const exportVectorWebsite = (state: State) => {
-  const { sketch, vectorNoiseSeeds } = state
-  if (!sketch) return
-
-  const { width, height, bleed } = sketch.settings
-  const lineWidth = 0.5 // 0.5mm line
-
-  let c = new C2S(VECTOR_EXPORT_WIDTH, (VECTOR_EXPORT_WIDTH * height) / width)
-  c.lineJoin = 'bevel'
-  c.lineCap = 'round'
-  c.scale(VECTOR_EXPORT_WIDTH / (width + lineWidth))
-  c.translate(-bleed + lineWidth / 2, -bleed + lineWidth / 2)
-  drawVector({ c, lineWidth, state }, false)
-
-  const blob = new Blob([c.getSerializedSvg()], {
-    type: 'text/plain',
-  })
-
-  saveAs(blob, `${sketch.id}_website_${formatSeeds(vectorNoiseSeeds)}.svg`)
 }

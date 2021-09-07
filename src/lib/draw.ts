@@ -44,10 +44,11 @@ export const drawRaster = ({ c, state }: Pick<DrawArgs, 'c' | 'state'>) => {
   })
 }
 
-export const drawVector = (
-  { c, lineWidth, state }: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>,
-  vectorPieces: boolean = false
-) => {
+export const drawVector = ({
+  c,
+  lineWidth,
+  state,
+}: Pick<DrawArgs, 'c' | 'lineWidth' | 'state'>) => {
   if (!state.sketch) return
 
   const { width, height, rows, columns, bleed } = state.sketch.settings
@@ -57,7 +58,7 @@ export const drawVector = (
   c.save()
   c.lineWidth = lineWidth
   c.translate(bleed, bleed)
-  state.sketch[vectorPieces ? 'vectorPieces' : 'vector']({
+  state.sketch.vector({
     c,
     simplex,
     seed: state.vectorNoiseSeeds,

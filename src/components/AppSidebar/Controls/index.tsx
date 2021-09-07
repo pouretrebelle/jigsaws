@@ -161,26 +161,6 @@ const Controls = () => {
         >
           Export vector
         </ExportButton>
-        <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.VectorPieces))
-            trackEvent('Export vector', { id: sketch?.id, pieces: true })
-          }}
-          loading={state.pending.includes(ActionType.ExportVectorPieces)}
-          ext="svg"
-        >
-          Export vector (pieces)
-        </ExportButton>
-        <ExportButton
-          onClick={() => {
-            dispatch(exportSketch(ExportPart.VectorWebsite))
-            trackEvent('Export vector', { id: sketch?.id, website: true })
-          }}
-          loading={state.pending.includes(ActionType.ExportVectorWebsite)}
-          ext="svg"
-        >
-          Export vector (website)
-        </ExportButton>
       </Section>
     </>
   )

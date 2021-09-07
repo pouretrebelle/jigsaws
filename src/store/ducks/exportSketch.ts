@@ -7,8 +7,6 @@ import {
   exportRaster,
   exportRasterAnimation,
   exportVector,
-  exportVectorPieces,
-  exportVectorWebsite,
   exportCanvas,
 } from 'lib/export'
 
@@ -24,14 +22,6 @@ const exportActions = {
   [ExportPart.Vector]: {
     actionType: ActionType.ExportVector,
     exportFunction: exportVector,
-  },
-  [ExportPart.VectorPieces]: {
-    actionType: ActionType.ExportVectorPieces,
-    exportFunction: exportVectorPieces,
-  },
-  [ExportPart.VectorWebsite]: {
-    actionType: ActionType.ExportVectorWebsite,
-    exportFunction: exportVectorWebsite,
   },
   [ExportPart.Canvas]: {
     actionType: ActionType.ExportCanvas,

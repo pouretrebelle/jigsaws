@@ -1,7 +1,7 @@
 import { BACKGROUND } from './raster/constants'
 import { SketchConstructorSettings } from 'types'
 export { raster, Seeds as RasterNoiseSeeds } from './raster'
-export { vector, vectorPieces, Seeds as VectorNoiseSeeds } from './vector'
+export { vector, Seeds as VectorNoiseSeeds } from './vector'
 
 export const settings = {
   width: 280,

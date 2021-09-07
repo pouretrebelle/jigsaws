@@ -13,7 +13,7 @@ Development environment for generative art.
 ## :raised_hands: Development
 
 - `npm install` installs all the site's dependencies
-- `npm run ide` runs the IDE on [localhost:4001](http://localhost:4001)
+- `npm run ide` runs the IDE on [localhost:4100](http://localhost:4100)
 
 ## :construction_worker: Being good
 

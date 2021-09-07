@@ -21,7 +21,7 @@ module.exports = (env, argv) => ({
     }),
   ],
   devServer: {
-    port: 4001,
+    port: 4100,
   },
   node: {
     fs: 'empty',

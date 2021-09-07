@@ -38,8 +38,6 @@ export enum ActionType {
   ExportCutPieces = 'EXPORT_CUT_PIECES',
   ExportCutWebsite = 'EXPORT_CUT_WEBSITE',
   ExportCanvas = 'EXPORT_CANVAS',
-  CacheDesign = 'CACHE_DESIGN',
-  CacheCut = 'CACHE_CUT',
 }
 
 export interface Action {
@@ -91,11 +89,6 @@ export interface Sketch {
   settings: SketchSettings
 }
 
-export interface Cache {
-  cutNoiseSeeds: string[]
-  designNoiseSeeds: string[]
-}
-
 export interface Cut {
   c: CanvasRenderingContext2D
   simplex: SimplexNoise[]
@@ -120,29 +113,4 @@ export interface Design {
   rows: number
   columns: number
   noiseStart: number
-}
-
-export interface SketchContent {
-  id: string
-  markdownDescription: string
-  excerpt: string
-  youTubeLink: string
-  appLink: string
-  pageLink: string
-  designNoiseSeeds: string[]
-  cutNoiseSeeds: string[]
-  accentColor?: string
-  accentColorRgb?: string
-  datePublished: number
-  pieces: number
-  timeToSolve: string
-  imagePath: {
-    solveStart: string
-    solveMiddle: string
-    solveEnd: string
-    cut: string
-    cutWebsite: string
-    canvas: string
-  }
-  cache: Cache
 }

@@ -1,5 +1,4 @@
 import { getFromStorage } from 'lib/storage'
-import { Env } from 'env'
 
 export const getInitialState = () => ({
   sketchId: '001',

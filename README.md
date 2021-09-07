@@ -1,6 +1,6 @@
-# Abstract Puzzles
+# Artwork
 
-Showcase and development environment for generative art jigsaw puzzles.
+Development environment for generative art.
 
 ![Screenshot of interface](/screenshot.png?raw=true)
 
@@ -13,7 +13,6 @@ Showcase and development environment for generative art jigsaw puzzles.
 ## :raised_hands: Development
 
 - `npm install` installs all the site's dependencies
-- `npm run dev` runs the Next.js app on [localhost:4000](http://localhost:4000)
 - `npm run ide` runs the IDE on [localhost:4001](http://localhost:4001)
 
 ## :construction_worker: Being good

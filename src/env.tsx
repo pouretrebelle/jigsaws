@@ -1,22 +1,14 @@
-import { createContext, useContext } from 'react'
-
-export enum Env {
-  Ide = 'ide',
-  Dev = 'development',
-  Prod = 'production',
-}
+import React, { createContext } from 'react'
 
 type SetAppSketchId = (sketchId: string) => void
 type TrackEvent = (eventName: string, props?: object) => void
 
 interface Props {
-  env: Env
   setAppSketchId: SetAppSketchId
   trackEvent?: TrackEvent
 }
 
 interface State {
-  env: Env
   setAppSketchId: SetAppSketchId
   trackEvent: TrackEvent
 }
@@ -24,13 +16,11 @@ interface State {
 export const EnvContext = createContext({} as unknown as State)
 
 export const EnvProvider: React.FC<Props> = ({
-  env,
   setAppSketchId,
   trackEvent,
   children,
 }) => {
   const value: State = {
-    env,
     setAppSketchId,
     trackEvent: (eventName, props) => {
       if (process.env.NEXT_PUBLIC_PLAUSIBLE_TRACKING === 'true') {
@@ -42,27 +32,4 @@ export const EnvProvider: React.FC<Props> = ({
   }
 
   return <EnvContext.Provider value={value}>{children}</EnvContext.Provider>
-}
-
-interface FilterProps {
-  env: Env
-}
-
-export const OnlyEnv: React.FC<FilterProps> = ({ children, env: onlyEnv }) => {
-  const { env } = useContext(EnvContext)
-
-  if (env !== onlyEnv) return null
-
-  return <>{children}</>
-}
-
-export const ExceptEnv: React.FC<FilterProps> = ({
-  children,
-  env: exceptEnv,
-}) => {
-  const { env } = useContext(EnvContext)
-
-  if (env === exceptEnv) return null
-
-  return <>{children}</>
 }

@@ -116,14 +116,15 @@ export const design = ({
         0.02,
         true
       )
-      circles.forEach((circle) => {
+      for (let circleI = 0; circleI < CIRCLE_COUNT; circleI++) {
+        const circle = circles[circleI + circleLayer * CIRCLE_COUNT]
         if (radius < circle.maxRadius) {
           bigC.fillStyle = circle.color
           bigC.beginPath()
           bigC.arc(circle.pos.x, circle.pos.y, radius, 0, 2 * Math.PI)
           bigC.fill()
         }
-      })
+      }
     }
   }
   bigC.restore()

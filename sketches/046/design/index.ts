@@ -44,17 +44,30 @@ export const design = ({
   const bigC = bigCanvas.getContext('2d') as CanvasRenderingContext2D
   bigC.setTransform(c.getTransform())
 
+  const startHue = Math.floor(
+    map(
+      randomFromNoise(simplex[Seeds.Color].noise2D(1.456, 5.234)),
+      0,
+      1,
+      160,
+      300
+    )
+  )
+  const hueRotation = Math.floor(
+    map(
+      randomFromNoise(simplex[Seeds.Color].noise2D(17.23, 5.241)),
+      0,
+      1,
+      40,
+      70
+    )
+  )
   const hues: number[] = []
   for (let hueI = 0; hueI < COLOR_COUNT + 1; hueI++) {
-    hues.push(
-      Math.floor(
-        randomFromNoise(simplex[Seeds.Color].noise2D(235.25 + hueI, 123.33)) *
-          360
-      )
-    )
+    hues.push((startHue + hueRotation * hueI) % 360)
   }
 
-  bigC.fillStyle = `hsl(${hues[0]}, 40%, 40%)`
+  bigC.fillStyle = chroma.lch(70, 40, hues[0]).hex()
   bigC.fillRect(0, 0, width * 2, height * 2)
   bigC.translate(width / 2, height / 2)
   bigC.save()
@@ -67,14 +80,14 @@ export const design = ({
     circleI++
   ) {
     const x = map(
-      simplex[Seeds.Position].noise2D(circleI * 5 + 0.5, 0.5),
+      simplex[Seeds.Position].noise2D(circleI * 5 + 2.5, 0.5),
       -0.6,
       0.6,
       0,
       width
     )
     const y = map(
-      simplex[Seeds.Position].noise2D(0.5, circleI * 5 + 0.5),
+      simplex[Seeds.Position].noise2D(0.5, circleI * 5 + 2.5),
       -0.6,
       0.6,
       0,
@@ -92,11 +105,8 @@ export const design = ({
       hues,
       randomFromNoise(simplex[Seeds.Color].noise2D(circleI, 0))
     )
-    let color = chroma(`hsl(${hue}, 70%, 40%)`)
-    if (color.luminance() > 0.3) {
-      color = color.luminance(0.3)
-    }
-    color = color.brighten(simplex[Seeds.Color].noise2D(circleI * 3.5, 4.6) * 4)
+    let color = chroma.lch(70, 60, hue)
+    color = color.brighten(simplex[Seeds.Color].noise2D(circleI * 3.5, 4.6) * 3)
 
     const circle = {
       pos: new Vector2(x, y),

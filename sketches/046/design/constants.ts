@@ -1,5 +1,5 @@
-export const COLOR_COUNT = 4
-export const CIRCLE_LAYER_COUNT = 3
+export const COLOR_COUNT = 3
+export const CIRCLE_LAYER_COUNT = 2
 export const CIRCLE_COUNT = 10
 export const CIRCLE_MIN_RADIUS = 50
 export const CIRCLE_MAX_RADIUS = 120

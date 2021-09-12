@@ -172,8 +172,8 @@ export const getEdgeData = ({
     simplex.noise2D(123 + lSite.voronoiId * 10, 345 + rSite.voronoiId * 10),
     -1,
     1,
-    -0.2,
-    0.2
+    -0.3,
+    0.3
   )
 
   const tabPos = bezierEndVectorUnit

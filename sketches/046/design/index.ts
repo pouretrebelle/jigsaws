@@ -67,7 +67,7 @@ export const design = ({
     hues.push((startHue + hueRotation * hueI) % 360)
   }
 
-  bigC.fillStyle = chroma.lch(70, 40, hues[0]).hex()
+  bigC.fillStyle = chroma.lch(60, 40, hues[0]).hex()
   bigC.fillRect(0, 0, width * 2, height * 2)
   bigC.translate(width / 2, height / 2)
   bigC.save()
@@ -80,16 +80,16 @@ export const design = ({
     circleI++
   ) {
     const x = map(
-      simplex[Seeds.Position].noise2D(circleI * 5 + 2.5, 0.5),
-      -0.6,
-      0.6,
+      simplex[Seeds.Position].noise2D(circleI * 5 + 5.42, 78.1),
+      -0.5,
+      0.5,
       0,
       width
     )
     const y = map(
-      simplex[Seeds.Position].noise2D(0.5, circleI * 5 + 2.5),
-      -0.6,
-      0.6,
+      simplex[Seeds.Position].noise2D(circleI * 5 + 123.4, 23.1),
+      -0.5,
+      0.5,
       0,
       height
     )
@@ -105,7 +105,7 @@ export const design = ({
       hues,
       randomFromNoise(simplex[Seeds.Color].noise2D(circleI, 0))
     )
-    let color = chroma.lch(70, 60, hue)
+    let color = chroma.lch(60, 60, hue)
     color = color.brighten(simplex[Seeds.Color].noise2D(circleI * 3.5, 4.6) * 3)
 
     const circle = {
@@ -146,11 +146,7 @@ export const design = ({
   for (let spinCircleI = 0; spinCircleI < SPIN_CIRCLE_COUNT; spinCircleI++) {
     const x = map(
       randomFromNoise(
-        simplex[Seeds.Position].noise3D(
-          spinCircleI * 12 + 0.5,
-          123.45,
-          noiseStart * 0.2
-        )
+        simplex[Seeds.Position].noise2D(spinCircleI * 12 + 0.5, 123.45)
       ),
       0,
       1,
@@ -159,11 +155,7 @@ export const design = ({
     )
     const y = map(
       randomFromNoise(
-        simplex[Seeds.Position].noise3D(
-          123.45,
-          spinCircleI * 12 + 0.5,
-          noiseStart * 0.2
-        )
+        simplex[Seeds.Position].noise2D(123.45, spinCircleI * 12 + 0.5)
       ),
       0,
       1,
@@ -177,17 +169,22 @@ export const design = ({
       SPIN_CIRCLE_MIN_RADIUS,
       SPIN_CIRCLE_MAX_RADIUS
     )
-    const rotationRandom = randomFromNoise(
-      simplex[Seeds.Rotation].noise2D(43.21, spinCircleI * 12 + 0.5)
+    const rotationRandom = simplex[Seeds.Rotation].noise2D(
+      43.21 + noiseStart,
+      spinCircleI * 12 + 0.5
     )
+
     const rotation =
       map(
         rotationRandom,
-        0,
+        -1,
         1,
         SPIN_CIRCLE_MIN_ROTATION,
         SPIN_CIRCLE_MAX_ROTATION
-      ) * signFromRandom(rotationRandom)
+      ) *
+      signFromRandom(
+        simplex[Seeds.Rotation].noise2D(43.21, spinCircleI * 12 + 0.5)
+      )
 
     tempC.save()
     tempC.translate(x, y)

@@ -5,11 +5,10 @@ import { map, randomFromNoise, signFromRandom } from 'utils/numberUtils'
 import Vector2 from 'utils/Vector2'
 
 import {
-  CIRCLE_COUNT,
-  CIRCLE_LAYER_COUNT,
-  CIRCLE_MAX_RADIUS,
-  CIRCLE_MIN_RADIUS,
-  CIRCLE_OPACITY_CLAMP_RADIUS,
+  STREAK_COUNT,
+  STREAK_LAYER_COUNT,
+  STREAK_MAX_RADIUS,
+  STREAK_MIN_RADIUS,
   COLOR_COUNT,
   SPIN_RECT_COLUMNS,
   SPIN_RECT_MIN_SIZE,
@@ -17,6 +16,7 @@ import {
   SPIN_RECT_MAX_ROTATION,
   SPIN_RECT_MIN_ROTATION,
   SPIN_RECT_ROWS,
+  CIRCLES_PER_STREAK,
 } from './constants'
 
 export enum Seeds {
@@ -26,10 +26,13 @@ export enum Seeds {
   Size,
 }
 
-interface Circle {
-  pos: Vector2
-  maxRadius: number
+interface Streak {
   color: string
+  circles: {
+    x: number
+    y: number
+    maxRadius: number
+  }[]
 }
 
 export const design = ({
@@ -50,8 +53,8 @@ export const design = ({
       randomFromNoise(simplex[Seeds.Color].noise2D(1.456, 5.234)),
       0,
       1,
-      160,
-      300
+      220,
+      360
     )
   )
   const hueRotation = Math.floor(
@@ -59,8 +62,8 @@ export const design = ({
       randomFromNoise(simplex[Seeds.Color].noise2D(17.23, 5.241)),
       0,
       1,
-      40,
-      70
+      30,
+      50
     )
   )
   const hues: number[] = []
@@ -73,68 +76,71 @@ export const design = ({
   bigC.translate(width / 2, height / 2)
   bigC.save()
 
-  const circles: Circle[] = []
+  const streaks: Streak[] = []
 
   for (
-    let circleI = 0;
-    circleI < CIRCLE_COUNT * CIRCLE_LAYER_COUNT;
-    circleI++
+    let streakI = 0;
+    streakI < STREAK_COUNT * STREAK_LAYER_COUNT;
+    streakI++
   ) {
-    const x = map(
-      simplex[Seeds.Position].noise2D(circleI * 5 + 5.42, 78.1),
-      -0.5,
-      0.5,
-      0,
-      width
-    )
-    const y = map(
-      simplex[Seeds.Position].noise2D(circleI * 5 + 123.4, 23.1),
-      -0.5,
-      0.5,
-      0,
-      height
-    )
-    const maxRadius = map(
-      Math.pow(simplex[Seeds.Size].noise2D(circleI * 50, 123.45), 2),
-      0,
-      1,
-      CIRCLE_MIN_RADIUS,
-      CIRCLE_MAX_RADIUS
-    )
-
     const hue = arrayValueFromRandom(
       hues,
-      randomFromNoise(simplex[Seeds.Color].noise2D(circleI, 0))
+      randomFromNoise(simplex[Seeds.Color].noise2D(streakI, 0))
     )
     let color = chroma.lch(60, 60, hue)
-    color = color.brighten(simplex[Seeds.Color].noise2D(circleI * 3.5, 4.6) * 3)
+    color = color.brighten(simplex[Seeds.Color].noise2D(streakI * 3.5, 4.6) * 4)
 
-    const circle = {
-      pos: new Vector2(x, y),
-      maxRadius,
-      color: color.hex(),
+    const circles: Streak['circles'] = []
+    for (let circleI = 0; circleI < CIRCLES_PER_STREAK; circleI++) {
+      const maxRadius = map(
+        Math.pow(
+          simplex[Seeds.Size].noise2D(streakI * 50 + circleI * 0.01, 123.45),
+          2
+        ),
+        0,
+        1,
+        STREAK_MIN_RADIUS,
+        STREAK_MAX_RADIUS
+      )
+      const increment = circleI * (0.01 + maxRadius * 0.0002)
+      const x = map(
+        simplex[Seeds.Position].noise2D(streakI * 5 + 5.42 + increment, 78.1),
+        -0.5,
+        0.5,
+        0,
+        width
+      )
+      const y = map(
+        simplex[Seeds.Position].noise2D(streakI * 5 + 123.4 + increment, 23.1),
+        -0.5,
+        0.5,
+        0,
+        height
+      )
+      circles.push({ x, y, maxRadius })
     }
-    circles.push(circle)
+
+    const streak = {
+      color: color.hex(),
+      circles,
+    }
+    streaks.push(streak)
   }
 
-  for (let circleLayer = 0; circleLayer < CIRCLE_LAYER_COUNT; circleLayer++) {
-    for (let radius = 3; radius < CIRCLE_MAX_RADIUS; radius++) {
-      bigC.globalAlpha = map(
-        radius,
-        0,
-        CIRCLE_OPACITY_CLAMP_RADIUS,
-        0.1,
-        0.02,
-        true
-      )
-      for (let circleI = 0; circleI < CIRCLE_COUNT; circleI++) {
-        const circle = circles[circleI + circleLayer * CIRCLE_COUNT]
-        if (radius < circle.maxRadius) {
-          bigC.fillStyle = circle.color
-          bigC.beginPath()
-          bigC.arc(circle.pos.x, circle.pos.y, radius, 0, 2 * Math.PI)
-          bigC.fill()
-        }
+  bigC.globalAlpha = 0.02
+  for (let streakLayer = 0; streakLayer < STREAK_LAYER_COUNT; streakLayer++) {
+    for (let radius = 5; radius < STREAK_MAX_RADIUS; radius += 2) {
+      for (let streakI = 0; streakI < STREAK_COUNT; streakI++) {
+        const streak = streaks[streakI + streakLayer * STREAK_COUNT]
+
+        streak.circles.forEach(({ x, y, maxRadius }) => {
+          if (radius < maxRadius) {
+            bigC.fillStyle = streak.color
+            bigC.beginPath()
+            bigC.arc(x, y, radius, 0, 2 * Math.PI)
+            bigC.fill()
+          }
+        })
       }
     }
   }

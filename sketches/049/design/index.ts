@@ -2,7 +2,6 @@ import chroma from 'chroma-js'
 import { Design } from 'types'
 import { arrayValueFromRandom } from 'utils/arrayUtils'
 import { map, randomFromNoise, signFromRandom } from 'utils/numberUtils'
-import Vector2 from 'utils/Vector2'
 
 import {
   STREAK_COUNT,
@@ -11,12 +10,12 @@ import {
   STREAK_MIN_RADIUS,
   COLOR_COUNT,
   SPIN_RECT_COLUMNS,
-  SPIN_RECT_MIN_SIZE,
-  SPIN_RECT_MAX_SIZE,
-  SPIN_RECT_MAX_ROTATION,
-  SPIN_RECT_MIN_ROTATION,
+  SPIN_RECT_MIN_HEIGHT,
+  SPIN_RECT_MAX_HEIGHT,
   SPIN_RECT_ROWS,
   CIRCLES_PER_STREAK,
+  SPIN_RECT_MIN_WIDTH,
+  SPIN_RECT_MAX_WIDTH,
 } from './constants'
 
 export enum Seeds {
@@ -31,7 +30,7 @@ interface Streak {
   circles: {
     x: number
     y: number
-    maxRadius: number
+    radius: number
   }[]
 }
 
@@ -92,9 +91,9 @@ export const design = ({
 
     const circles: Streak['circles'] = []
     for (let circleI = 0; circleI < CIRCLES_PER_STREAK; circleI++) {
-      const maxRadius = map(
+      const radius = map(
         Math.pow(
-          simplex[Seeds.Size].noise2D(streakI * 50 + circleI * 0.01, 123.45),
+          simplex[Seeds.Size].noise2D(streakI * 50 + circleI * 0.001, 123.45),
           2
         ),
         0,
@@ -102,22 +101,22 @@ export const design = ({
         STREAK_MIN_RADIUS,
         STREAK_MAX_RADIUS
       )
-      const increment = circleI * (0.01 + maxRadius * 0.0002)
+      const increment = circleI * 0.001 + noiseStart
       const x = map(
         simplex[Seeds.Position].noise2D(streakI * 5 + 5.42 + increment, 78.1),
-        -0.5,
-        0.5,
+        -0.7,
+        0.7,
         0,
         width
       )
       const y = map(
         simplex[Seeds.Position].noise2D(streakI * 5 + 123.4 + increment, 23.1),
-        -0.5,
-        0.5,
+        -0.7,
+        0.7,
         0,
         height
       )
-      circles.push({ x, y, maxRadius })
+      circles.push({ x, y, radius })
     }
 
     const streak = {
@@ -127,21 +126,17 @@ export const design = ({
     streaks.push(streak)
   }
 
-  bigC.globalAlpha = 0.02
+  bigC.globalAlpha = 0.03
   for (let streakLayer = 0; streakLayer < STREAK_LAYER_COUNT; streakLayer++) {
-    for (let radius = 5; radius < STREAK_MAX_RADIUS; radius += 2) {
-      for (let streakI = 0; streakI < STREAK_COUNT; streakI++) {
-        const streak = streaks[streakI + streakLayer * STREAK_COUNT]
+    for (let streakI = 0; streakI < STREAK_COUNT; streakI++) {
+      const streak = streaks[streakI + streakLayer * STREAK_COUNT]
 
-        streak.circles.forEach(({ x, y, maxRadius }) => {
-          if (radius < maxRadius) {
-            bigC.fillStyle = streak.color
-            bigC.beginPath()
-            bigC.arc(x, y, radius, 0, 2 * Math.PI)
-            bigC.fill()
-          }
-        })
-      }
+      streak.circles.forEach(({ x, y, radius }) => {
+        bigC.fillStyle = streak.color
+        bigC.beginPath()
+        bigC.arc(x, y, radius, 0, 2 * Math.PI)
+        bigC.fill()
+      })
     }
   }
   bigC.restore()
@@ -149,8 +144,13 @@ export const design = ({
   const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
   tempC.setTransform(c.getTransform())
-  const spinRects: { x: number; y: number; size: number; rotation: number }[] =
-    []
+  const spinRects: {
+    x: number
+    y: number
+    w: number
+    h: number
+    rotation: number
+  }[] = []
 
   const unitX = (width - bleed * 2) / SPIN_RECT_COLUMNS
   const unitY = (height - bleed * 2) / SPIN_RECT_ROWS
@@ -163,33 +163,47 @@ export const design = ({
     const y =
       bleed + unitY / 2 + unitY * Math.floor(spinCircleI / SPIN_RECT_COLUMNS)
 
-    const size = map(
+    const w = map(
+      Math.pow(
+        simplex[Seeds.Size].noise2D(13.2 + spinCircleI * 50, 6123.45),
+        2
+      ),
+      0,
+      1,
+      SPIN_RECT_MIN_WIDTH,
+      SPIN_RECT_MAX_WIDTH,
+      true
+    )
+    const h = map(
       Math.pow(simplex[Seeds.Size].noise2D(13.2 + spinCircleI * 50, 123.45), 2),
       0,
       1,
-      SPIN_RECT_MIN_SIZE,
-      SPIN_RECT_MAX_SIZE,
+      SPIN_RECT_MIN_HEIGHT,
+      SPIN_RECT_MAX_HEIGHT,
       true
     )
     const rotation =
-      map(
-        simplex[Seeds.Rotation].noise2D(
-          43.21 + noiseStart,
-          spinCircleI * 12 + 0.5
-        ),
-        -1,
-        1,
-        SPIN_RECT_MIN_ROTATION,
-        SPIN_RECT_MAX_ROTATION
+      Math.ceil(
+        map(
+          randomFromNoise(
+            simplex[Seeds.Rotation].noise2D(43.21, spinCircleI * 12 + 0.5)
+          ),
+          0,
+          1,
+          1,
+          5.5
+        )
       ) *
+      30 *
       signFromRandom(
-        simplex[Seeds.Rotation].noise2D(43.21, spinCircleI * 12 + 0.5)
+        simplex[Seeds.Rotation].noise2D(43.21, spinCircleI * 12 + 532.5)
       )
 
-    spinRects.push({ x, y, size, rotation })
+    spinRects.push({ x, y, w, h, rotation })
   }
 
-  spinRects.forEach(({ x, y, size, rotation }) => {
+  bigC.globalAlpha = 0.75
+  spinRects.forEach(({ x, y, w, h, rotation }) => {
     tempC.save()
     tempC.drawImage(bigC.canvas, -width / 2, -height / 2, width * 2, height * 2)
     tempC.restore()
@@ -199,7 +213,9 @@ export const design = ({
     bigC.rotate((rotation / 180) * Math.PI)
     bigC.translate(-x, -y)
     bigC.beginPath()
-    bigC.rect(x - size / 2, y - size / 2, size, size)
+    bigC.rect(x - w / 2, y - h / 2, w, h)
+    bigC.arc(x, y - h / 2, w / 2, 0, 2 * Math.PI)
+    bigC.arc(x, y + h / 2, w / 2, 0, 2 * Math.PI)
     bigC.clip()
     bigC.drawImage(tempC.canvas, 0, 0, width, height)
     bigC.restore()

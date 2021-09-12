@@ -2,8 +2,9 @@
 datePublished: 2021-10-08
 youTubeLink: upcoming
 
-designNoiseSeeds: []
-cutNoiseSeeds: []
+designNoiseSeeds: [yxa, wiw, los, roj]
+cutNoiseSeeds: [csf, wok, drx]
+
 accentColor: 'fuchsia'
 
 pieces: 196

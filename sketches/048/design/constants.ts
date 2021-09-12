@@ -1,9 +1,9 @@
 export const COLOR_COUNT = 3
-export const CIRCLE_LAYER_COUNT = 4
-export const CIRCLE_COUNT = 6
-export const CIRCLE_MIN_RADIUS = 100
-export const CIRCLE_MAX_RADIUS = 200
-export const CIRCLE_OPACITY_CLAMP_RADIUS = 60
+export const STREAK_LAYER_COUNT = 5
+export const STREAK_COUNT = 6
+export const CIRCLES_PER_STREAK = 50
+export const STREAK_MIN_RADIUS = 10
+export const STREAK_MAX_RADIUS = 60
 export const SPIN_RECT_ROWS = 8
 export const SPIN_RECT_COLUMNS = 8
 export const SPIN_RECT_MIN_SIZE = 5

@@ -11,11 +11,12 @@ import {
   CIRCLE_MIN_RADIUS,
   CIRCLE_OPACITY_CLAMP_RADIUS,
   COLOR_COUNT,
-  SPIN_CIRCLE_COUNT,
-  SPIN_CIRCLE_MAX_RADIUS,
-  SPIN_CIRCLE_MAX_ROTATION,
-  SPIN_CIRCLE_MIN_RADIUS,
-  SPIN_CIRCLE_MIN_ROTATION,
+  SPIN_RECT_COLUMNS,
+  SPIN_RECT_MIN_SIZE,
+  SPIN_RECT_MAX_SIZE,
+  SPIN_RECT_MAX_ROTATION,
+  SPIN_RECT_MIN_ROTATION,
+  SPIN_RECT_ROWS,
 } from './constants'
 
 export enum Seeds {
@@ -142,64 +143,61 @@ export const design = ({
   const tempCanvas = createCanvas(c.canvas.width, c.canvas.height)
   const tempC = tempCanvas.getContext('2d') as CanvasRenderingContext2D
   tempC.setTransform(c.getTransform())
+  const spinRects: { x: number; y: number; size: number; rotation: number }[] =
+    []
 
-  for (let spinCircleI = 0; spinCircleI < SPIN_CIRCLE_COUNT; spinCircleI++) {
-    const x = map(
-      randomFromNoise(
-        simplex[Seeds.Position].noise2D(spinCircleI * 12 + 0.5, 123.45)
-      ),
-      0,
-      1,
-      0,
-      width
-    )
-    const y = map(
-      randomFromNoise(
-        simplex[Seeds.Position].noise2D(123.45, spinCircleI * 12 + 0.5)
-      ),
-      0,
-      1,
-      0,
-      height
-    )
-    const radius = map(
-      simplex[Seeds.Size].noise2D(spinCircleI * 50, 123.45),
-      -1,
-      1,
-      SPIN_CIRCLE_MIN_RADIUS,
-      SPIN_CIRCLE_MAX_RADIUS
-    )
-    const rotationRandom = simplex[Seeds.Rotation].noise2D(
-      43.21 + noiseStart,
-      spinCircleI * 12 + 0.5
-    )
+  const unitX = (width - bleed * 2) / SPIN_RECT_COLUMNS
+  const unitY = (height - bleed * 2) / SPIN_RECT_ROWS
+  for (
+    let spinCircleI = 0;
+    spinCircleI < SPIN_RECT_ROWS * SPIN_RECT_COLUMNS;
+    spinCircleI++
+  ) {
+    const x = bleed + unitX / 2 + unitX * (spinCircleI % SPIN_RECT_COLUMNS)
+    const y =
+      bleed + unitY / 2 + unitY * Math.floor(spinCircleI / SPIN_RECT_COLUMNS)
 
+    const size = map(
+      Math.pow(simplex[Seeds.Size].noise2D(13.2 + spinCircleI * 50, 123.45), 2),
+      0,
+      1,
+      SPIN_RECT_MIN_SIZE,
+      SPIN_RECT_MAX_SIZE,
+      true
+    )
     const rotation =
       map(
-        rotationRandom,
+        simplex[Seeds.Rotation].noise2D(
+          43.21 + noiseStart,
+          spinCircleI * 12 + 0.5
+        ),
         -1,
         1,
-        SPIN_CIRCLE_MIN_ROTATION,
-        SPIN_CIRCLE_MAX_ROTATION
+        SPIN_RECT_MIN_ROTATION,
+        SPIN_RECT_MAX_ROTATION
       ) *
       signFromRandom(
         simplex[Seeds.Rotation].noise2D(43.21, spinCircleI * 12 + 0.5)
       )
 
+    spinRects.push({ x, y, size, rotation })
+  }
+
+  spinRects.forEach(({ x, y, size, rotation }) => {
     tempC.save()
-    tempC.translate(x, y)
-    tempC.rotate(rotation)
-    tempC.translate(-x, -y)
     tempC.drawImage(bigC.canvas, -width / 2, -height / 2, width * 2, height * 2)
     tempC.restore()
 
     bigC.save()
+    bigC.translate(x, y)
+    bigC.rotate((rotation / 180) * Math.PI)
+    bigC.translate(-x, -y)
     bigC.beginPath()
-    bigC.arc(x, y, radius, 0, 2 * Math.PI)
+    bigC.rect(x - size / 2, y - size / 2, size, size)
     bigC.clip()
     bigC.drawImage(tempC.canvas, 0, 0, width, height)
     bigC.restore()
-  }
+  })
 
   c.drawImage(bigC.canvas, -width / 2, -height / 2, width * 2, height * 2)
 }

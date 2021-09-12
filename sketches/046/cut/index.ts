@@ -226,7 +226,7 @@ const getCutData = ({
         edgeData = getEdgeData({
           edge,
           simplex: simplex[Seeds.Flip],
-          forceCurve: true,
+          forceStraight: true,
         })
       }
     }

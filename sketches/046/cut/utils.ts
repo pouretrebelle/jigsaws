@@ -86,10 +86,6 @@ interface EdgeBase {
 interface StraightEdge {
   edgeType: EdgeType.Straight
 }
-interface CurveEdge {
-  edgeType: EdgeType.Curve
-  anchorPos: [Vector2, Vector2]
-}
 interface TabEdge {
   edgeType: EdgeType.Tab
   hasWings: boolean
@@ -99,18 +95,18 @@ interface TabEdge {
   anchorPos: [Vector2, Vector2]
   tabAnchorPos: [Vector2, Vector2]
 }
-type EdgeData = EdgeBase & (StraightEdge | CurveEdge | TabEdge)
+type EdgeData = EdgeBase & (StraightEdge | TabEdge)
 
 export const getEdgeData = ({
   edge,
   simplex,
   flipTab,
-  forceCurve,
+  forceStraight,
 }: {
   edge: Edge
   simplex: SimplexNoise
   flipTab?: boolean
-  forceCurve?: boolean
+  forceStraight?: boolean
 }): EdgeData => {
   const flipSign = flipTab ? 1 : -1
   const { lSite, rSite, va, vb } = edge
@@ -123,34 +119,13 @@ export const getEdgeData = ({
     pos: [startPos, endPos],
   }
 
-  if (!lSite || !rSite) {
-    return {
-      ...result,
-      edgeType: EdgeType.Straight,
-    }
-  }
-
   const endVector = endPos.minusNew(startPos)
   const length = endVector.magnitude()
 
-  if (length < MIN_TAB_SIZE || forceCurve) {
-    const curveSimplex = simplex.noise2D(
-      123 + lSite.voronoiId * 10,
-      345 + rSite.voronoiId * 10
-    )
-    let curveAngle =
-      map(curveSimplex, -1, 1, 0.5, 0.8) *
-      signFromRandom((curveSimplex * 100) % 1) *
-      flipSign
-    if (forceCurve) curveAngle *= MIN_TAB_SIZE / length
-
+  if (!lSite || !rSite || length < MIN_TAB_SIZE || forceStraight) {
     return {
       ...result,
-      edgeType: EdgeType.Curve,
-      anchorPos: [
-        startPos.plusNew(endVector.multiplyNew(0.35).rotate(curveAngle)),
-        endPos.plusNew(endVector.multiplyNew(-0.35).rotate(-curveAngle)),
-      ],
+      edgeType: EdgeType.Straight,
     }
   }
 
@@ -172,20 +147,25 @@ export const getEdgeData = ({
   let bezierEndPos = endPos.clone()
 
   if (hasWings) {
+    const tabSway = map(
+      simplex.noise2D(678 + lSite.voronoiId * 10, 912 + rSite.voronoiId * 10),
+      -1,
+      1,
+      0,
+      1
+    )
+
     const endVectorUnit = endPos.minusNew(startPos).normalise()
-    const wingLength = (length - MAX_TAB_SIZE) / 2 / Math.cos(leanBackAngle)
-    bezierStartPos.plusEq(
-      endVectorUnit.multiplyNew(wingLength).rotate(leanBackAngle)
-    )
-    bezierEndPos.minusEq(
-      endVectorUnit.multiplyNew(wingLength).rotate(-leanBackAngle)
-    )
+    const wingLength = (length - MAX_TAB_SIZE) / Math.cos(leanBackAngle)
+
+    bezierStartPos.plusEq(endVectorUnit.multiplyNew(wingLength * tabSway))
+    bezierEndPos.minusEq(endVectorUnit.multiplyNew(wingLength * (1 - tabSway)))
   }
 
   const bezierLength = Math.min(length, MAX_TAB_SIZE)
   const bezierEndVectorUnit = bezierEndPos.minusNew(bezierStartPos).normalise()
 
-  const tabLength = bezierLength * 0.4 * flipSign
+  const tabLength = bezierLength * 0.45 * flipSign
   const tabAnchorLength = bezierLength * 1.1 // how far tab anchors are from the center
   const anchorLength = bezierLength * 0.85
   const tabAnchorAngle = map(
@@ -205,12 +185,12 @@ export const getEdgeData = ({
     .rotate(tabAnchorAngle) // tweak tab angles
 
   const bezierStartAnchorPos = bezierStartPos.plusNew(
-    bezierEndVectorUnit.multiplyNew(anchorLength).rotate(leanBackAngle)
+    bezierEndVectorUnit.multiplyNew(anchorLength)
   )
   const tabStartAnchorPos = tabPos.minusNew(tabAnchorVector)
   const tabEndAnchorPos = tabPos.plusNew(tabAnchorVector)
   const bezierEndAnchorPos = bezierEndPos.minusNew(
-    bezierEndVectorUnit.multiplyNew(anchorLength).rotate(-leanBackAngle)
+    bezierEndVectorUnit.multiplyNew(anchorLength)
   )
 
   return {
@@ -268,23 +248,6 @@ export const getAvoidPoints = (
       points.push(unit.multiplyNew(d).plusEq(pos[Start]))
     }
     return getAvoidPointsOverLine(pos[Start], pos[End])
-  }
-
-  if (edgeData.edgeType === EdgeType.Curve) {
-    const { anchorPos } = edgeData
-    const pointCount = Math.floor(length / AVOID_POINTS_GAP)
-    for (let d = 1 / (pointCount + 1); d < 1; d += 1 / (pointCount + 1)) {
-      points.push(
-        getCubicBezierXYatPercent(
-          pos[Start],
-          anchorPos[Start],
-          anchorPos[End],
-          pos[End],
-          d
-        )
-      )
-    }
-    return points
   }
 
   const { tabPos, bezierPos, anchorPos, tabAnchorPos } = edgeData

@@ -9,5 +9,5 @@ export const settings = {
   rows: 14,
   columns: 14,
 
-  backgroundColor: '#194d80',
+  backgroundColor: '#4c4c7f',
 } as SketchConstructorSettings

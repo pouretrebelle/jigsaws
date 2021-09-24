@@ -52,7 +52,7 @@ export const design = ({
       randomFromNoise(simplex[Seeds.Color].noise2D(1.456, 5.234)),
       0,
       1,
-      220,
+      160,
       360
     )
   )
@@ -152,16 +152,15 @@ export const design = ({
     rotation: number
   }[] = []
 
-  const unitX = (width - bleed * 2) / SPIN_RECT_COLUMNS
-  const unitY = (height - bleed * 2) / SPIN_RECT_ROWS
+  const unitX = (width - bleed * 2) / (SPIN_RECT_COLUMNS - 1)
+  const unitY = (height - bleed * 2) / (SPIN_RECT_ROWS - 1)
   for (
     let spinCircleI = 0;
     spinCircleI < SPIN_RECT_ROWS * SPIN_RECT_COLUMNS;
     spinCircleI++
   ) {
-    const x = bleed + unitX / 2 + unitX * (spinCircleI % SPIN_RECT_COLUMNS)
-    const y =
-      bleed + unitY / 2 + unitY * Math.floor(spinCircleI / SPIN_RECT_COLUMNS)
+    const x = bleed + unitX * (spinCircleI % SPIN_RECT_COLUMNS)
+    const y = bleed + unitY * Math.floor(spinCircleI / SPIN_RECT_COLUMNS)
 
     const w = map(
       Math.pow(

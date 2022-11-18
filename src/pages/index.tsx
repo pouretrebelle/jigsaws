@@ -85,8 +85,9 @@ const HomePage = ({ latestSketch }: Props) => {
           exploring generative art through the medium of jigsaw design.
         </p>
         <p>
-          Every week I create a new generative jigsaw program in the browser and
-          laser cut one of the variations to solve and critique.
+          Each week from Sept ’20 to Sept ’21 I created a new generative jigsaw
+          program in the browser and laser cut one of the variations to solve
+          and critique.
         </p>
       </StyledDescription>
 

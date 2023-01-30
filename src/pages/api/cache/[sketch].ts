@@ -67,7 +67,7 @@ const cacheDesign = async ({
   const canvasHeight = (settings.height + settings.bleed * 2) * scale
 
   const canvas = createCanvas(canvasWidth, canvasHeight)
-  const c = canvas.getContext('2d') as CanvasRenderingContext2D
+  const c = canvas.getContext('2d') as unknown as CanvasRenderingContext2D
 
   c.save()
   c.scale(scale, scale)

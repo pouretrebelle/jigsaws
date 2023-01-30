@@ -240,10 +240,10 @@ export const SketchPage = ({
   const navButtons = (
     <>
       <Link href={nextSketchLink || '/'} passHref>
-        <Button disabled={!nextSketchLink}>Newer</Button>
+        <Button disabled={!nextSketchLink}>Next</Button>
       </Link>
       <Link href={prevSketchLink || '/'} passHref>
-        <Button disabled={!prevSketchLink}>Older</Button>
+        <Button disabled={!prevSketchLink}>Previous</Button>
       </Link>
     </>
   )

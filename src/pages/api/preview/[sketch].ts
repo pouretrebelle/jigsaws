@@ -52,7 +52,7 @@ const handler = async (req: Req, res: Res) => {
     : []
 
   const canvas = createCanvas(canvasWidth, canvasWidth)
-  const c = canvas.getContext('2d') as CanvasRenderingContext2D
+  const c = canvas.getContext('2d') as unknown as CanvasRenderingContext2D
 
   let designNoiseSeeds = Object.keys(DesignNoiseSeeds)
   designNoiseSeeds = designNoiseSeeds

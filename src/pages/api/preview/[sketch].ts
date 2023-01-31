@@ -105,7 +105,6 @@ const handler = async (req: Req, res: Res) => {
     c.save()
     c.translate(-lineWidth / 2, -lineWidth / 2)
     c.scale(designScale, designScale)
-    c.translate(-settings.bleed, -settings.bleed)
     design({
       c,
       createCanvas,
@@ -113,10 +112,9 @@ const handler = async (req: Req, res: Res) => {
       simplex: designNoiseSeeds.map((seed) => new SimplexNoise(seed)),
       noiseStart: 0,
       ...settings,
-      width: settings.width ? settings.width + settings.bleed * 2 : undefined,
-      height: settings.height
-        ? settings.height + settings.bleed * 2
-        : undefined,
+      width: settings.width ?? undefined,
+      height: settings.height ?? undefined,
+      bleed: 0,
     } as Design)
     c.restore()
   }

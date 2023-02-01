@@ -6,15 +6,11 @@ const SPACE_AROUND_BULLET = '0.5em'
 const BULLET_SIZE = '0.4em'
 
 export const BulletSeparator = styled.div`
-  > * {
-    display: inline-block;
-  }
-
   > *:not(:last-child) {
     margin-right: ${SPACE_AROUND_BULLET};
   }
 
-  > * + * {
+  > * {
     position: relative;
     margin-left: ${SPACE_AROUND_BULLET};
 
@@ -29,6 +25,20 @@ export const BulletSeparator = styled.div`
       width: ${BULLET_SIZE};
       height: ${BULLET_SIZE};
       background: ${COLOR.DIVIDER};
+    }
+  }
+
+  @media (min-width: 500px) {
+    > * {
+      display: inline-block;
+    }
+
+    > *:first-child {
+      margin-left: 0;
+
+      &:before {
+        display: none;
+      }
     }
   }
 `

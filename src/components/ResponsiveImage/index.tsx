@@ -58,6 +58,7 @@ const StyledTimeout = styled.svg<{ $visible: boolean }>`
   fill: currentColor;
   transition: opacity 0.2s linear;
   opacity: 0;
+  pointer-events: none;
 
   ${({ $visible }) => $visible && `opacity: 1;`}
 `
